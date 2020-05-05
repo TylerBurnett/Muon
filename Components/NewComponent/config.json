@@ -1,0 +1,17 @@
+{
+    "name": "My new Component",
+    
+    "active": false,
+    
+    "displayFile": "index.html",
+    
+    "windowLocation": { "x": 25, "y": 25 },
+    
+    "windowSize": { "x": 500, "y": 500 },
+    
+	"settings": {
+		"name": "Setting1",
+		"description": "Its a custom user setting",
+		"variable": "number"
+	}
+}
