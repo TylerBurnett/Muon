@@ -1,0 +1,15 @@
+{
+  "name": "particle",
+  "version": "1.0.0",
+  "description": "A lightweight manager for desktop customisation",
+  "main": "main.js",
+  "dependencies": {
+    "electron": "^8.2.5"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tyler Burnett",
+  "license": "ISC"
+}
