@@ -1,11 +1,12 @@
+import { IVec2 } from "./IVec2";
 
 // Custom component base settings (Things that should always be the same not matter the component)
 export interface IComponentSettings {
     name: string;
     active: boolean;
     displayFile: string;
-    windowLocation: Position;
-    windowsSize: Position;
+    windowLocation: IVec2;
+    windowsSize: IVec2;
     settings: IUserSetting[];
 }
 

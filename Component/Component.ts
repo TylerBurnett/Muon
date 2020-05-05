@@ -1,12 +1,12 @@
 import { existsSync, writeFile, readFile } from 'fs';
 import { ipcRenderer, remote } from "electron";
-import { MessageHeader } from './MessageHeader';
+import { MessageHeader } from './Enums/MessageHeader';
 
 /**
  * Component Base class, used as extended class for all custom components
  * 
  */
-class ComponentBase {
+export class ComponentBase {
     settings: IComponentSettings;
 
 
