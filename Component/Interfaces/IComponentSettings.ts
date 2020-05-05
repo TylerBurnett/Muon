@@ -1,6 +1,6 @@
 
 // Custom component base settings (Things that should always be the same not matter the component)
-interface IComponentSettings {
+export interface IComponentSettings {
     name: string;
     active: boolean;
     displayFile: string;
@@ -12,7 +12,7 @@ interface IComponentSettings {
 // User facing settings exposed for editing, 
 // this will later be used in the main application 
 // to edit the component functionality, Like in rainmeter.
-interface IUserSetting {
+export interface IUserSetting {
     name: string;
     description: string;
     variable: any;

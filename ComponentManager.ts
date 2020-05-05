@@ -1,7 +1,8 @@
 import { BrowserWindow, ipcMain } from "electron";
-import { readFile, writeFile } from "fs";
-import { IApplicationSettings } from "./Component/Interfaces/IApplicationSettings"
+import { readFile, writeFile, readdirSync, statSync } from "fs";
+import { IApplicationSettings } from "./Component/Interfaces/IApplicationSettings";
 import { MessageHeader } from "./Component/Enums/MessageHeader";
+import { IComponentSettings } from "./Component/Interfaces/IComponentSettings";
 
 /**
  * Component manager class
