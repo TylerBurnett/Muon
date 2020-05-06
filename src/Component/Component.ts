@@ -1,20 +1,17 @@
 import { existsSync, writeFile, readFile } from 'fs';
 import { ipcRenderer, remote } from "electron";
-import { MessageHeader } from './Enums/MessageHeader';
+import { IComponentSettings } from './IComponentSettings';
 
 /**
  * Component Base class, used as extended class for all custom components
- * 
  */
 export class ComponentBase {
     settings: IComponentSettings;
-
 
     constructor() {
 
         // Load Config -> notify manager of result.
         if (this.loadConfig()) {
-            this.sendMessage(MessageHeader.Log, "Component " + this.settings.name + "- Loaded and operational.");
         }
         else {
             this.deconstruct(false);
@@ -32,20 +29,13 @@ export class ComponentBase {
 
         // Message Parent about shutting down
         if (error) {
-            this.sendMessage(MessageHeader.Error, "Component " + this.settings.name + "- " + error);
         }
         else {
-            this.sendMessage(MessageHeader.Log, "Component " + this.settings.name + "- Shutting down normally.");
         }
 
         // Close the component
         const window = remote.getCurrentWindow();
         window.close();
-    }
-
-    // Messaging service for child components to master component
-    public sendMessage(header: MessageHeader, message: string) {
-        ipcRenderer.send('asynchronous-message', header + ':' + message);
     }
 
     // Loads the component config from respective directory
@@ -67,7 +57,6 @@ export class ComponentBase {
             }
         }
         catch (err) {
-            this.sendMessage(MessageHeader.Error, err);
         }
 
         return false;

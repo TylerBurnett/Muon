@@ -1,8 +1,7 @@
 import { BrowserWindow, ipcMain } from "electron";
 import { readFile, writeFile, readdirSync, statSync } from "fs";
-import { IApplicationSettings } from "./Component/Interfaces/IApplicationSettings";
-import { MessageHeader } from "./Component/Enums/MessageHeader";
-import { IComponentSettings } from "./Component/Interfaces/IComponentSettings";
+import { IApplicationSettings } from "./IApplicationSettings";
+import { IComponentSettings } from "../Component/IComponentSettings";
 
 /**
  * Component manager class
@@ -22,11 +21,6 @@ export class ComponentManager {
         if (!this.loadSettings())
             // Continue constructing
             console.log("ComponentManager: Constructor failed, Unable to load settings.");
-
-        // Messenger Reciever
-        ipcMain.on('asynchronous-message', (event, arg) => {
-            this.handleMessage(arg);
-        });
     }
 
     private loadSettings(): boolean {
@@ -53,23 +47,5 @@ export class ComponentManager {
         // Read component settings.
 
         return null;
-    }
-
-    private handleMessage(arg: string): void {
-        const message = arg.split(':');
-
-        switch (message[0]) {
-            case MessageHeader.Log:
-                console.log(message[1]);
-                break;
-
-            case MessageHeader.Warning:
-                console.log("Warning: " + message[1]);
-                break;
-
-            case MessageHeader.Error:
-                console.log("Error: " + message[1]);
-                break;
-        }
     }
 }

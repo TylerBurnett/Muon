@@ -1,4 +1,4 @@
-import { ComponentManager } from "./ComponentManager";
+import { ComponentManager } from "./src/ComponentManager/ComponentManager";
 const electron = require("electron");
 
 // Start the manager
