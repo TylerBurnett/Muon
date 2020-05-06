@@ -1,47 +1,30 @@
-import { ipcMain, ipcRenderer } from "electron";
+import { ipcMain, ipcRenderer, BrowserView, BrowserWindow } from "electron";
 
+/**
+ * This class is both the listener and sender of events to Components
+ * This class should be used in the Component Manager only
+ */
 export class ManagerMessenger {
 
     constructor() {
-        // Hook as the primary component
-        ipcMain.on('asynchronous-message', (event, args) => {
-            this.handleMessage(event, args);
+        // Create a reciever for errors
+        ipcMain.on(ManagerRecievers.Error, (event, args) => {
+            console.log("ERROR in:  " + <string>args[0] + ", " + <string>args[1])
         });
 
+        // Create a reciever for warnings
+        ipcMain.on(ManagerRecievers.Warning, (event, args) => {
+            console.log("WARNING in:  " + <string>args[0] + ", " + <string>args[1])
+        });
+
+        // Create a reciever for logging
+        ipcMain.on(ManagerRecievers.Log, (event, args) => {
+            console.log(<string>args[0] + ": " + <string>args[1])
+        });
     }
 
-    public sendMessage() {
-        //ipcMain.emit()
-    }
-
-    private handleMessage(event: Electron.IpcMainEvent, args: any[]) {
-        try {
-            const header = <ManagerRecievers>args[0]
-            const component = <string>args[1];
-
-            switch (header) {
-
-                // Logging Headers
-                case ManagerRecievers.Error:
-                    console.log("ERROR in:  " + component + ", " + <string>args[2])
-                    break;
-
-                case ManagerRecievers.Warning:
-                    console.log("WARNING in:  " + component + ", " + <string>args[2])
-                    break;
-
-                case ManagerRecievers.Log:
-                    console.log(component + ": " + <string>args[2])
-                    break;
-
-                // Event Headers
-                // TBA
-            }
-
-        }
-        catch {
-            console.log("ERROR: Cannot parse component header.");
-        }
+    public sendMessage(window: BrowserWindow, reciever: ComponentRecievers) {
+        window.webContents.send(reciever, null);
     }
 }
 
@@ -58,48 +41,38 @@ export class ComponentMessenger {
     // Responding function when the manager requests the component to reload.
     private onReload: Function;
 
+    /**
+     * Intakes event responders for the Component class. This class should only be used in ComponentBase.
+     * @param deconstructor The component deconstructor should be used here. Will be called upon recieving request from ComponentManager.
+     * @param reloader The component Reloader should be used here. Will be called upon recieving request from ComponentManager.
+     */
     constructor(deconstructor: Function, reloader: Function) {
 
         // Set responders
         this.onDeconstruct = deconstructor;
         this.onReload = reloader;
 
-        // Hook component as a renderer
-        ipcRenderer.on('asynchronous-message', (event, args) => {
-            this.handleMessage(event, args);
+        // Create a reload reciever
+        ipcRenderer.on(ComponentRecievers.Reload, (event, args) => {
+            this.onReload;
+        });
+
+        // Create a close reciever
+        ipcRenderer.on(ComponentRecievers.Close, (event, args) => {
+            this.onDeconstruct;
         });
     }
 
+    /**
+     * This function should be wrapped by a ComponentBase Function to ensure correct component name passing.
+     * @param header The enum header that specifies the intent of the message
+     * @param sender The caller component name.
+     * @param message Additonal information, Used primarily when using Log, Warning, Error.
+     */
     public sendMessage(header: ComponentRecievers, sender: string, message?: string) {
-        const args = [header, sender, message || ""];
-
-        ipcRenderer.send('asynchronous-message', args);
+        const args = [sender, message];
+        ipcRenderer.send(header, args);
     }
-
-    private handleMessage(event: Electron.IpcRendererEvent, args: any[]) {
-
-        event.type
-        try {
-            const header = <ComponentRecievers>args[0]
-
-            switch (header) {
-
-                case ComponentRecievers.Reload:
-                    this.onReload;
-                    break;
-
-                case ComponentRecievers.Close:
-                    this.onDeconstruct;
-                    break;
-            }
-
-        }
-        catch {
-            console.log("ERROR: Cannot parse component header.");
-        }
-
-    }
-
 }
 
 /**
@@ -108,8 +81,8 @@ export class ComponentMessenger {
  * Note: A component will only react to these headers.
  */
 export enum ComponentRecievers {
-    Reload,
-    Close,
+    Reload = "Reload",
+    Close = "Close",
 }
 
 /**
@@ -118,8 +91,8 @@ export enum ComponentRecievers {
  * Note: The component manager will only react to these headers.
  */
 export enum ManagerRecievers {
-    Error,
-    Warning,
-    Log,
+    Error = "Error",
+    Warning = "Warning",
+    Log = "Log"
 }
 
