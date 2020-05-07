@@ -1,5 +1,5 @@
-import { BrowserWindow, ipcMain } from "electron";
-import { readFile, writeFile, readdirSync, statSync } from "fs";
+import { BrowserWindow } from "electron";
+import { readFile, writeFile } from "fs";
 import { IApplicationSettings } from "./IApplicationSettings";
 import { IComponentSettings } from "../Component/IComponentSettings";
 

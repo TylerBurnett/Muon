@@ -1,4 +1,4 @@
-import { IVec2 } from "../IVec2";
+import { IVec2 } from "../Common/IVec2";
 
 // Custom component base settings (Things that should always be the same not matter the component)
 export interface IComponentSettings {
