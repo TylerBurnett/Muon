@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const path_1 = require("path");
 const fs_1 = require("fs");
 const IApplicationSettings_1 = require("./IApplicationSettings");
 /**
@@ -12,11 +13,10 @@ class ComponentManager {
             this.settings = this.loadSettings();
         }
         else {
-            console.log("No settings file, creating one now.");
             this.settings = new IApplicationSettings_1.Defaults;
             const result = this.saveSettings();
-            console.log(result);
         }
+        console.log(this.components);
     }
     get components() {
         return this.findComponents();
@@ -47,11 +47,20 @@ class ComponentManager {
         return false;
     }
     findComponents() {
-        //Assinged to @PeterBurnett 
-        // check all folders in the /components directory
-        // Check for config.json
-        // Read component settings.
-        return null;
+        // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load.
+        var dirs = fs_1.readdirSync("Components").filter(f => fs_1.statSync(path_1.join("Components", f)).isDirectory());
+        var components;
+        const baseDir = "Components/";
+        for (const dir in dirs) {
+            if (fs_1.existsSync(baseDir + dirs[dir] + "/config.json")) {
+                fs_1.readFile(baseDir + dirs[dir] + "/config.json", function (err, buf) {
+                    var contents = JSON.parse(buf.toString());
+                    console.log(contents);
+                    components.push(contents);
+                });
+            }
+        }
+        return components;
     }
 }
 exports.ComponentManager = ComponentManager;

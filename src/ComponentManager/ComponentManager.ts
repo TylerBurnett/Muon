@@ -1,5 +1,6 @@
 import { BrowserWindow } from "electron";
-import { readFile, writeFile, existsSync, appendFile } from "fs";
+import { join } from "path";
+import { readFile, writeFile, existsSync, appendFile, readdirSync, statSync } from "fs";
 import { IApplicationSettings, Defaults } from "./IApplicationSettings";
 import { IComponentSettings } from "../Component/IComponentSettings";
 
@@ -22,11 +23,13 @@ export class ComponentManager {
             this.settings = this.loadSettings();
         }
         else {
-            console.log("No settings file, creating one now.")
             this.settings = new Defaults;
             const result = this.saveSettings();
-            console.log(result)
         }
+
+
+        console.log(this.components);
+
     }
 
     private loadSettings(): IApplicationSettings {
@@ -57,11 +60,21 @@ export class ComponentManager {
     }
 
     private findComponents(): IComponentSettings[] {
-        //Assinged to @PeterBurnett 
-        // check all folders in the /components directory
-        // Check for config.json
-        // Read component settings.
+        // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load.
+        var dirs = readdirSync("Components").filter(f => statSync(join("Components", f)).isDirectory())
+        var components: IComponentSettings[];
 
-        return null;
+        const baseDir = "Components/"
+        for (const dir in dirs) {
+            if (existsSync(baseDir + dirs[dir] + "/config.json")) {
+                readFile(baseDir + dirs[dir] + "/config.json", function (err, buf) {
+                    // JSON.parse is returning a string. Investigation required.
+                    var contents = JSON.parse(buf.toString());
+                    components.push(<IComponentSettings>contents);
+                });
+            }
+        }
+
+        return components;
     }
 }
