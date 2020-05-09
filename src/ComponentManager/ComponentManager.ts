@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
-import { readFile, writeFile } from "fs";
-import { IApplicationSettings } from "./IApplicationSettings";
+import { readFile, writeFile, existsSync, appendFile } from "fs";
+import { IApplicationSettings, Defaults } from "./IApplicationSettings";
 import { IComponentSettings } from "../Component/IComponentSettings";
 
 /**
@@ -17,31 +17,47 @@ export class ComponentManager {
     }
 
     constructor() {
-        // Load application settings
-        if (!this.loadSettings())
-            // Continue constructing
-            console.log("ComponentManager: Constructor failed, Unable to load settings.");
+
+        if (existsSync("settings.json")) {
+            this.settings = this.loadSettings();
+        }
+        else {
+            console.log("No settings file, creating one now.")
+            this.settings = new Defaults;
+            const result = this.saveSettings();
+            console.log(result)
+        }
     }
 
-    private loadSettings(): boolean {
+    private loadSettings(): IApplicationSettings {
         readFile("settings.json", function (err, buf) {
-            this.settings = <IApplicationSettings>JSON.parse(buf.toString());
-            return true;
+            return <IApplicationSettings>JSON.parse(buf.toString());
         });
 
-        return false;
+        return null;
     }
 
     private saveSettings(): boolean {
-        writeFile("settings.json", JSON.stringify(this.settings), (err) => {
-            if (err) return false;
-            else return true;
-        });
+
+        if (existsSync("settings.json")) {
+            writeFile("settings.json", JSON.stringify(this.settings), (err) => {
+                if (err) return false;
+                else return true;
+            });
+        }
+
+        else {
+            appendFile("settings.json", JSON.stringify(this.settings), (err) => {
+                if (err) return false;
+                else return true;
+            });
+        }
 
         return false;
     }
 
     private findComponents(): IComponentSettings[] {
+        //Assinged to @PeterBurnett 
         // check all folders in the /components directory
         // Check for config.json
         // Read component settings.
