@@ -5,74 +5,83 @@ import { ipcMain, ipcRenderer, BrowserWindow } from "electron";
  * This class should be used in the Component Manager only
  */
 export class ManagerMessenger {
+  constructor() {
+    // Create a reciever for errors
+    ipcMain.on(ManagerRecievers.Error, (event, args) => {
+      console.log("ERROR in:  " + <string>args[0] + ", " + <string>args[1]);
+    });
 
-    constructor() {
-        // Create a reciever for errors
-        ipcMain.on(ManagerRecievers.Error, (event, args) => {
-            console.log("ERROR in:  " + <string>args[0] + ", " + <string>args[1])
-        });
+    // Create a reciever for warnings
+    ipcMain.on(ManagerRecievers.Warning, (event, args) => {
+      console.log("WARNING in:  " + <string>args[0] + ", " + <string>args[1]);
+    });
 
-        // Create a reciever for warnings
-        ipcMain.on(ManagerRecievers.Warning, (event, args) => {
-            console.log("WARNING in:  " + <string>args[0] + ", " + <string>args[1])
-        });
+    // Create a reciever for logging
+    ipcMain.on(ManagerRecievers.Log, (event, args) => {
+      console.log(<string>args[0] + ": " + <string>args[1]);
+    });
+  }
 
-        // Create a reciever for logging
-        ipcMain.on(ManagerRecievers.Log, (event, args) => {
-            console.log(<string>args[0] + ": " + <string>args[1])
-        });
-    }
-
-    public sendMessage(window: BrowserWindow, reciever: ComponentRecievers) {
-        window.webContents.send(reciever, null);
-    }
+  public sendMessage(window: BrowserWindow, reciever: ComponentRecievers) {
+    window.webContents.send(reciever, null);
+  }
 }
 
 /**
  * This class is both the listener and sender of events to the Component Manager
- * This class should be private in the BaseComponent Class, public functions should be encapsulated in a wrapper 
+ * This class should be private in the BaseComponent Class, public functions should be encapsulated in a wrapper
  * in the BaseComponent class.
  */
 export class ComponentMessenger {
+  // Responding function when the Manager requests deconstruction of the object.
+  private onDeconstruct: Function;
 
-    // Responding function when the Manager requests deconstruction of the object.
-    private onDeconstruct: Function;
+  // Responding function when the manager requests the component to reload.
+  private onReload: Function;
 
-    // Responding function when the manager requests the component to reload.
-    private onReload: Function;
+  // Responding function when the manager sends the component config.
+  private onConfig: Function;
 
-    /**
-     * Intakes event responders for the Component class. This class should only be used in ComponentBase.
-     * @param deconstructor The component deconstructor should be used here. Will be called upon recieving request from ComponentManager.
-     * @param reloader The component Reloader should be used here. Will be called upon recieving request from ComponentManager.
-     */
-    constructor(deconstructor: Function, reloader: Function) {
+  /**
+   * Intakes event responders for the Component class. This class should only be used in ComponentBase.
+   * @param deconstructor The component deconstructor should be used here. Will be called upon recieving request from ComponentManager.
+   * @param reloader The component Reloader should be used here. Will be called upon recieving request from ComponentManager.
+   */
+  constructor(deconstructor: Function, reloader: Function) {
+    // Set responders
+    this.onDeconstruct = deconstructor;
+    this.onReload = reloader;
 
-        // Set responders
-        this.onDeconstruct = deconstructor;
-        this.onReload = reloader;
+    // Create a close reciever
+    ipcRenderer.on(ComponentRecievers.Close, (event, args) => {
+      this.onConfig;
+    });
 
-        // Create a reload reciever
-        ipcRenderer.on(ComponentRecievers.Reload, (event, args) => {
-            this.onReload;
-        });
+    // Create a reload reciever
+    ipcRenderer.on(ComponentRecievers.Reload, (event, args) => {
+      this.onReload;
+    });
 
-        // Create a close reciever
-        ipcRenderer.on(ComponentRecievers.Close, (event, args) => {
-            this.onDeconstruct;
-        });
-    }
+    // Create a close reciever
+    ipcRenderer.on(ComponentRecievers.Close, (event, args) => {
+      this.onDeconstruct;
+    });
+  }
 
-    /**
-     * This function should be wrapped by a ComponentBase Function to ensure correct component name passing.
-     * @param header The enum header that specifies the intent of the message
-     * @param sender The caller component name.
-     * @param message Additonal information, Used primarily when using Log, Warning, Error.
-     */
-    public sendMessage(header: ComponentRecievers, sender: string, message?: string) {
-        const args = [sender, message];
-        ipcRenderer.send(header, args);
-    }
+  /**
+   * This function should be wrapped by a ComponentBase Function to ensure correct component name passing.
+   * @param header The enum header that specifies the intent of the message
+   * @param sender The caller component name.
+   * @param message Additonal information, Used primarily when using Log, Warning, Error.
+   */
+  public sendMessage(
+    header: ComponentRecievers,
+    sender: string,
+    message?: string
+  ) {
+    const args = [sender, message];
+    ipcRenderer.send(header, args);
+  }
 }
 
 /**
@@ -81,8 +90,9 @@ export class ComponentMessenger {
  * Note: A component will only react to these headers.
  */
 export enum ComponentRecievers {
-    Reload = "Reload",
-    Close = "Close",
+  Config = "Config",
+  Reload = "Reload",
+  Close = "Close",
 }
 
 /**
@@ -91,8 +101,7 @@ export enum ComponentRecievers {
  * Note: The component manager will only react to these headers.
  */
 export enum ManagerRecievers {
-    Error = "Error",
-    Warning = "Warning",
-    Log = "Log"
+  Error = "Error",
+  Warning = "Warning",
+  Log = "Log",
 }
-
