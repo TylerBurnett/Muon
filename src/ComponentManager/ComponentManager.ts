@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
 import { join } from "path";
-import { readFile, writeFile, existsSync, appendFile, readdirSync, statSync, readFileSync } from "fs";
+import { existsSync, readdirSync, statSync, readFileSync, writeFileSync } from "fs";
 import { IApplicationSettings, Defaults } from "./IApplicationSettings";
 import { IComponentSettings } from "../Component/IComponentSettings";
 
@@ -34,27 +34,14 @@ export class ComponentManager {
     }
 
     private loadSettings(): IApplicationSettings {
-        readFile("settings.json", function (err, buf) {
-            return <IApplicationSettings>JSON.parse(buf.toString());
-        });
-
-        return null;
+        var contents = readFileSync("settings.json");
+        return <IApplicationSettings>JSON.parse(contents.toString());
     }
 
     private saveSettings(): boolean {
 
         if (existsSync("settings.json")) {
-            writeFile("settings.json", JSON.stringify(this.settings), (err) => {
-                if (err) return false;
-                else return true;
-            });
-        }
-
-        else {
-            appendFile("settings.json", JSON.stringify(this.settings), (err) => {
-                if (err) return false;
-                else return true;
-            });
+            writeFileSync("settings.json", JSON.stringify(this.settings));
         }
 
         return false;
