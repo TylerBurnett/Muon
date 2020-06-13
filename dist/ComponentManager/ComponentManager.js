@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ComponentManager = void 0;
 const electron_1 = require("electron");
 const path_1 = require("path");
 const fs_1 = require("fs");

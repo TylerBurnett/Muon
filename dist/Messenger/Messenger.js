@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ManagerRecievers = exports.ComponentRecievers = exports.ComponentMessenger = exports.ManagerMessenger = void 0;
 const electron_1 = require("electron");
 /**
  * This class is both the listener and sender of events to Components
@@ -26,6 +25,7 @@ class ManagerMessenger {
     }
 }
 exports.ManagerMessenger = ManagerMessenger;
+exports.default = ManagerMessenger;
 /**
  * This class is both the listener and sender of events to the Component Manager
  * This class should be private in the BaseComponent Class, public functions should be encapsulated in a wrapper
@@ -37,17 +37,10 @@ class ComponentMessenger {
      * @param deconstructor The component deconstructor should be used here. Will be called upon recieving request from ComponentManager.
      * @param reloader The component Reloader should be used here. Will be called upon recieving request from ComponentManager.
      */
-    constructor(deconstructor, reloader) {
-        // Set responders
-        this.onDeconstruct = deconstructor;
-        this.onReload = reloader;
-        // Create a reload reciever
-        electron_1.ipcRenderer.on(ComponentRecievers.Reload, (event, args) => {
-            this.onReload;
-        });
-        // Create a close reciever
-        electron_1.ipcRenderer.on(ComponentRecievers.Close, (event, args) => {
-            this.onDeconstruct;
+    constructor(onConfig) {
+        // Create a config reciever
+        electron_1.ipcRenderer.on(ComponentRecievers.Config, (event, args) => {
+            this.onConfig(args);
         });
     }
     /**
@@ -69,8 +62,7 @@ exports.ComponentMessenger = ComponentMessenger;
  */
 var ComponentRecievers;
 (function (ComponentRecievers) {
-    ComponentRecievers["Reload"] = "Reload";
-    ComponentRecievers["Close"] = "Close";
+    ComponentRecievers["Config"] = "Config";
 })(ComponentRecievers = exports.ComponentRecievers || (exports.ComponentRecievers = {}));
 /**
  * This enumerator is used for specifying the intent of a message to the Component Manager

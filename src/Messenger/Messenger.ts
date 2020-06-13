@@ -27,18 +27,14 @@ export class ManagerMessenger {
   }
 }
 
+export default ManagerMessenger;
+
 /**
  * This class is both the listener and sender of events to the Component Manager
  * This class should be private in the BaseComponent Class, public functions should be encapsulated in a wrapper
  * in the BaseComponent class.
  */
 export class ComponentMessenger {
-  // Responding function when the Manager requests deconstruction of the object.
-  private onDeconstruct: Function;
-
-  // Responding function when the manager requests the component to reload.
-  private onReload: Function;
-
   // Responding function when the manager sends the component config.
   private onConfig: Function;
 
@@ -47,24 +43,10 @@ export class ComponentMessenger {
    * @param deconstructor The component deconstructor should be used here. Will be called upon recieving request from ComponentManager.
    * @param reloader The component Reloader should be used here. Will be called upon recieving request from ComponentManager.
    */
-  constructor(deconstructor: Function, reloader: Function) {
-    // Set responders
-    this.onDeconstruct = deconstructor;
-    this.onReload = reloader;
-
-    // Create a close reciever
-    ipcRenderer.on(ComponentRecievers.Close, (event, args) => {
-      this.onConfig;
-    });
-
-    // Create a reload reciever
-    ipcRenderer.on(ComponentRecievers.Reload, (event, args) => {
-      this.onReload;
-    });
-
-    // Create a close reciever
-    ipcRenderer.on(ComponentRecievers.Close, (event, args) => {
-      this.onDeconstruct;
+  constructor(onConfig: Function) {
+    // Create a config reciever
+    ipcRenderer.on(ComponentRecievers.Config, (event, args) => {
+      this.onConfig(args);
     });
   }
 
@@ -91,8 +73,6 @@ export class ComponentMessenger {
  */
 export enum ComponentRecievers {
   Config = "Config",
-  Reload = "Reload",
-  Close = "Close",
 }
 
 /**
