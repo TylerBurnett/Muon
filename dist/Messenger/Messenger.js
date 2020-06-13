@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ManagerRecievers = exports.ComponentRecievers = exports.ComponentMessenger = exports.ManagerMessenger = void 0;
 const electron_1 = require("electron");
 /**
  * This class is both the listener and sender of events to Components

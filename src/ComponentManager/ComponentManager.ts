@@ -1,6 +1,6 @@
 import { BrowserWindow } from "electron";
 import { join } from "path";
-import { readFile, writeFile, existsSync, appendFile, readdirSync, statSync } from "fs";
+import { readFile, writeFile, existsSync, appendFile, readdirSync, statSync, readFileSync } from "fs";
 import { IApplicationSettings, Defaults } from "./IApplicationSettings";
 import { IComponentSettings } from "../Component/IComponentSettings";
 
@@ -27,9 +27,10 @@ export class ComponentManager {
             const result = this.saveSettings();
         }
 
+        // Call display loop on components
+        var components = this.findComponents();
 
-        console.log(this.components);
-
+        console.log(components);
     }
 
     private loadSettings(): IApplicationSettings {
@@ -61,17 +62,15 @@ export class ComponentManager {
 
     private findComponents(): IComponentSettings[] {
         // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load.
-        var dirs = readdirSync("Components").filter(f => statSync(join("Components", f)).isDirectory())
-        var components: IComponentSettings[];
+        var dirs = readdirSync("Components").filter(f => statSync(join("Components", f)).isDirectory());
+        let components: IComponentSettings[] = [];
 
-        const baseDir = "Components/"
+        const baseDir = "Components/";
         for (const dir in dirs) {
-            if (existsSync(baseDir + dirs[dir] + "/config.json")) {
-                readFile(baseDir + dirs[dir] + "/config.json", function (err, buf) {
-                    // JSON.parse is returning a string. Investigation required.
-                    var contents = JSON.parse(buf.toString());
-                    components.push(<IComponentSettings>contents);
-                });
+            var path = baseDir + dirs[dir] + "/config.json";
+            if (existsSync(path)) {
+                var contents = JSON.parse(readFileSync(path).toString());
+                components.push(<IComponentSettings>contents);
             }
         }
 

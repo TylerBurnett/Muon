@@ -2,12 +2,14 @@
 	"name": "particle",
 	"version": "1.0.0",
 	"description": "A lightweight manager for desktop customisation",
-	"main": "/src/main.js",
+	"main": "/src/main.ts",
 	"dependencies": {
 		"electron": "^8.2.5"
 	},
 	"devDependencies": {
+		"@types/electron-devtools-installer": "^2.2.0",
 		"electron": "^6.0.8",
+		"electron-devtools-installer": "^3.0.0",
 		"tslint": "^5.19.0",
 		"typescript": "^3.6.0"
 	},
