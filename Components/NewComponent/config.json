@@ -5,6 +5,8 @@
 
 	"displayFile": "index.html",
 
+	"componentPath": "NewComponent",
+
 	"windowLocation": { "x": 25, "y": 25 },
 
 	"windowSize": { "x": 500, "y": 500 },

@@ -1,4 +1,4 @@
-import { BrowserWindow } from "electron";
+import { BrowserWindow, app } from "electron";
 import { join } from "path";
 import { existsSync, readdirSync, statSync, readFileSync, writeFileSync } from "fs";
 import { IApplicationSettings, Defaults } from "./IApplicationSettings";
@@ -29,8 +29,13 @@ export class ComponentManager {
 
         // Call display loop on components
         var components = this.findComponents();
-
-        console.log(components);
+        // Instantiate all components.
+        components.forEach(component => {
+            console.log(component);
+            const win = new BrowserWindow({width: component.windowSize.x, height: component.windowSize.y});
+            var displayPath = 'file://' + __dirname + '/../../Components/' + component.componentPath + '/' + component.displayFile;
+            win.loadURL(displayPath);
+        });
     }
 
     private loadSettings(): IApplicationSettings {

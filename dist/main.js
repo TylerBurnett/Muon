@@ -8,7 +8,7 @@ electron_1.app.whenReady().then(() => {
     installExtension(REACT_DEVELOPER_TOOLS)
         .then((name) => console.log(`Added Extension:  ${name}`))
         .catch((err) => console.log('An error occurred: ', err));
+    // Now lets start the app
+    var componentManager = new ComponentManager_1.ComponentManager();
 });
-// Start the manager
-var componentManager = new ComponentManager_1.ComponentManager();
 //# sourceMappingURL=main.js.map

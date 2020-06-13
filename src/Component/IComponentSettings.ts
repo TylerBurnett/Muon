@@ -5,8 +5,9 @@ export interface IComponentSettings {
     name: string;
     active: boolean;
     displayFile: string;
+    componentPath: string;
     windowLocation: IVec2;
-    windowsSize: IVec2;
+    windowSize: IVec2;
     settings: IUserSetting[];
 }
 

@@ -7,7 +7,8 @@ app.whenReady().then(() => {
     installExtension(REACT_DEVELOPER_TOOLS)
         .then((name:any) => console.log(`Added Extension:  ${name}`))
         .catch((err:any) => console.log('An error occurred: ', err));
+
+    // Now lets start the app
+    var componentManager = new ComponentManager();
 });
 
-// Start the manager
-var componentManager = new ComponentManager();

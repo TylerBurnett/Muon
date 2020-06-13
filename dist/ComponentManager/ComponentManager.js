@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ComponentManager = void 0;
+const electron_1 = require("electron");
 const path_1 = require("path");
 const fs_1 = require("fs");
 const IApplicationSettings_1 = require("./IApplicationSettings");
@@ -19,33 +20,24 @@ class ComponentManager {
         }
         // Call display loop on components
         var components = this.findComponents();
-        console.log(components);
+        // Instantiate all components.
+        components.forEach(component => {
+            console.log(component);
+            const win = new electron_1.BrowserWindow({ width: component.windowSize.x, height: component.windowSize.y });
+            var displayPath = 'file://' + __dirname + '/../../Components/' + component.componentPath + '/' + component.displayFile;
+            win.loadURL(displayPath);
+        });
     }
     get components() {
         return this.findComponents();
     }
     loadSettings() {
-        fs_1.readFile("settings.json", function (err, buf) {
-            return JSON.parse(buf.toString());
-        });
-        return null;
+        var contents = fs_1.readFileSync("settings.json");
+        return JSON.parse(contents.toString());
     }
     saveSettings() {
         if (fs_1.existsSync("settings.json")) {
-            fs_1.writeFile("settings.json", JSON.stringify(this.settings), (err) => {
-                if (err)
-                    return false;
-                else
-                    return true;
-            });
-        }
-        else {
-            fs_1.appendFile("settings.json", JSON.stringify(this.settings), (err) => {
-                if (err)
-                    return false;
-                else
-                    return true;
-            });
+            fs_1.writeFileSync("settings.json", JSON.stringify(this.settings));
         }
         return false;
     }

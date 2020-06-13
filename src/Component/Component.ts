@@ -8,20 +8,16 @@ import { IComponentSettings } from './IComponentSettings';
 export class ComponentBase {
     settings: IComponentSettings;
 
-    constructor() {
-
-        // Load Config -> notify manager of result.
-        if (this.loadConfig()) {
-        }
-        else {
-            this.deconstruct(false);
-        }
+    constructor(config:IComponentSettings) {
+        this.settings = config;
     }
 
     // Object and window deconstruction, Deconstruction is handled by object for time being in the event of major errors.
     public deconstruct(saveState: boolean, error?: string) {
 
-        if (saveState) {
+        // TODO Rework to do all this through the component manager.
+
+        /*if (saveState) {
             if (this.settings != null && this.settings != undefined) {
                 this.saveConfig();
             }
@@ -31,44 +27,10 @@ export class ComponentBase {
         if (error) {
         }
         else {
-        }
+        }*/
 
         // Close the component
         const window = remote.getCurrentWindow();
         window.close();
-    }
-
-    // Loads the component config from respective directory
-    private loadConfig(): boolean {
-
-        try {
-            if (existsSync('config.json')) {
-
-                readFile("config.json", function (err, buf) {
-                    this.settings = <IComponentSettings>JSON.parse(buf.toString());
-                    return true;
-                });
-            }
-            else {
-                writeFile("config.json", JSON.stringify(this.settings), (err) => {
-                    if (err) return false;
-                    else return true;
-                });
-            }
-        }
-        catch (err) {
-        }
-
-        return false;
-    }
-
-    // Saves the component config from the respective directory
-    private saveConfig(): boolean {
-        writeFile("config.json", JSON.stringify(this.settings), (err) => {
-            if (err) return false;
-            else return true;
-        });
-
-        return false;
     }
 }
