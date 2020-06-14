@@ -1,19 +1,19 @@
-import { ComponentBase } from "../../src/Component/Component";
+import { ComponentBase } from "../../dist/Component/Component.js";
 var os = require("os");
 
 window.addEventListener("DOMContentLoaded", (event) => {
-	const myComponent = new MyComponent();
+  const myComponent = new MyComponent();
 });
 
 class MyComponent extends ComponentBase {
-	constructor() {
-		super();
+  constructor() {
+    super();
 
-		this.cpuLoop();
-	}
+    this.cpuLoop();
+  }
 
-	cpuLoop() {
-		var selector = document.getElementById("cpuIndicator");
-		selector.innerHTML = os.cpus().toString();
-	}
+  cpuLoop() {
+    var selector = document.getElementById("cpuIndicator");
+    selector.innerHTML = os.cpus().toString();
+  }
 }

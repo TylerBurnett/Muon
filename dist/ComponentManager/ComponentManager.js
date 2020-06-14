@@ -1,30 +1,44 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ComponentManager = void 0;
 const electron_1 = require("electron");
 const path_1 = require("path");
 const fs_1 = require("fs");
 const IApplicationSettings_1 = require("./IApplicationSettings");
+const Messenger_1 = require("../Messenger/Messenger");
 /**
  * Component manager class
  *  this class is purposed for use in the application which maintains and runs the custom components.
  */
 class ComponentManager {
     constructor() {
+        // Attach the parent messenger to the manager
+        this.messenger = new Messenger_1.ManagerMessenger();
         if (fs_1.existsSync("settings.json")) {
             this.settings = this.loadSettings();
         }
         else {
-            this.settings = new IApplicationSettings_1.Defaults;
+            this.settings = new IApplicationSettings_1.Defaults();
             const result = this.saveSettings();
         }
         // Call display loop on components
         var components = this.findComponents();
         // Instantiate all components.
-        components.forEach(component => {
+        components.forEach((component) => {
             console.log(component);
-            const win = new electron_1.BrowserWindow({ width: component.windowSize.x, height: component.windowSize.y });
-            var displayPath = 'file://' + __dirname + '/../../Components/' + component.componentPath + '/' + component.displayFile;
+            const win = new electron_1.BrowserWindow({
+                width: component.windowSize.x,
+                height: component.windowSize.y,
+            });
+            var displayPath = "file://" +
+                __dirname +
+                "/../../Components/" +
+                component.componentPath +
+                "/" +
+                component.displayFile;
             win.loadURL(displayPath);
+            // Finally, send the config
+            this.messenger.sendMessage(win, Messenger_1.ComponentRecievers.Config, JSON.stringify(component));
         });
     }
     get components() {
@@ -42,7 +56,7 @@ class ComponentManager {
     }
     findComponents() {
         // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load.
-        var dirs = fs_1.readdirSync("Components").filter(f => fs_1.statSync(path_1.join("Components", f)).isDirectory());
+        var dirs = fs_1.readdirSync("Components").filter((f) => fs_1.statSync(path_1.join("Components", f)).isDirectory());
         let components = [];
         const baseDir = "Components/";
         for (const dir in dirs) {

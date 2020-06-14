@@ -1,7 +1,5 @@
-import { existsSync, writeFile, readFile } from "fs";
-import { ipcRenderer, remote } from "electron";
 import { IComponentSettings } from "./IComponentSettings";
-import { ComponentMessenger } from "src/Messenger/Messenger";
+import { ComponentMessenger } from "../Messenger/Messenger";
 
 /**
  * Component Base class, used as extended class for all custom components
@@ -11,9 +9,14 @@ export class ComponentBase {
   messenger: ComponentMessenger;
 
   constructor() {
-    this.messenger = ComponentMessenger(this.setConfig);
+    // Set the callback for the config reciever
+    this.messenger = new ComponentMessenger(this.setConfig.bind(this));
 
-    while (this.settings == undefined) {}
+    while (this.settings == undefined) {
+      // Cheap but effective. This should be fixed to be less intensive.
+    }
+
+    // Continue past super into component code.
   }
 
   private setConfig(config: IComponentSettings) {

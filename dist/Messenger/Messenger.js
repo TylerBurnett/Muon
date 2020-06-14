@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ManagerRecievers = exports.ComponentRecievers = exports.ComponentMessenger = exports.ManagerMessenger = void 0;
 const electron_1 = require("electron");
 /**
  * This class is both the listener and sender of events to Components
@@ -20,12 +21,11 @@ class ManagerMessenger {
             console.log(args[0] + ": " + args[1]);
         });
     }
-    sendMessage(window, reciever) {
-        window.webContents.send(reciever, null);
+    sendMessage(window, reciever, args) {
+        window.webContents.send(reciever, args);
     }
 }
 exports.ManagerMessenger = ManagerMessenger;
-exports.default = ManagerMessenger;
 /**
  * This class is both the listener and sender of events to the Component Manager
  * This class should be private in the BaseComponent Class, public functions should be encapsulated in a wrapper
@@ -40,7 +40,7 @@ class ComponentMessenger {
     constructor(onConfig) {
         // Create a config reciever
         electron_1.ipcRenderer.on(ComponentRecievers.Config, (event, args) => {
-            this.onConfig(args);
+            this.onConfig(JSON.parse(args));
         });
     }
     /**

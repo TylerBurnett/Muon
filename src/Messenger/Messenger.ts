@@ -1,4 +1,5 @@
 import { ipcMain, ipcRenderer, BrowserWindow } from "electron";
+import { IComponentSettings } from "../Component/IComponentSettings";
 
 /**
  * This class is both the listener and sender of events to Components
@@ -22,12 +23,14 @@ export class ManagerMessenger {
     });
   }
 
-  public sendMessage(window: BrowserWindow, reciever: ComponentRecievers) {
-    window.webContents.send(reciever, null);
+  public sendMessage(
+    window: BrowserWindow,
+    reciever: ComponentRecievers,
+    args: string
+  ) {
+    window.webContents.send(reciever, args);
   }
 }
-
-export default ManagerMessenger;
 
 /**
  * This class is both the listener and sender of events to the Component Manager
@@ -46,7 +49,7 @@ export class ComponentMessenger {
   constructor(onConfig: Function) {
     // Create a config reciever
     ipcRenderer.on(ComponentRecievers.Config, (event, args) => {
-      this.onConfig(args);
+      this.onConfig(<IComponentSettings>JSON.parse(args));
     });
   }
 
