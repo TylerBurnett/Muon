@@ -11,14 +11,11 @@
     <title>New component!</title>
     <script type="module" src="component.js"></script>
   </head>
-  <body style="-webkit-app-region: drag;">
+  <!-- Note that these style options controll the dragability and user selection of a component -->
+  <body style="-webkit-app-region: drag; -webkit-user-select: none;">
     <div>
       <h1 id="TimeTitle" class="Center"></h1>
       <h2 id="DateTitle" class="Center"></h2>
     </div>
-
-    <p id="cpuIndicator">
-      <!-- If we're lucky the cpu load will be shown here -->
-    </p>
   </body>
 </html>
