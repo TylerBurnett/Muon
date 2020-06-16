@@ -1,19 +1,19 @@
 {
-	"name": "My new Component",
+  "name": "Clock",
 
-	"active": false,
+  "active": false,
 
-	"displayFile": "index.html",
+  "displayFile": "index.html",
 
-	"componentPath": "NewComponent",
+  "componentPath": "NewComponent",
 
-	"windowLocation": { "x": 25, "y": 25 },
+  "windowLocation": { "x": 25, "y": 25 },
 
-	"windowSize": { "x": 500, "y": 500 },
+  "windowSize": { "x": 500, "y": 500 },
 
-	"settings": {
-		"name": "Setting1",
-		"description": "Its a custom user setting",
-		"variable": "number"
-	}
+  "settings": {
+    "name": "Setting1",
+    "description": "Its a custom user setting",
+    "variable": "number"
+  }
 }

@@ -38,9 +38,6 @@ export class ManagerMessenger {
  * in the BaseComponent class.
  */
 export class ComponentMessenger {
-  // Responding function when the manager sends the component config.
-  private onConfig: Function;
-
   /**
    * Intakes event responders for the Component class. This class should only be used in ComponentBase.
    * @param deconstructor The component deconstructor should be used here. Will be called upon recieving request from ComponentManager.
@@ -49,7 +46,7 @@ export class ComponentMessenger {
   constructor(onConfig: Function) {
     // Create a config reciever
     ipcRenderer.on(ComponentRecievers.Config, (event, args) => {
-      this.onConfig(<IComponentSettings>JSON.parse(args));
+      onConfig(<IComponentSettings>JSON.parse(args));
     });
   }
 

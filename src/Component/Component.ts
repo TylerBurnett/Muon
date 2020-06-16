@@ -11,11 +11,6 @@ export class ComponentBase {
   constructor() {
     // Set the callback for the config reciever
     this.messenger = new ComponentMessenger(this.setConfig.bind(this));
-
-    while (this.settings == undefined) {
-      // Cheap but effective. This should be fixed to be less intensive.
-    }
-
     // Continue past super into component code.
   }
 

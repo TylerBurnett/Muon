@@ -43,6 +43,11 @@ export class ComponentManager {
       const win = new BrowserWindow({
         width: component.windowSize.x,
         height: component.windowSize.y,
+        webPreferences: {
+          nodeIntegration: true,
+        },
+        frame: false,
+        transparent: true,
       });
       var displayPath =
         "file://" +
@@ -53,12 +58,12 @@ export class ComponentManager {
         component.displayFile;
       win.loadURL(displayPath);
 
-      // Finally, send the config
-      this.messenger.sendMessage(
-        win,
-        ComponentRecievers.Config,
-        JSON.stringify(component)
-      );
+      win.webContents.on("dom-ready", () => {
+        win.webContents.send(
+          ComponentRecievers.Config,
+          JSON.stringify(component)
+        );
+      });
     });
   }
 

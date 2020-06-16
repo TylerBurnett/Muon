@@ -1,19 +1,25 @@
-import { ComponentBase } from "../../dist/Component/Component.js";
-var os = require("os");
+console.log("Here we are");
+const os = require("os");
+const component = require("../../dist/Component/Component.js");
 
 window.addEventListener("DOMContentLoaded", (event) => {
-  const myComponent = new MyComponent();
+  var myComponent = new MyComponent();
 });
 
-class MyComponent extends ComponentBase {
+class MyComponent extends component.ComponentBase {
   constructor() {
     super();
-
-    this.cpuLoop();
+    setInterval(this.mainLoop.bind(this), 1000);
   }
 
-  cpuLoop() {
-    var selector = document.getElementById("cpuIndicator");
-    selector.innerHTML = os.cpus().toString();
+  mainLoop() {
+    var timeTitle = document.getElementById("TimeTitle");
+    var dateTitle = document.getElementById("DateTitle");
+
+    const time = new Date();
+    timeTitle.innerHTML =
+      time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds();
+    dateTitle.innerHTML =
+      time.getDay() + " | " + time.getMonth() + " | " + time.getUTCFullYear();
   }
 }

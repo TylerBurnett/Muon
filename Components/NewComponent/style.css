@@ -1,0 +1,22 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+  font-family: "Roboto", sans-serif;
+  color: white;
+}
+
+h1 {
+  font-size: 50pt;
+  padding-bottom: 0;
+}
+h2 {
+  padding-top: 0;
+  font-size: 25pt;
+}
+
+.Center {
+  text-align: center;
+}
