@@ -46,7 +46,7 @@ export class ComponentMessenger {
   constructor(onConfig: Function) {
     // Create a config reciever
     ipcRenderer.on(ComponentRecievers.Config, (event, args) => {
-      onConfig(<IComponentSettings>JSON.parse(args));
+      onConfig(<IComponentSettings>args);
     });
   }
 

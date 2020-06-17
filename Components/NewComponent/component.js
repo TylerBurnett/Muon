@@ -1,5 +1,3 @@
-console.log("Here we are");
-const os = require("os");
 const component = require("../../dist/Component/Component.js");
 
 window.addEventListener("DOMContentLoaded", (event) => {

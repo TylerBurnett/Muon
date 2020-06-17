@@ -1,22 +1,22 @@
 {
-	"name": "particle",
-	"version": "1.0.0",
-	"description": "A lightweight manager for desktop customisation",
-	"main": "/src/main.ts",
-	"dependencies": {},
-	"devDependencies": {
-		"@types/electron-devtools-installer": "^2.2.0",
-		"electron": "^9.0.4",
-		"electron-devtools-installer": "^3.0.0",
-		"tslint": "^6.1.2",
-		"typescript": "^3.6.0"
-	},
-	"scripts": {
-		"build": "tsc",
-		"watch": "tsc -w",
-		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "npm run build && electron ./dist/main.js"
-	},
-	"author": "Tyler Burnett",
-	"license": "ISC"
+  "name": "particle",
+  "version": "1.0.0",
+  "description": "A lightweight manager for desktop customisation",
+  "main": "/src/main.ts",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/electron-devtools-installer": "^2.2.0",
+    "electron": "^9.0.4",
+    "electron-devtools-installer": "^3.0.0",
+    "tslint": "^6.1.2",
+    "typescript": "^3.6.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run build && electron ./dist/main.js"
+  },
+  "author": "Tyler Burnett, Peter Burnett",
+  "license": "ISC"
 }

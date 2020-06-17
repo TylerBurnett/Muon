@@ -14,7 +14,9 @@ export class ComponentBase {
     // Continue past super into component code.
   }
 
+  //Call back for the settings
   private setConfig(config: IComponentSettings) {
     this.settings = config;
+    console.log(this.settings);
   }
 }

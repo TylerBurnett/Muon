@@ -8,6 +8,7 @@ export interface IComponentSettings {
   componentPath: string;
   windowLocation: IVec2;
   windowSize: IVec2;
+  production: boolean;
   settings: IUserSetting[];
 }
 

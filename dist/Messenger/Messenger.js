@@ -41,7 +41,7 @@ var ComponentMessenger = /** @class */ (function () {
     function ComponentMessenger(onConfig) {
         // Create a config reciever
         electron_1.ipcRenderer.on(ComponentRecievers.Config, function (event, args) {
-            onConfig(JSON.parse(args));
+            onConfig(args);
         });
     }
     /**

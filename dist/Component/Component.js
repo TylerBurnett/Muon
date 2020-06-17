@@ -13,6 +13,7 @@ var ComponentBase = /** @class */ (function () {
     }
     ComponentBase.prototype.setConfig = function (config) {
         this.settings = config;
+        console.log(this.settings);
     };
     return ComponentBase;
 }());

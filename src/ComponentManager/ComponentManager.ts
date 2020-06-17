@@ -17,8 +17,9 @@ import { ManagerMessenger, ComponentRecievers } from "../Messenger/Messenger";
  */
 export class ComponentManager {
   settings: IApplicationSettings;
-  activeComponents: BrowserWindow[];
   messenger: ManagerMessenger;
+
+  activeComponents: BrowserWindow[];
 
   get components() {
     return this.findComponents();
@@ -32,46 +33,72 @@ export class ComponentManager {
       this.settings = this.loadSettings();
     } else {
       this.settings = new Defaults();
-      const result = this.saveSettings();
+      this.saveSettings();
     }
 
-    // Call display loop on components
-    var components = this.findComponents();
-    // Instantiate all components.
-    components.forEach((component) => {
-      console.log(component);
-      const win = new BrowserWindow({
-        width: component.windowSize.x,
-        height: component.windowSize.y,
-        webPreferences: {
-          nodeIntegration: true,
-        },
-        frame: false,
-        transparent: true,
-      });
-      var displayPath =
-        "file://" +
-        __dirname +
-        "/../../Components/" +
-        component.componentPath +
-        "/" +
-        component.displayFile;
-      win.loadURL(displayPath);
+    // Finally, load the components.
+    this.loadComponents();
+  }
 
-      win.webContents.on("dom-ready", () => {
-        win.webContents.send(
-          ComponentRecievers.Config,
-          JSON.stringify(component)
-        );
-      });
+  /**
+   * Loads the collective of located components
+   */
+  public loadComponents() {
+    this.components.forEach((component) => {
+      this.loadComponent(component);
     });
   }
 
+  /**
+   * Loads an individual component based on the provided settings
+   * @param component The component settings
+   */
+  public loadComponent(component: IComponentSettings) {
+    // Determine the template object for the window settings
+    const windowSettings = component.production
+      ? this.productionSettings
+      : this.debugSettings;
+
+    // Slap the dynamic values in
+    const window = new BrowserWindow(
+      Object.assign({}, windowSettings, {
+        width: component.windowSize.x,
+        height: component.windowSize.y,
+      })
+    );
+
+    // Build the display path
+    const displayPath =
+      "file://" +
+      __dirname +
+      "/../../Components/" +
+      component.componentPath +
+      "/" +
+      component.displayFile;
+
+    // Load its display file
+    window.loadURL(displayPath);
+
+    // Set its position
+    window.setPosition(component.windowLocation.x, component.windowLocation.y);
+
+    // Wait until its ready before sending it the settings.
+    window.webContents.on("dom-ready", () => {
+      window.webContents.send(ComponentRecievers.Config, component);
+    });
+  }
+
+  /**
+   * Loads the application settings
+   */
   private loadSettings(): IApplicationSettings {
     var contents = readFileSync("settings.json");
     return <IApplicationSettings>JSON.parse(contents.toString());
   }
 
+  /**
+   * Saves the application settings
+   */
   private saveSettings(): boolean {
     if (existsSync("settings.json")) {
       writeFileSync("settings.json", JSON.stringify(this.settings));
@@ -80,22 +107,42 @@ export class ComponentManager {
     return false;
   }
 
+  /**
+   * Finds all the components in the /Components directory
+   */
   private findComponents(): IComponentSettings[] {
     // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load.
-    var dirs = readdirSync("Components").filter((f) =>
+    var directories = readdirSync("Components").filter((f) =>
       statSync(join("Components", f)).isDirectory()
     );
     let components: IComponentSettings[] = [];
 
     const baseDir = "Components/";
-    for (const dir in dirs) {
-      var path = baseDir + dirs[dir] + "/config.json";
+    for (const directory in directories) {
+      const path = baseDir + directories[directory] + "/config.json";
       if (existsSync(path)) {
-        var contents = JSON.parse(readFileSync(path).toString());
+        const contents = JSON.parse(readFileSync(path).toString());
         components.push(<IComponentSettings>contents);
       }
     }
 
     return components;
   }
+
+  // Template object for the window settings
+  private debugSettings = {
+    webPreferences: {
+      nodeIntegration: true,
+    },
+  };
+
+  // Template object for the window settings
+  private productionSettings = {
+    webPreferences: {
+      nodeIntegration: true,
+      devTools: false,
+    },
+    frame: false,
+    transparent: true,
+  };
 }
