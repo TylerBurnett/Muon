@@ -7,9 +7,9 @@
 
   "componentPath": "DigitalClock",
 
-  "windowLocation": { "x": 25, "y": 25 },
+  "windowLocation": { "x": 1600, "y": 0 },
 
-  "windowSize": { "x": 500, "y": 500 },
+  "windowSize": { "x": 280, "y": 300 },
 
   "production": true,
 
