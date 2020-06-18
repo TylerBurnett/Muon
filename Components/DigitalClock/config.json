@@ -5,7 +5,7 @@
 
   "displayFile": "index.html",
 
-  "componentPath": "NewComponent",
+  "componentPath": "DigitalClock",
 
   "windowLocation": { "x": 25, "y": 25 },
 

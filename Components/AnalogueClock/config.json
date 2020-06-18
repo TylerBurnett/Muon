@@ -1,0 +1,21 @@
+{
+  "name": "Clock",
+
+  "active": false,
+
+  "displayFile": "index.html",
+
+  "componentPath": "AnalogueClock",
+
+  "windowLocation": { "x": 25, "y": 25 },
+
+  "windowSize": { "x": 500, "y": 500 },
+
+  "production": true,
+
+  "settings": {
+    "name": "Setting1",
+    "description": "Its a custom user setting",
+    "variable": "number"
+  }
+}
