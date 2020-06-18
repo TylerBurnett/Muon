@@ -11,7 +11,7 @@
 
   "windowSize": { "x": 500, "y": 500 },
 
-  "production": false,
+  "production": true,
 
   "settings": {
     "name": "Setting1",

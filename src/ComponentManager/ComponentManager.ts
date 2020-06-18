@@ -64,23 +64,23 @@ export class ComponentManager {
       Object.assign({}, windowSettings, {
         width: component.windowSize.x,
         height: component.windowSize.y,
+        x: component.windowLocation.x,
+        y: component.windowLocation.y,
       })
     );
 
     // Build the display path
+    console.log(__dirname);
     const displayPath =
-      "file://" +
+      "file:/" +
       __dirname +
-      "/../../Components/" +
+      "/../Components/" +
       component.componentPath +
       "/" +
       component.displayFile;
 
     // Load its display file
     window.loadURL(displayPath);
-
-    // Set its position
-    window.setPosition(component.windowLocation.x, component.windowLocation.y);
 
     // Wait until its ready before sending it the settings.
     window.webContents.on("dom-ready", () => {
@@ -134,6 +134,9 @@ export class ComponentManager {
     webPreferences: {
       nodeIntegration: true,
     },
+    hasShadow: false,
+    type: "desktop",
+    skipTaskbar: true,
   };
 
   // Template object for the window settings
@@ -144,5 +147,8 @@ export class ComponentManager {
     },
     frame: false,
     transparent: true,
+    hasShadow: false,
+    type: "desktop",
+    skipTaskbar: true,
   };
 }
