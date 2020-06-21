@@ -7,6 +7,8 @@
 
   "componentPath": "DigitalClock",
 
+  "nodeDependency": false,
+
   "windowLocation": { "x": 1600, "y": 0 },
 
   "windowSize": { "x": 280, "y": 300 },

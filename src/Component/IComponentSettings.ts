@@ -4,11 +4,15 @@ import { IVec2 } from "../Common/IVec2";
 export interface IComponentSettings {
   name: string;
   active: boolean;
+  production: boolean;
+  nodeDependency: boolean;
+
   displayFile: string;
   componentPath: string;
+
   windowLocation: IVec2;
   windowSize: IVec2;
-  production: boolean;
+
   settings: IUserSetting[];
 }
 

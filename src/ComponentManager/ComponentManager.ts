@@ -53,39 +53,52 @@ export class ComponentManager {
    * Loads an individual component based on the provided settings
    * @param component The component settings
    */
-  public loadComponent(component: IComponentSettings) {
-    // Determine the template object for the window settings
-    const windowSettings = component.production
-      ? this.productionSettings
-      : this.debugSettings;
+  public loadComponent(component: IComponentSettings): void {
+    if (
+      this.settings.componentNodeAccess ||
+      this.settings.componentNodeAccess == component.nodeDependency
+    ) {
+      // Determine the template object for the window settings
+      const windowSettings = component.production
+        ? this.productionSettings
+        : this.debugSettings;
 
-    // Slap the dynamic values in
-    const window = new BrowserWindow(
-      Object.assign({}, windowSettings, {
-        width: component.windowSize.x,
-        height: component.windowSize.y,
-        x: component.windowLocation.x,
-        y: component.windowLocation.y,
-      })
-    );
+      // Slap the dynamic values in
+      const window = new BrowserWindow(
+        Object.assign({}, windowSettings, {
+          width: component.windowSize.x,
+          height: component.windowSize.y,
+          x: component.windowLocation.x,
+          y: component.windowLocation.y,
 
-    // Build the display path
-    console.log(__dirname);
-    const displayPath =
-      "file:/" +
-      __dirname +
-      "/../Components/" +
-      component.componentPath +
-      "/" +
-      component.displayFile;
+          webPreferences: {
+            ...windowSettings.webPreferences,
+            nodeIntegration: component.nodeDependency,
+          },
+        })
+      );
 
-    // Load its display file
-    window.loadURL(displayPath);
+      // Build the display path
+      const displayPath =
+        "file:/" +
+        __dirname +
+        "/../Components/" +
+        component.componentPath +
+        "/" +
+        component.displayFile;
 
-    // Wait until its ready before sending it the settings.
-    window.webContents.on("dom-ready", () => {
-      window.webContents.send(ComponentRecievers.Config, component);
-    });
+      // Load its display file
+      window.loadURL(displayPath);
+
+      // Wait until its ready before sending it the settings.
+      window.webContents.on("dom-ready", () => {
+        window.webContents.send(ComponentRecievers.Config, component);
+      });
+    } else {
+      console.error(
+        "Component has node depedencies but lacks node access, to fix this change Component Node Access in settings"
+      );
+    }
   }
 
   /**
@@ -131,9 +144,7 @@ export class ComponentManager {
 
   // Template object for the window settings
   private debugSettings = {
-    webPreferences: {
-      nodeIntegration: true,
-    },
+    webPreferences: {},
     hasShadow: false,
     type: "desktop",
     skipTaskbar: true,
@@ -142,7 +153,6 @@ export class ComponentManager {
   // Template object for the window settings
   private productionSettings = {
     webPreferences: {
-      nodeIntegration: true,
       devTools: false,
     },
     frame: false,
