@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@types/electron-devtools-installer": "^2.2.0",
-    "electron": "^9.0.4",
+    "electron": "^9.3.0",
     "electron-devtools-installer": "^3.0.0",
     "tslint": "^6.1.2",
     "typescript": "^3.6.0"
