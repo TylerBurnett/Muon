@@ -14,7 +14,7 @@
     "typescript": "^3.6.0"
   },
   "scripts": {
-    "build": "tsc && parcel build ./dist/main.js --target electron",
+    "build": "tsc && parcel build ./dist/main.js --target electron && cp ./src/Component/System/ApplicationComponent/config.json ./dist/Component/System/ApplicationComponent/config.json && cp ./src/Component/System/ApplicationComponent/index.html ./dist/Component/System/ApplicationComponent/index.html && cp ./src/Component/System/ApplicationComponent/style.css ./dist/Component/System/ApplicationComponent/style.css",
     "watch": "tsc -w",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run build && electron ./dist/main.js"
