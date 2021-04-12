@@ -7,13 +7,13 @@
 
   "componentPath": "AnalogueClock",
 
-  "nodeDependency": false,
+  "nodeDependency": true,
 
   "windowLocation": { "x": 25, "y": 25 },
 
   "windowSize": { "x": 300, "y": 300 },
 
-  "production": true,
+  "production": false,
 
   "settings": {
     "name": "Setting1",

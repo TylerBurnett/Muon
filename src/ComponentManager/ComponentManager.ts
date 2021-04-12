@@ -29,7 +29,7 @@ export class ComponentManager {
     // Attach the parent messenger to the manager
     this.messenger = new ManagerMessenger();
 
-    if (existsSync("settings.json")) {
+    if (existsSync("./local/settings.json")) {
       this.settings = this.loadSettings();
     } else {
       this.settings = new Defaults();
@@ -44,16 +44,21 @@ export class ComponentManager {
    * Loads the collective of located components
    */
   public loadComponents() {
+    // Load the system application component.
+    // TODO: Dont always show this.
+    this.loadApplicationComponent();
+
     this.components.forEach((component) => {
-      this.loadComponent(component);
+      this.loadComponent(component, false);
     });
   }
 
   /**
    * Loads an individual component based on the provided settings
    * @param component The component settings
+   * @param system Is this a system component? Affect pathing
    */
-  public loadComponent(component: IComponentSettings): void {
+  public loadComponent(component: IComponentSettings, system: Boolean): void {
     if (
       this.settings.componentNodeAccess ||
       this.settings.componentNodeAccess == component.nodeDependency
@@ -78,15 +83,29 @@ export class ComponentManager {
         })
       );
 
-      // Build the display path
-      const displayPath =
-        "file:/" +
+      // Build the display path based on external or system components.
+      let displayPath = '';
+      if (!system) {
+        displayPath =
+        "file://" +
         __dirname +
         "/../Components/" +
         component.componentPath +
         "/" +
         component.displayFile;
 
+      } else {
+        displayPath =
+        "file://" +
+        __dirname +
+        "/Component/System/" +
+        component.componentPath +
+        "/" +
+        component.displayFile;
+      }
+
+      console.log(displayPath);
+      
       // Load its display file
       window.loadURL(displayPath);
 
@@ -105,7 +124,7 @@ export class ComponentManager {
    * Loads the application settings
    */
   private loadSettings(): IApplicationSettings {
-    var contents = readFileSync("settings.json");
+    var contents = readFileSync("local/settings.json");
     return <IApplicationSettings>JSON.parse(contents.toString());
   }
 
@@ -113,8 +132,8 @@ export class ComponentManager {
    * Saves the application settings
    */
   private saveSettings(): boolean {
-    if (existsSync("settings.json")) {
-      writeFileSync("settings.json", JSON.stringify(this.settings));
+    if (existsSync("local/settings.json")) {
+      writeFileSync("local/settings.json", JSON.stringify(this.settings));
     }
 
     return false;
@@ -140,6 +159,15 @@ export class ComponentManager {
     }
 
     return components;
+  }
+
+  /**
+   * Load the system settings component.
+   */
+  private loadApplicationComponent(): void {
+    const path = __dirname + "/Component/System/ApplicationComponent/config.json";
+    const ApplicationSettings = <IComponentSettings>JSON.parse(readFileSync(path).toString());
+    this.loadComponent(ApplicationSettings, true);
   }
 
   // Template object for the window settings

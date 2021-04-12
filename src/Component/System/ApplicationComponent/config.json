@@ -1,17 +1,17 @@
 {
-  "name": "Clock",
+  "name": "Settings",
 
   "active": false,
 
   "displayFile": "index.html",
 
-  "componentPath": "DigitalClock",
+  "componentPath": "ApplicationComponent",
 
   "nodeDependency": true,
 
-  "windowLocation": { "x": 1600, "y": 0 },
+  "windowLocation": { "x": 400, "y": 400 },
 
-  "windowSize": { "x": 280, "y": 300 },
+  "windowSize": { "x": 1000, "y": 500 },
 
   "production": false,
 
