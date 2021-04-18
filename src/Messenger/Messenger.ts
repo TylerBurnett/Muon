@@ -1,4 +1,5 @@
 import { ipcMain, ipcRenderer, BrowserWindow } from "electron";
+import { ComponentManager } from "../ComponentManager/ComponentManager";
 import { IComponentSettings } from "../Component/IComponentSettings";
 
 /**
@@ -20,6 +21,12 @@ export class ManagerMessenger {
     // Create a reciever for logging
     ipcMain.on(ManagerRecievers.Log, (event, args) => {
       console.log(<string>args[0] + ": " + <string>args[1]);
+    });
+
+    // Create a reciever for getting appConfig from the appSettingsComponent.
+    ipcMain.on(ManagerRecievers.AppConfig, (event, args) => {
+      let manager = ComponentManager.getManager();
+      manager.updateSettings(args[1]);
     });
   }
 
@@ -57,7 +64,7 @@ export class ComponentMessenger {
    * @param message Additonal information, Used primarily when using Log, Warning, Error.
    */
   public sendMessage(
-    header: ComponentRecievers,
+    header: ManagerRecievers,
     sender: string,
     message?: string
   ) {
@@ -84,4 +91,5 @@ export enum ManagerRecievers {
   Error = "Error",
   Warning = "Warning",
   Log = "Log",
+  AppConfig = "AppConfig"
 }

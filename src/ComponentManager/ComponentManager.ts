@@ -19,6 +19,9 @@ export class ComponentManager {
   settings: IApplicationSettings;
   messenger: ManagerMessenger;
 
+  // MAGIC STATIC SINGLETON STUFF.
+  static instance: ComponentManager;
+
   activeComponents: BrowserWindow[];
 
   get components() {
@@ -38,6 +41,9 @@ export class ComponentManager {
 
     // Finally, load the components.
     this.loadComponents();
+
+    // Now set the static instance to this.
+    ComponentManager.instance = this;
   }
 
   /**
@@ -189,4 +195,19 @@ export class ComponentManager {
     type: "desktop",
     skipTaskbar: true,
   };
+
+  public updateSettings(json: string) {
+    this.settings = JSON.parse(json);
+    this.saveSettings();
+    this.reload();
+  }
+
+  private reload() {
+    this.loadComponents();
+  }
+  
+  // Singleton MAGIC POWER!
+  public static getManager(): ComponentManager {
+    return ComponentManager.instance;
+  }
 }
