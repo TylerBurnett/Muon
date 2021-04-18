@@ -23,10 +23,23 @@ class ApplicationSettingsComponent extends component.ComponentBase {
   mainLoop() {
     // Iterate through and construct controls.
     for (const [key, value] of Object.entries(this.appSettings)) {
-      if (typeof value === 'boolean') {
-        this.boolSetting(key, value);
+      switch(typeof value) {
+
+        case 'boolean': {
+          this.boolSetting(key, value);
+          break;
+        }
+
+        case 'string': {
+          this.stringSetting(key, value);
+          break;
+        }
+
       }
     }
+
+    // Now add a Final submit button.
+    this.addSubmit();
   }
 
   loadsettings(): object {
@@ -68,13 +81,49 @@ class ApplicationSettingsComponent extends component.ComponentBase {
     this.settingForm.appendChild(flexbox);
   }
 
+  stringSetting(id: string, value: string) {
+    // Label Node.
+    let pNode = document.createElement('p');
+    pNode.innerHTML = id;
+    pNode.setAttribute('class', 'settinglabel');
+
+    //Input node.
+    let inputNode = document.createElement('input');
+    inputNode.setAttribute('type', 'text');
+    inputNode.value = value;
+    inputNode.setAttribute('id', id);
+    inputNode.addEventListener('change', this.stringStateChange.bind(this));
+
+    // Parent node.
+    let flexbox = document.createElement('div');
+    flexbox.setAttribute('class', 'settingcontainer');
+
+    flexbox.appendChild(pNode);
+    flexbox.appendChild(inputNode);
+
+    this.settingForm.appendChild(flexbox);
+  }
+
   boolStateChange(event: Event) {
     let target = <HTMLInputElement>event.target;
     let name = target.getAttribute('id');
     this.appSettings[name] = target.checked;
+  }
 
-    // Now send the current state of the settings back up to the component manager.
-    this.updateSettings();
+  stringStateChange(event: Event) {
+    let target = <HTMLInputElement>event.target;
+    let name = target.getAttribute('id');
+    this.appSettings[name] = target.value;
+  }
+
+  addSubmit() {
+    let submitNode = document.createElement('button');
+    submitNode.innerText = 'Save';
+    submitNode.addEventListener('click', function(event: Event){
+      this.updateSettings();
+    }.bind(this))
+
+    this.settingForm.appendChild(submitNode);
   }
 
   updateSettings() {
