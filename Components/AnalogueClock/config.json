@@ -13,7 +13,7 @@
 
   "windowSize": { "x": 300, "y": 300 },
 
-  "production": false,
+  "production": true,
 
   "settings": {
     "name": "Setting1",

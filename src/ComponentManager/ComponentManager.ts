@@ -18,11 +18,10 @@ import { ManagerMessenger, ComponentRecievers } from "../Messenger/Messenger";
 export class ComponentManager {
   settings: IApplicationSettings;
   messenger: ManagerMessenger;
+  activeComponents: BrowserWindow[];
 
   // MAGIC STATIC SINGLETON STUFF.
   static instance: ComponentManager;
-
-  activeComponents: BrowserWindow[];
 
   get components() {
     return this.findComponents();
@@ -40,6 +39,7 @@ export class ComponentManager {
     }
 
     // Finally, load the components.
+    this.activeComponents = [];
     this.loadComponents();
 
     // Now set the static instance to this.
@@ -50,10 +50,6 @@ export class ComponentManager {
    * Loads the collective of located components
    */
   public loadComponents() {
-    // Load the system application component.
-    // TODO: Dont always show this.
-    this.loadApplicationComponent();
-
     this.components.forEach((component) => {
       this.loadComponent(component, false);
     });
@@ -70,12 +66,17 @@ export class ComponentManager {
       this.settings.componentNodeAccess == component.nodeDependency
     ) {
       // Determine the template object for the window settings
-      const windowSettings = component.production
+      let windowSettings;
+      if (this.settings.editMode) {
+        windowSettings = this.editSettings; 
+      } else {
+        windowSettings = component.production
         ? this.productionSettings
         : this.debugSettings;
+      }
 
       // Slap the dynamic values in
-      const window = new BrowserWindow(
+      let window = new BrowserWindow(
         Object.assign({}, windowSettings, {
           width: component.windowSize.x,
           height: component.windowSize.y,
@@ -109,8 +110,6 @@ export class ComponentManager {
         "/" +
         component.displayFile;
       }
-
-      console.log(displayPath);
       
       // Load its display file
       window.loadURL(displayPath);
@@ -119,6 +118,10 @@ export class ComponentManager {
       window.webContents.on("dom-ready", () => {
         window.webContents.send(ComponentRecievers.Config, component);
       });
+
+      // Add it to the list of initialised components.
+      this.activeComponents.push(window);
+
     } else {
       console.error(
         "Component has node depedencies but lacks node access, to fix this change Component Node Access in settings"
@@ -170,12 +173,13 @@ export class ComponentManager {
   /**
    * Load the system settings component.
    */
-  private loadApplicationComponent(): void {
+  public loadApplicationComponent(): void {
     const path = __dirname + "/Component/System/ApplicationComponent/config.json";
     const ApplicationSettings = <IComponentSettings>JSON.parse(readFileSync(path).toString());
     this.loadComponent(ApplicationSettings, true);
   }
 
+  // TODO. MOVE THESE TO AN INTERFACE FILE.
   // Template object for the window settings
   private debugSettings = {
     webPreferences: {},
@@ -184,7 +188,7 @@ export class ComponentManager {
     skipTaskbar: true,
   };
 
-  // Template object for the window settings
+  // Template object for the edit mode settings.
   private productionSettings = {
     webPreferences: {
       devTools: false,
@@ -196,18 +200,54 @@ export class ComponentManager {
     skipTaskbar: true,
   };
 
-  public updateSettings(json: string) {
-    this.settings = JSON.parse(json);
+  // Template object for the window settings
+  private editSettings = {
+    webPreferences: {
+      devTools: false,
+    },
+    frame: true,
+    transparent: false,
+    hasShadow: true,
+    type: "desktop",
+    skipTaskbar: false,
+  };
+
+  /**
+   * Public access point for Updating the settings, from tray or from messenger.
+   * 
+   * @param json The JSON holding the settings.
+   * @param update Are we updating the settings, or replacing with new JSON.
+   */
+  public updateSettings(json: string, update: boolean = false) {
+  
+    const parsed: IApplicationSettings = JSON.parse(json);
+    let temp: any = this.settings;
+    if (update) {
+      for (const [key, value] of Object.entries(<IApplicationSettings>parsed)) {
+        temp[key] = value;
+      }
+
+      this.settings = <IApplicationSettings> temp;
+    } else {
+      this.settings = <IApplicationSettings> JSON.parse(json);
+    }
+
     this.saveSettings();
     this.reload();
   }
 
   private reload() {
+    this.activeComponents.forEach(element => element.close());
+    this.activeComponents = [];
     this.loadComponents();
   }
   
   // Singleton MAGIC POWER!
   public static getManager(): ComponentManager {
     return ComponentManager.instance;
+  }
+
+  public getSettings(): IApplicationSettings {
+    return this.settings;
   }
 }

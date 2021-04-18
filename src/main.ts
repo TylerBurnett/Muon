@@ -4,7 +4,12 @@ const {
   REACT_DEVELOPER_TOOLS,
 } = require("electron-devtools-installer");
 import { ComponentManager } from "./ComponentManager/ComponentManager";
-import { app } from "electron";
+import { TrayManager} from "./System/TrayManager";
+import { app, Tray } from "electron";
+
+app.on('window-all-closed', function(e: Event) {
+  e.preventDefault();
+});
 
 // Import debugging tools.
 app.whenReady().then(() => {
@@ -12,6 +17,9 @@ app.whenReady().then(() => {
     .then((name: any) => console.log(`Added Extension:  ${name}`))
     .catch((err: any) => console.log("An error occurred: ", err));
 
-  // Now lets start the app
+  // Now lets start the app.
   var componentManager = new ComponentManager();
+
+  // Add an icon to the tray.
+  TrayManager.addTrayIcon();
 });
