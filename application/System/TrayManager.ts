@@ -5,7 +5,7 @@ export class TrayManager {
   private static tray: Tray;
 
   public static addTrayIcon() {
-    this.tray = new Tray(__dirname + "/../res/trayIcon.png");
+    this.tray = new Tray(__dirname + "/res/trayIcon.png");
 
     let menu = Menu.buildFromTemplate([
       { label: "Settings", type: "normal", click: this.openSettings },
