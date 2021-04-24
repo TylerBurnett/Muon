@@ -13,7 +13,7 @@ import { ManagerMessenger, ComponentRecievers } from "../Messenger/Messenger";
 
 /**
  * Component manager class
- *  this class is purposed for use in the application which maintains and runs the custom components.
+ * this class is purposed for use in the application which maintains and runs the custom components.
  */
 export class ComponentManager {
   settings: IApplicationSettings;

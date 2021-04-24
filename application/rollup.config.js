@@ -20,7 +20,10 @@ export default [
       }),
       // Copy the node modules into the build directory
       copy({
-        targets: [{ src: "./node_modules/*", dest: "../build/node_modules" }],
+        targets: [
+          { src: "./node_modules/*", dest: "../build/node_modules" },
+          { src: "./res/*", dest: "../build/res" },
+        ],
       }),
     ],
     // this is important as fuck, please read up on it before you mess with it.
