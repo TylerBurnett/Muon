@@ -1,13 +1,13 @@
-require("v8-compile-cache");
+//require("v8-compile-cache");
 const {
   default: installExtension,
   REACT_DEVELOPER_TOOLS,
 } = require("electron-devtools-installer");
 import { ComponentManager } from "./ComponentManager/ComponentManager";
-import { TrayManager} from "./System/TrayManager";
+import { TrayManager } from "./System/TrayManager";
 import { app, Tray } from "electron";
 
-app.on('window-all-closed', function(e: Event) {
+app.on("window-all-closed", function (e: Event) {
   e.preventDefault();
 });
 

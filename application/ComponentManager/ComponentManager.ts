@@ -68,11 +68,11 @@ export class ComponentManager {
       // Determine the template object for the window settings
       let windowSettings;
       if (this.settings.editMode) {
-        windowSettings = this.editSettings; 
+        windowSettings = this.editSettings;
       } else {
         windowSettings = component.production
-        ? this.productionSettings
-        : this.debugSettings;
+          ? this.productionSettings
+          : this.debugSettings;
       }
 
       // Slap the dynamic values in
@@ -91,26 +91,25 @@ export class ComponentManager {
       );
 
       // Build the display path based on external or system components.
-      let displayPath = '';
+      let displayPath = "";
       if (!system) {
         displayPath =
-        "file://" +
-        __dirname +
-        "/../Components/" +
-        component.componentPath +
-        "/" +
-        component.displayFile;
-
+          "file://" +
+          __dirname +
+          "/../Components/" +
+          component.componentPath +
+          "/" +
+          component.displayFile;
       } else {
         displayPath =
-        "file://" +
-        __dirname +
-        "/Component/System/" +
-        component.componentPath +
-        "/" +
-        component.displayFile;
+          "file://" +
+          __dirname +
+          "/Component/System/" +
+          component.componentPath +
+          "/" +
+          component.displayFile;
       }
-      
+
       // Load its display file
       window.loadURL(displayPath);
 
@@ -121,7 +120,6 @@ export class ComponentManager {
 
       // Add it to the list of initialised components.
       this.activeComponents.push(window);
-
     } else {
       console.error(
         "Component has node depedencies but lacks node access, to fix this change Component Node Access in settings"
@@ -152,13 +150,14 @@ export class ComponentManager {
    * Finds all the components in the /Components directory
    */
   private findComponents(): IComponentSettings[] {
+    console.log(__dirname);
     // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load.
-    var directories = readdirSync("Components").filter((f) =>
-      statSync(join("Components", f)).isDirectory()
+    var directories = readdirSync(__dirname + "/Components").filter((f) =>
+      statSync(join(__dirname + "/Components", f)).isDirectory()
     );
     let components: IComponentSettings[] = [];
 
-    const baseDir = "Components/";
+    const baseDir = __dirname + "/Components";
     for (const directory in directories) {
       const path = baseDir + directories[directory] + "/config.json";
       if (existsSync(path)) {
@@ -174,8 +173,11 @@ export class ComponentManager {
    * Load the system settings component.
    */
   public loadApplicationComponent(): void {
-    const path = __dirname + "/Component/System/ApplicationComponent/config.json";
-    const ApplicationSettings = <IComponentSettings>JSON.parse(readFileSync(path).toString());
+    const path =
+      __dirname + "/Component/System/ApplicationComponent/config.json";
+    const ApplicationSettings = <IComponentSettings>(
+      JSON.parse(readFileSync(path).toString())
+    );
     this.loadComponent(ApplicationSettings, true);
   }
 
@@ -214,12 +216,11 @@ export class ComponentManager {
 
   /**
    * Public access point for Updating the settings, from tray or from messenger.
-   * 
+   *
    * @param json The JSON holding the settings.
    * @param update Are we updating the settings, or replacing with new JSON.
    */
   public updateSettings(json: string, update: boolean = false) {
-  
     const parsed: IApplicationSettings = JSON.parse(json);
     let temp: any = this.settings;
     if (update) {
@@ -227,9 +228,9 @@ export class ComponentManager {
         temp[key] = value;
       }
 
-      this.settings = <IApplicationSettings> temp;
+      this.settings = <IApplicationSettings>temp;
     } else {
-      this.settings = <IApplicationSettings> JSON.parse(json);
+      this.settings = <IApplicationSettings>JSON.parse(json);
     }
 
     this.saveSettings();
@@ -237,11 +238,11 @@ export class ComponentManager {
   }
 
   private reload() {
-    this.activeComponents.forEach(element => element.close());
+    this.activeComponents.forEach((element) => element.close());
     this.activeComponents = [];
     this.loadComponents();
   }
-  
+
   // Singleton MAGIC POWER!
   public static getManager(): ComponentManager {
     return ComponentManager.instance;

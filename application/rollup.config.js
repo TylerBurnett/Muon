@@ -12,7 +12,19 @@ export default [
       file: "../build/application.js",
       format: "cjs",
     },
-    plugins: [typescript(), commonjs(), nodeResolve(), nodePolyfills()],
+    plugins: [
+      nodeResolve(),
+      typescript({ target: "ESNext" }),
+      commonjs({
+        include: "./node_modules/**",
+      }),
+      // Copy the node modules into the build directory
+      copy({
+        targets: [{ src: "./node_modules/*", dest: "../build/node_modules" }],
+      }),
+    ],
+    // this is important as fuck, please read up on it before you mess with it.
+    external: ["electron", "fs"],
   },
   // Build the ComponentBase for Component Injection
   {
@@ -21,22 +33,13 @@ export default [
       file: "../build/ComponentBase.js",
       format: "cjs",
     },
-    plugins: [typescript(), commonjs(), nodeResolve(), nodePolyfills()],
-  },
-  /* Copy required resources
-  {
     plugins: [
-      copy({
-        targets: [
-          { src: "src/index.html", dest: "dist/public" },
-          {
-            src: ["assets/fonts/arial.woff", "assets/fonts/arial.woff2"],
-            dest: "dist/public/fonts",
-          },
-          { src: "", dest: "dist/public/images" },
-        ],
+      nodeResolve(),
+      typescript({ target: "es5" }),
+      commonjs({
+        include: "./node_modules/**",
       }),
+      nodePolyfills(),
     ],
   },
-  */
 ];
