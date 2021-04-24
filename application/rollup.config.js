@@ -24,7 +24,7 @@ export default [
       }),
     ],
     // this is important as fuck, please read up on it before you mess with it.
-    external: ["electron", "fs"],
+    external: ["electron", "fs", "path"],
   },
   // Build the ComponentBase for Component Injection
   {
