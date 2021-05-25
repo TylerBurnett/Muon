@@ -28,14 +28,30 @@ export class ManagerMessenger {
       let manager = ComponentManager.getManager();
       manager.updateSettings(args[1]);
     });
+
+    /*
+    // Create a reciever for getting updated component settings from interface.
+    ipcMain.on(ManagerRecievers.SetComponent, (event, args) => {
+      let manager = ComponentManager.getManager();
+      manager.updateSettings(args[1]);
+    });
+    */
+
+    // Create a reciever for responding the components settings to interface.
+    ipcMain.on(ManagerRecievers.GetComponents, (event, args) => {
+      let manager = ComponentManager.getManager();
+      manager.updateSettings(args[1]);
+
+      event.returnValue(manager.components);
+    });
   }
 
   public sendMessage(
     window: BrowserWindow,
     reciever: ComponentRecievers,
-    args: string
+    args: any
   ) {
-    window.webContents.send(reciever, args);
+    window.webContents.send(reciever, [args]);
   }
 }
 
@@ -73,6 +89,20 @@ export class ComponentMessenger {
   }
 }
 
+export class InterfaceMessenger {
+  constructor() {}
+
+  /**
+   * This function should be wrapped by a ComponentBase Function to ensure correct component name passing.
+   * @param header The enum header that specifies the intent of the message
+   * @param sender The caller component name.
+   * @param args The relevant information associated with the channel message.
+   */
+  public sendMessage(header: ManagerRecievers, args: any) {
+    ipcRenderer.send(header, [args]);
+  }
+}
+
 /**
  * This enumerator is used for specifying the intent of a message to a component
  * This should be used in the case of: ComponentManager --> Component Messaging.
@@ -91,5 +121,10 @@ export enum ManagerRecievers {
   Error = "Error",
   Warning = "Warning",
   Log = "Log",
-  AppConfig = "AppConfig"
+  AppConfig = "AppConfig",
+
+  // These are only used by the interface
+  GetComponents = "GetComponents",
+  GetComponent = "GetComponent",
+  SetComponent = "SetComponent",
 }
