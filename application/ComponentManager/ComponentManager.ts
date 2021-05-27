@@ -63,7 +63,8 @@ export class ComponentManager {
   public loadComponent(component: IComponentSettings, system: Boolean): void {
     if (
       this.settings.componentNodeAccess ||
-      this.settings.componentNodeAccess == component.nodeDependency
+      this.settings.componentNodeAccess ||
+      false == component.nodeDependency
     ) {
       // Determine the template object for the window settings
       let windowSettings;
@@ -74,6 +75,8 @@ export class ComponentManager {
           ? this.productionSettings
           : this.debugSettings;
       }
+
+      console.log(__dirname + "\\ComponentBase.js");
 
       // Slap the dynamic values in
       let window = new BrowserWindow(
@@ -159,7 +162,7 @@ export class ComponentManager {
 
     const baseDir = __dirname + "/Components";
     for (const directory in directories) {
-      const path = baseDir + directories[directory] + "/config.json";
+      const path = baseDir + "/" + directories[directory] + "/config.json";
       if (existsSync(path)) {
         const contents = JSON.parse(readFileSync(path).toString());
         components.push(<IComponentSettings>contents);
@@ -184,7 +187,11 @@ export class ComponentManager {
   // TODO. MOVE THESE TO AN INTERFACE FILE.
   // Template object for the window settings
   private debugSettings = {
-    webPreferences: {},
+    webPreferences: {
+      preload: __dirname + "\\ComponentBase.js",
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
+    },
     hasShadow: false,
     type: "desktop",
     skipTaskbar: true,
@@ -194,6 +201,9 @@ export class ComponentManager {
   private productionSettings = {
     webPreferences: {
       devTools: false,
+      preload: __dirname + "\\ComponentBase.js",
+      nodeIntegration: true,
+      nodeIntegrationInWorker: true,
     },
     frame: false,
     transparent: true,
