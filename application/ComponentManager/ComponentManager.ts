@@ -76,8 +76,6 @@ export class ComponentManager {
           : this.debugSettings;
       }
 
-      console.log(__dirname + "\\ComponentBase.js");
-
       // Slap the dynamic values in
       let window = new BrowserWindow(
         Object.assign({}, windowSettings, {
@@ -99,7 +97,7 @@ export class ComponentManager {
         displayPath =
           "file://" +
           __dirname +
-          "/../Components/" +
+          "/Components/" +
           component.componentPath +
           "/" +
           component.displayFile;
@@ -188,7 +186,7 @@ export class ComponentManager {
   // Template object for the window settings
   private debugSettings = {
     webPreferences: {
-      preload: __dirname + "\\ComponentBase.js",
+      preload: `${__dirname}/ComponentBase.js`,
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
     },
@@ -201,7 +199,7 @@ export class ComponentManager {
   private productionSettings = {
     webPreferences: {
       devTools: false,
-      preload: __dirname + "\\ComponentBase.js",
+      preload: `${__dirname}/ComponentBase.js`,
       nodeIntegration: true,
       nodeIntegrationInWorker: true,
     },

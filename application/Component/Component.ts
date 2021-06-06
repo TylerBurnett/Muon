@@ -1,5 +1,5 @@
 import { IComponentSettings } from "./IComponentSettings";
-import { ComponentMessenger } from "../Messenger/Messenger";
+import { ComponentMessenger } from "./ComponentMessenger";
 
 /**
  * Component Base class, used as extended class for all custom components
