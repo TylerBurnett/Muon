@@ -1,0 +1,88 @@
+body {
+  margin: 0;
+}
+
+html,
+body {
+  height: 100vh;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clock {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-color: #f6f6f6;
+  position: relative;
+  border: 10px solid #e6e6e6;
+  box-shadow: 2px 6px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #333;
+    z-index: 20;
+  }
+}
+
+.hands {
+  content: "";
+  background-color: #333;
+  width: 2px;
+  transform-origin: bottom;
+  position: absolute;
+  left: calc(50% - 1px);
+  bottom: 50%;
+  transform: translateX(-50%);
+
+  //https://stackoverflow.com/questions/11164806/firefox-animation-hardware-acceleration-pixelated-edges
+  outline: 1px solid transparent;
+}
+
+.hours {
+  height: 30%;
+  transform: rotate(0deg);
+}
+
+.minutes {
+  height: 40%;
+  transform: rotate(0deg);
+}
+
+.seconds {
+  height: 40%;
+  background-color: #c01f20;
+  transform: rotate(0deg);
+  transition: transform 0.1s cubic-bezier(0.17, 0.67, 0.83, 1.93);
+  z-index: 10;
+}
+
+.seconds-indicator {
+  position: absolute;
+  bottom: 50%;
+  left: calc(50% - 1px);
+  width: 2px;
+  height: 50%;
+  background-color: transparent;
+  transform-origin: bottom;
+  border-top: 5px solid #333;
+  box-sizing: border-box;
+
+  &--fifth {
+    border-top-width: 12px;
+  }
+}
+
+.no-transition {
+  transition-duration: 0s;
+}

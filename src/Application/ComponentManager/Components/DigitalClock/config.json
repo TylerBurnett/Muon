@@ -1,0 +1,23 @@
+{
+  "name": "Clock",
+
+  "active": false,
+
+  "displayFile": "index.html",
+
+  "componentPath": "DigitalClock",
+
+  "nodeDependency": false,
+
+  "windowLocation": { "x": 1600, "y": 0 },
+
+  "windowSize": { "x": 280, "y": 300 },
+
+  "production": true,
+
+  "settings": {
+    "name": "Setting1",
+    "description": "Its a custom user setting",
+    "variable": "number"
+  }
+}
