@@ -1,5 +1,5 @@
 /*
-Depreciated for now
+Depreciated for now due to it causing circular dependencies and other issues at compile time.
 
 export class InterfaceMessenger {
   constructor() {}

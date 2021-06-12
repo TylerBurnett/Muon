@@ -1,4 +1,4 @@
-import { BrowserWindow, app } from 'electron';
+import { BrowserWindow } from 'electron';
 import { join } from 'path';
 import {
   existsSync,
@@ -157,7 +157,6 @@ export class ComponentManager {
    * Finds all the components in the /Components directory
    */
   private findComponents(): IComponentSettings[] {
-    console.log(__dirname);
     // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load.
     var directories = readdirSync(__dirname + '/Components').filter((f) =>
       statSync(join(__dirname + '/Components', f)).isDirectory()
