@@ -1,31 +1,35 @@
 import { ipcMain, BrowserWindow } from 'electron';
 import { ComponentRecievers, ManagerRecievers } from '../Common/Recievers';
-import { ComponentManager } from '../ComponentManager/ComponentManager';
+// eslint-disable-next-line import/no-cycle
+import ComponentManager from './ComponentManager';
 
 /**
  * This class is both the listener and sender of events to Components
  * This class should be used in the Component Manager only
  */
-export class ManagerMessenger {
+export default class ManagerMessenger {
   constructor() {
     // Create a reciever for errors
-    ipcMain.on(ManagerRecievers.Error, (event, args) => {
-      console.log('ERROR in:  ' + <string>args[0] + ', ' + <string>args[1]);
+    ipcMain.on(ManagerRecievers.Error, (_event, args) => {
+      // eslint-disable-next-line no-console
+      console.log(`ERROR in:  ${<string>args[0]}, ${<string>args[1]}`);
     });
 
     // Create a reciever for warnings
-    ipcMain.on(ManagerRecievers.Warning, (event, args) => {
-      console.log('WARNING in:  ' + <string>args[0] + ', ' + <string>args[1]);
+    ipcMain.on(ManagerRecievers.Warning, (_event, args) => {
+      // eslint-disable-next-line no-console
+      console.log(`WARNING in:  ${<string>args[0]}, ${<string>args[1]}`);
     });
 
     // Create a reciever for logging
-    ipcMain.on(ManagerRecievers.Log, (event, args) => {
-      console.log(<string>args[0] + ': ' + <string>args[1]);
+    ipcMain.on(ManagerRecievers.Log, (_event, args) => {
+      // eslint-disable-next-line no-console
+      console.log(`${<string>args[0]}: ${<string>args[1]}`);
     });
 
     // Create a reciever for getting appConfig from the appSettingsComponent.
-    ipcMain.on(ManagerRecievers.AppConfig, (event, args) => {
-      let manager = ComponentManager.getManager();
+    ipcMain.on(ManagerRecievers.AppConfig, (_event, args) => {
+      const manager = ComponentManager.getManager();
       manager.updateSettings(args[1]);
     });
 
@@ -39,13 +43,14 @@ export class ManagerMessenger {
 
     // Create a reciever for responding the components settings to interface.
     ipcMain.on(ManagerRecievers.GetComponents, (event, args) => {
-      let manager = ComponentManager.getManager();
+      const manager = ComponentManager.getManager();
       manager.updateSettings(args[1]);
 
       event.returnValue(manager.components);
     });
   }
 
+  // eslint-disable-next-line class-methods-use-this
   public sendMessage(
     window: BrowserWindow,
     reciever: ComponentRecievers,

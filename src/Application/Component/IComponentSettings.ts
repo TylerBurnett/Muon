@@ -2,6 +2,7 @@ import { IVec2 } from '../Common/IVec2';
 
 // Custom component base settings (Things that should always be the same not matter the component)
 export interface IComponentSettings {
+  uuid: string;
   name: string;
   active: boolean;
   production: boolean;
@@ -22,5 +23,5 @@ export interface IComponentSettings {
 export interface IUserSetting {
   name: string;
   description: string;
-  variable: any;
+  variable: unknown;
 }

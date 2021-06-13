@@ -1,11 +1,12 @@
-import { Box, Grid, Paper, TextField, Typography } from "@material-ui/core";
-import { IComponentSettings } from "../../../../application/Component/IComponentSettings";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { componentSelector } from "./ComponentSlice";
+import React from 'react';
+import { Box, Grid, Paper, TextField, Typography } from '@material-ui/core';
+import { IComponentSettings } from '../../../Application/Component/IComponentSettings';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { componentSelector } from './ComponentSlice';
 
 function ComponentSettings() {
   const component: IComponentSettings = useAppSelector(
-    componentSelector("Random name here")
+    componentSelector('Random name here')
   );
   const dispatch = useAppDispatch();
 
@@ -14,7 +15,7 @@ function ComponentSettings() {
       <Grid item>
         <Grid container spacing={5}>
           <Grid item>
-            <Paper style={{ height: "100px", width: "100px" }} />
+            <Paper style={{ height: '100px', width: '100px' }} />
           </Grid>
           <Grid item xs={5}>
             <Typography variant="h3">Component Name</Typography>

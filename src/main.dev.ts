@@ -10,12 +10,10 @@
  */
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import path from 'path';
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import MenuBuilder from './menu';
-import { ComponentManager } from './Application/ComponentManager/ComponentManager';
+import ComponentManager from './Application/ComponentManager/ComponentManager';
 
 export default class AppUpdater {
   constructor() {
@@ -24,8 +22,6 @@ export default class AppUpdater {
     autoUpdater.checkForUpdatesAndNotify();
   }
 }
-
-let mainWindow: BrowserWindow | null = null;
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -70,18 +66,10 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
-  mainWindow = new BrowserWindow({
-    show: false,
-    width: 1024,
-    height: 728,
-    icon: getAssetPath('icon.png'),
-    webPreferences: {
-      nodeIntegration: true,
-    },
-  });
+  
   
 
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  
   */
   // @TODO: Use 'ready-to-show' event
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
@@ -90,7 +78,7 @@ const createWindow = async () => {
   menuBuilder.buildMenu();
   */
 
-  var componentManager = new ComponentManager();
+  const componentManager = new ComponentManager();
 };
 
 app.whenReady().then(createWindow).catch(console.log);

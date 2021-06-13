@@ -1,6 +1,6 @@
-import React from "react";
-import { Grid, Container, Typography, Paper } from "@material-ui/core";
-import "./App.css";
+import React from 'react';
+import { Grid, Typography, Paper } from '@material-ui/core';
+import './App.css';
 
 function App() {
   return (
@@ -8,7 +8,7 @@ function App() {
       <Grid container>
         <Grid item>
           <Grid container>
-            <Grid item></Grid>
+            <Grid item />
             <Grid item>
               <Typography variant="h4">Card Title</Typography>
             </Grid>

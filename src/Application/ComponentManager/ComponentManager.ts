@@ -7,23 +7,23 @@ import {
   readFileSync,
   writeFileSync,
 } from 'fs';
+import { validate } from 'uuid';
+import { debugSettings, productionSettings } from './WindowSettings';
+// eslint-disable-next-line import/no-cycle
+import ManagerMessenger from './ManagerMessenger';
+import { ComponentRecievers } from '../Common/Recievers';
 import { IApplicationSettings, Defaults } from './IApplicationSettings';
 import { IComponentSettings } from '../Component/IComponentSettings';
-import {
-  debugSettings,
-  editSettings,
-  productionSettings,
-} from './WindowSettings';
-import { ManagerMessenger } from './ManagerMessenger';
-import { ComponentRecievers } from '../Common/Recievers';
 
 /**
  * Component manager class
  * this class is purposed for use in the application which maintains and runs the custom components.
  */
-export class ComponentManager {
+export default class ComponentManager {
   settings: IApplicationSettings;
+
   messenger: ManagerMessenger;
+
   activeComponents: BrowserWindow[];
 
   // MAGIC STATIC SINGLETON STUFF.
@@ -40,13 +40,15 @@ export class ComponentManager {
     if (existsSync('./local/settings.json')) {
       this.settings = this.loadSettings();
     } else {
-      this.settings = new Defaults();
+      this.settings = Defaults;
       this.saveSettings();
     }
 
     // Finally, load the components.
     this.activeComponents = [];
     this.loadComponents();
+
+    this.loadInterface();
 
     // Now set the static instance to this.
     ComponentManager.instance = this;
@@ -56,8 +58,8 @@ export class ComponentManager {
    * Loads the collective of located components
    */
   public loadComponents() {
-    this.components.forEach((component) => {
-      this.loadComponent(component, false);
+    this.components.forEach((component: IComponentSettings) => {
+      this.loadComponent(component);
     });
   }
 
@@ -66,56 +68,39 @@ export class ComponentManager {
    * @param component The component settings
    * @param system Is this a system component? Affect pathing
    */
-  public loadComponent(component: IComponentSettings, system: Boolean): void {
+  public loadComponent(component: IComponentSettings): void {
     if (
       this.settings.componentNodeAccess ||
       this.settings.componentNodeAccess ||
-      false == component.nodeDependency
+      component.nodeDependency === false
     ) {
+      /*
       // Determine the template object for the window settings
       let windowSettings;
       if (this.settings.editMode) {
         windowSettings = editSettings;
       } else {
-        windowSettings = component.production
-          ? productionSettings
-          : debugSettings;
-      }
+        */
+      const windowSettings = component.production
+        ? productionSettings
+        : debugSettings;
 
       // Slap the dynamic values in
-      let window = new BrowserWindow(
-        Object.assign({}, windowSettings, {
-          width: component.windowSize.x,
-          height: component.windowSize.y,
-          x: component.windowLocation.x,
-          y: component.windowLocation.y,
+      const window = new BrowserWindow({
+        ...windowSettings,
+        width: component.windowSize.x,
+        height: component.windowSize.y,
+        x: component.windowLocation.x,
+        y: component.windowLocation.y,
 
-          webPreferences: {
-            ...windowSettings.webPreferences,
-            nodeIntegration: component.nodeDependency,
-          },
-        })
-      );
+        webPreferences: {
+          ...windowSettings.webPreferences,
+          nodeIntegration: component.nodeDependency,
+        },
+      });
 
       // Build the display path based on external or system components.
-      let displayPath = '';
-      if (!system) {
-        displayPath =
-          'file://' +
-          __dirname +
-          '/Components/' +
-          component.componentPath +
-          '/' +
-          component.displayFile;
-      } else {
-        displayPath =
-          'file://' +
-          __dirname +
-          '/Component/System/' +
-          component.componentPath +
-          '/' +
-          component.displayFile;
-      }
+      const displayPath = `file://${__dirname}/Components/${component.componentPath}/${component.displayFile}`;
 
       // Load its display file
       window.loadURL(displayPath);
@@ -128,6 +113,7 @@ export class ComponentManager {
       // Add it to the list of initialised components.
       this.activeComponents.push(window);
     } else {
+      // eslint-disable-next-line no-console
       console.error(
         'Component has node depedencies but lacks node access, to fix this change Component Node Access in settings'
       );
@@ -135,10 +121,47 @@ export class ComponentManager {
   }
 
   /**
+   * Loads an individual component based on the provided settings
+   * @param component The component settings
+   * @param system Is this a system component? Affect pathing
+   */
+  // eslint-disable-next-line class-methods-use-this
+  public loadInterface(): void {
+    // Slap the dynamic values in
+    const window = new BrowserWindow({
+      ...debugSettings,
+      width: 1920,
+      height: 1080,
+      x: 0,
+      y: 0,
+
+      webPreferences: {
+        ...debugSettings.webPreferences,
+        nodeIntegration: true,
+        webSecurity: false,
+      },
+    });
+
+    // Build the display path based on external or system components.
+    const displayPath = `file://${__dirname}/../../index.html`;
+
+    // Load its display file
+    window.loadURL(displayPath);
+
+    // Wait until its ready before sending it the settings.
+    /*
+        window.webContents.on('dom-ready', () => {
+          window.webContents.send(ComponentRecievers.Config, component);
+        });
+        */
+  }
+
+  /**
    * Loads the application settings
    */
+  // eslint-disable-next-line class-methods-use-this
   private loadSettings(): IApplicationSettings {
-    var contents = readFileSync('local/settings.json');
+    const contents = readFileSync('local/settings.json');
     return <IApplicationSettings>JSON.parse(contents.toString());
   }
 
@@ -156,35 +179,39 @@ export class ComponentManager {
   /**
    * Finds all the components in the /Components directory
    */
+  // eslint-disable-next-line class-methods-use-this
   private findComponents(): IComponentSettings[] {
     // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load.
-    var directories = readdirSync(__dirname + '/Components').filter((f) =>
-      statSync(join(__dirname + '/Components', f)).isDirectory()
+    const directories = readdirSync(`${__dirname}/Components`).filter((f) =>
+      statSync(join(`${__dirname}/Components`, f)).isDirectory()
     );
-    let components: IComponentSettings[] = [];
+    const components: IComponentSettings[] = [];
 
-    const baseDir = __dirname + '/Components';
-    for (const directory in directories) {
-      const path = baseDir + '/' + directories[directory] + '/config.json';
+    const baseDir = join(__dirname, '/Components');
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const directory of directories) {
+      const path = `${baseDir}/${directory}/config.json`;
+
       if (existsSync(path)) {
         const contents = JSON.parse(readFileSync(path).toString());
-        components.push(<IComponentSettings>contents);
+
+        // Config validation
+        if (validate(contents.uuid)) {
+          components.push(<IComponentSettings>contents);
+        } else {
+          console.error(
+            `Invalid UUID in config @${directory}, please ensure you use UUID v4,v5.`
+          );
+        }
+      } else {
+        console.error(
+          `Could not find component config @${directory}, please check the location of this file.`
+        );
       }
     }
 
     return components;
-  }
-
-  /**
-   * Load the system settings component.
-   */
-  public loadApplicationComponent(): void {
-    const path =
-      __dirname + '/Component/System/ApplicationComponent/config.json';
-    const ApplicationSettings = <IComponentSettings>(
-      JSON.parse(readFileSync(path).toString())
-    );
-    this.loadComponent(ApplicationSettings, true);
   }
 
   /**
@@ -193,10 +220,11 @@ export class ComponentManager {
    * @param json The JSON holding the settings.
    * @param update Are we updating the settings, or replacing with new JSON.
    */
-  public updateSettings(json: string, update: boolean = false) {
+  public updateSettings(json: string, update = false) {
     const parsed: IApplicationSettings = JSON.parse(json);
-    let temp: any = this.settings;
+    const temp: any = this.settings;
     if (update) {
+      // eslint-disable-next-line no-restricted-syntax
       for (const [key, value] of Object.entries(<IApplicationSettings>parsed)) {
         temp[key] = value;
       }

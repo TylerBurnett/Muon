@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Grid,
   Paper,
@@ -9,18 +9,15 @@ import {
   ListItemText,
   Collapse,
   Typography,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   List as ListIcon,
-  Send as SendIcon,
-  Drafts as DraftsIcon,
-  Inbox as InboxIcon,
   StarBorder as StarBorderIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
   Settings as SettingsIcon,
   Security as SecurityIcon,
-} from "@material-ui/icons";
+} from '@material-ui/icons';
 
 function SideBar() {
   const [state, setState] = useState({
@@ -29,7 +26,7 @@ function SideBar() {
   });
 
   return (
-    <Paper style={{ height: "100vh" }}>
+    <Paper style={{ height: '100vh' }}>
       <Typography variant="h4" align="center">
         Desktop Electron
       </Typography>

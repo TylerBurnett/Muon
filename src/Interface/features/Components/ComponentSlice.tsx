@@ -3,19 +3,19 @@ import {
   createSelector,
   createSlice,
   PayloadAction,
-} from "@reduxjs/toolkit";
-import { RootState, AppThunk } from "../../app/store";
-import { IComponentSettings } from "../../../../application/Component/IComponentSettings";
-import { getComponent, getComponents, saveComponent } from "./ComponentAPI";
+} from '@reduxjs/toolkit';
+import { RootState } from '../../app/store';
+import { IComponentSettings } from '../../../Application/Component/IComponentSettings';
+import { getComponent, getComponents, saveComponent } from './ComponentAPI';
 
 export interface ComponentState {
   components: IComponentSettings[];
-  status: "idle" | "loading" | "failed";
+  status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: ComponentState = {
   components: [],
-  status: "idle",
+  status: 'idle',
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -24,7 +24,7 @@ const initialState: ComponentState = {
 // code can then be executed and other actions can be dispatched. Thunks are
 // typically used to make async requests.
 export const getComponentsAsync = createAsyncThunk(
-  "components/getComponents",
+  'components/getComponents',
   async () => {
     const response = await getComponents();
     // The value we return becomes the `fulfilled` action payload
@@ -33,7 +33,7 @@ export const getComponentsAsync = createAsyncThunk(
 );
 
 export const getComponentAsync = createAsyncThunk(
-  "components/getComponent",
+  'components/getComponent',
   async (id: string) => {
     const response = await getComponent(id);
     // The value we return becomes the `fulfilled` action payload
@@ -42,7 +42,7 @@ export const getComponentAsync = createAsyncThunk(
 );
 
 export const saveComponentAsync = createAsyncThunk(
-  "components/saveComponent",
+  'components/saveComponent',
   async (state: IComponentSettings) => {
     const response = await saveComponent(state);
     // The value we return becomes the `fulfilled` action payload
@@ -51,7 +51,7 @@ export const saveComponentAsync = createAsyncThunk(
 );
 
 export const componentsSlice = createSlice({
-  name: "components",
+  name: 'components',
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {},
@@ -60,15 +60,15 @@ export const componentsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getComponentsAsync.pending, (state) => {
-        state.status = "loading";
+        state.status = 'loading';
       })
       .addCase(getComponentsAsync.fulfilled, (state, action) => {
         state.components = action.payload;
-        state.status = "idle";
+        state.status = 'idle';
       })
 
       .addCase(getComponentAsync.pending, (state) => {
-        state.status = "loading";
+        state.status = 'loading';
       })
       .addCase(getComponentAsync.fulfilled, (state, action) => {
         state.components[
@@ -76,11 +76,11 @@ export const componentsSlice = createSlice({
             (component) => component.name === action.payload.name
           )
         ] = action.payload;
-        state.status = "idle";
+        state.status = 'idle';
       })
 
       .addCase(saveComponentAsync.pending, (state) => {
-        state.status = "loading";
+        state.status = 'loading';
       })
       .addCase(saveComponentAsync.fulfilled, (state, action) => {
         state.components[
@@ -88,7 +88,7 @@ export const componentsSlice = createSlice({
             (component) => component.name === action.payload.name
           )
         ] = action.payload;
-        state.status = "idle";
+        state.status = 'idle';
       });
   },
 });

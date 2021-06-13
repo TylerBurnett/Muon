@@ -1,4 +1,4 @@
-import { IComponentSettings } from "../../../../application/Component/IComponentSettings";
+import { IComponentSettings } from '../../../Application/Component/IComponentSettings';
 
 // A mock function to mimic making an async request for data
 export function getComponents() {

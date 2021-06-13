@@ -1,5 +1,5 @@
 window.addEventListener('DOMContentLoaded', (event) => {
-  var myComponent = new MyComponent();
+  const myComponent = new MyComponent();
 });
 
 class MyComponent extends window.ComponentBase {
@@ -9,13 +9,11 @@ class MyComponent extends window.ComponentBase {
   }
 
   mainLoop() {
-    var timeTitle = document.getElementById('TimeTitle');
-    var dateTitle = document.getElementById('DateTitle');
+    const timeTitle = document.getElementById('TimeTitle');
+    const dateTitle = document.getElementById('DateTitle');
 
     const time = new Date();
-    timeTitle.innerHTML =
-      time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds();
-    dateTitle.innerHTML =
-      time.getDay() + ' | ' + time.getMonth() + ' | ' + time.getUTCFullYear();
+    timeTitle.innerHTML = `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`;
+    dateTitle.innerHTML = `${time.getDay()} | ${time.getMonth()} | ${time.getUTCFullYear()}`;
   }
 }

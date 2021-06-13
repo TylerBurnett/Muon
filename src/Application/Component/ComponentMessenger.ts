@@ -1,6 +1,7 @@
-const { ipcRenderer } = require('electron');
 import { ComponentRecievers, ManagerRecievers } from '../Common/Recievers';
 import { IComponentSettings } from './IComponentSettings';
+
+const { ipcRenderer } = require('electron');
 
 /**
  * This class is both the listener and sender of events to the Component Manager
@@ -8,12 +9,13 @@ import { IComponentSettings } from './IComponentSettings';
  * in the BaseComponent class.
  */
 
-export class ComponentMessenger {
+export default class ComponentMessenger {
   /**
    * Intakes event responders for the Component class. This class should only be used in ComponentBase.
    * @param deconstructor The component deconstructor should be used here. Will be called upon recieving request from ComponentManager.
    * @param reloader The component Reloader should be used here. Will be called upon recieving request from ComponentManager.
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   constructor(onConfig: Function) {
     // Create a config reciever
     ipcRenderer.on(ComponentRecievers.Config, (event: any, args: any) => {
@@ -27,6 +29,7 @@ export class ComponentMessenger {
    * @param sender The caller component name.
    * @param message Additonal information, Used primarily when using Log, Warning, Error.
    */
+  // eslint-disable-next-line class-methods-use-this
   public sendMessage(
     header: ManagerRecievers,
     sender: string,

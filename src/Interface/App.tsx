@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { Grid, Container, Box } from '@material-ui/core';
+import React from 'react';
+import { Grid, Box } from '@material-ui/core';
 
 import './App.css';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import SideBar from './features/Components/SideBar';
 import ComponentSettings from './features/Components/ComponentSettings';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 function App() {
   return (

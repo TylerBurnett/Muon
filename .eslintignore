@@ -35,6 +35,7 @@ release
 src/*.main.prod.js
 src/main.prod.js
 src/main.prod.js.map
+src/Application/Component/preload.js
 src/renderer.prod.js
 src/renderer.prod.js.map
 src/style.css
@@ -54,3 +55,6 @@ package.json
 *.css.d.ts
 *.sass.d.ts
 *.scss.d.ts
+
+#Components
+src/Application/ComponentManager/Components/

@@ -1,5 +1,5 @@
 window.addEventListener('DOMContentLoaded', (event) => {
-  var myComponent = new MyComponent();
+  const myComponent = new MyComponent();
 });
 
 class MyComponent extends window.ComponentBase {
@@ -8,8 +8,8 @@ class MyComponent extends window.ComponentBase {
     this.mainLoop();
   }
 
-  //This analogue clock was taken from this codepen:
-  //https://codepen.io/axelf/pen/MWaBLOp , thank you Alex
+  // This analogue clock was taken from this codepen:
+  // https://codepen.io/axelf/pen/MWaBLOp , thank you Alex
   mainLoop() {
     const clock = document.querySelector('.clock');
     const hours = document.querySelector('.hours');
@@ -37,20 +37,20 @@ class MyComponent extends window.ComponentBase {
       minutes_angle = current_minute * 6;
       seconds_angle = current_second * 6;
 
-      hours.style.transform = 'rotate(' + hours_angle + 'deg)';
-      minutes.style.transform = 'rotate(' + minutes_angle + 'deg)';
-      seconds.style.transform = 'rotate(' + seconds_angle + 'deg)';
+      hours.style.transform = `rotate(${hours_angle}deg)`;
+      minutes.style.transform = `rotate(${minutes_angle}deg)`;
+      seconds.style.transform = `rotate(${seconds_angle}deg)`;
     };
 
     const runClock = () => {
-      seconds.style.transform = 'rotate(' + seconds_angle + 'deg)';
+      seconds.style.transform = `rotate(${seconds_angle}deg)`;
 
       if (seconds_angle == degrees) {
         seconds_angle = 0;
 
         seconds.addEventListener('transitionend', function controlBouncing() {
           seconds.classList.add('no-transition');
-          seconds.style.transform = 'rotate(' + seconds_angle + 'deg)';
+          seconds.style.transform = `rotate(${seconds_angle}deg)`;
 
           setTimeout(() => {
             seconds.classList.remove('no-transition');
@@ -61,11 +61,11 @@ class MyComponent extends window.ComponentBase {
         });
 
         minutes_angle += degrees / 60;
-        minutes.style.transform = 'rotate(' + minutes_angle + 'deg)';
+        minutes.style.transform = `rotate(${minutes_angle}deg)`;
 
         if (minutes_angle % 15 == 0) {
           hours_angle += 6;
-          hours.style.transform = 'rotate(' + hours_angle + 'deg)';
+          hours.style.transform = `rotate(${hours_angle}deg)`;
         }
       } else {
         seconds_angle += degrees / 60;
@@ -76,7 +76,7 @@ class MyComponent extends window.ComponentBase {
       for (let i = 0; i < 60; i++) {
         const indicator = document.createElement('div');
         indicator.classList.add('seconds-indicator');
-        indicator.style.transform = 'rotate(' + i * 6 + 'deg)';
+        indicator.style.transform = `rotate(${i * 6}deg)`;
 
         if (i % 5 == 0) {
           indicator.classList.add('seconds-indicator--fifth');
