@@ -18,12 +18,19 @@ import {
   Settings as SettingsIcon,
   Security as SecurityIcon,
 } from '@material-ui/icons';
+import { Link } from 'react-router-dom';
+import { componentsSelector } from './ComponentSlice';
+import { useAppSelector } from '../../app/hooks';
+import { IComponentSettings } from '../../../Application/Component/IComponentSettings';
 
 function SideBar() {
   const [state, setState] = useState({
     ActiveComponentsOpen: false,
     InactiveComponentsOpen: false,
   });
+
+  const components: IComponentSettings[] =
+    useAppSelector(componentsSelector) || [];
 
   return (
     <Paper style={{ height: '100vh' }}>
@@ -79,33 +86,19 @@ function SideBar() {
         </ListItem>
         <Collapse in={state.ActiveComponentsOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItem button>
-              <ListItemIcon>
-                <StarBorderIcon />
-              </ListItemIcon>
-              <ListItemText primary="Component 1" />
-            </ListItem>
-
-            <ListItem button>
-              <ListItemIcon>
-                <StarBorderIcon />
-              </ListItemIcon>
-              <ListItemText primary="Component 2" />
-            </ListItem>
-
-            <ListItem button>
-              <ListItemIcon>
-                <StarBorderIcon />
-              </ListItemIcon>
-              <ListItemText primary="Component 3" />
-            </ListItem>
-
-            <ListItem button>
-              <ListItemIcon>
-                <StarBorderIcon />
-              </ListItemIcon>
-              <ListItemText primary="Component 4" />
-            </ListItem>
+            {components.map((component: IComponentSettings) => (
+              <ListItem
+                button
+                key={component.uuid}
+                component={Link}
+                to={`/component/${component.uuid}`}
+              >
+                <ListItemIcon>
+                  <StarBorderIcon />
+                </ListItemIcon>
+                <ListItemText primary={component.name} />
+              </ListItem>
+            ))}
           </List>
         </Collapse>
 

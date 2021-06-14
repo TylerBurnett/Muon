@@ -42,7 +42,13 @@ export default class ManagerMessenger {
       */
 
     // Create a reciever for responding the components settings to interface.
-    ipcMain.on(ManagerRecievers.GetComponents, (event, args) => {
+    ipcMain.handle(ManagerRecievers.GetComponents, (event, args) => {
+      const manager = ComponentManager.getManager();
+      return manager.components;
+    });
+
+    // Create a reciever for responding the components settings to interface.
+    ipcMain.on(ManagerRecievers.GetComponent, (event, args) => {
       const manager = ComponentManager.getManager();
       manager.updateSettings(args[1]);
 

@@ -4,9 +4,10 @@ import { IComponentSettings } from '../../../Application/Component/IComponentSet
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { componentSelector } from './ComponentSlice';
 
-function ComponentSettings() {
+function ComponentSettings(props: any) {
   const component: IComponentSettings = useAppSelector(
-    componentSelector('Random name here')
+    // eslint-disable-next-line react/destructuring-assignment
+    componentSelector(props.match.params.id)
   );
   const dispatch = useAppDispatch();
 
@@ -18,11 +19,8 @@ function ComponentSettings() {
             <Paper style={{ height: '100px', width: '100px' }} />
           </Grid>
           <Grid item xs={5}>
-            <Typography variant="h3">Component Name</Typography>
-            <Typography variant="body1">
-              Description which is decently long in length. lorem ipsium dollor
-              amet
-            </Typography>
+            <Typography variant="h3">{component.name}</Typography>
+            <Typography variant="body1">{component.uuid}</Typography>
           </Grid>
         </Grid>
       </Grid>
@@ -37,6 +35,7 @@ function ComponentSettings() {
                   size="small"
                   fullWidth
                   disabled
+                  value={component.displayFile}
                 />
               </Grid>
 
@@ -46,15 +45,7 @@ function ComponentSettings() {
                   size="small"
                   fullWidth
                   disabled
-                />
-              </Grid>
-
-              <Grid item xs={5}>
-                <TextField
-                  label="Another item"
-                  size="small"
-                  fullWidth
-                  disabled
+                  value={component.componentPath}
                 />
               </Grid>
             </Grid>

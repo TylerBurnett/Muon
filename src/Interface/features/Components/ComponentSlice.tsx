@@ -2,8 +2,8 @@ import {
   createAsyncThunk,
   createSelector,
   createSlice,
-  PayloadAction,
 } from '@reduxjs/toolkit';
+// eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store';
 import { IComponentSettings } from '../../../Application/Component/IComponentSettings';
 import { getComponent, getComponents, saveComponent } from './ComponentAPI';
@@ -93,7 +93,9 @@ export const componentsSlice = createSlice({
   },
 });
 
-export const componentsSelector = (state: RootState) => state.components;
+export const componentsSelector = (state: RootState) => {
+  return state.components.components;
+};
 
 export const componentSelector = (id: string) => {
   return createSelector(
@@ -101,7 +103,7 @@ export const componentSelector = (id: string) => {
     (components: IComponentSettings[]) =>
       components[
         components.findIndex(
-          (component: IComponentSettings) => component.name === id
+          (component: IComponentSettings) => component.uuid === id
         )
       ]
   );
