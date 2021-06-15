@@ -1,13 +1,41 @@
 import path from 'path';
 
 /**
- * The production window settings used for Components
+ * The system interface window settings
  */
-export const productionSettings = {
+export const interfaceProductionSettings = {
   webPreferences: {
     devTools: false,
     nodeIntegration: true,
     nodeIntegrationInWorker: true,
+    // TODO Find a way to fix the component API to then re-enable this
+    contextIsolation: false,
+  },
+  type: 'desktop',
+  frame: true,
+};
+
+/**
+ * The system interface window settings
+ */
+export const interfaceDebugSettings = {
+  webPreferences: {
+    devTools: false,
+    nodeIntegration: true,
+    nodeIntegrationInWorker: true,
+    // TODO Find a way to fix the component API to then re-enable this
+    contextIsolation: false,
+  },
+  type: 'desktop',
+  frame: true,
+};
+
+/**
+ * The production window settings used for Components
+ */
+export const componentProductionSettings = {
+  webPreferences: {
+    devTools: false,
     preload: path.join(__dirname, '../Component/preload.js'),
     // TODO Find a way to fix the component API to then re-enable this
     contextIsolation: false,
@@ -22,10 +50,8 @@ export const productionSettings = {
 /**
  * The Debug window settings used for Components
  */
-export const debugSettings = {
+export const componentDebugSettings = {
   webPreferences: {
-    nodeIntegration: true,
-    nodeIntegrationInWorker: true,
     preload: path.join(__dirname, '../Component/preload.js'),
     // TODO Find a way to fix the component API to then re-enable this
     contextIsolation: false,

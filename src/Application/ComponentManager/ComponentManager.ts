@@ -8,7 +8,12 @@ import {
   writeFileSync,
 } from 'fs';
 import { validate } from 'uuid';
-import { debugSettings, productionSettings } from './WindowSettings';
+import {
+  componentDebugSettings,
+  componentProductionSettings,
+  interfaceDebugSettings,
+  interfaceProductionSettings,
+} from './WindowSettings';
 // eslint-disable-next-line import/no-cycle
 import ManagerMessenger from './ManagerMessenger';
 import { ComponentRecievers } from '../Common/Recievers';
@@ -80,8 +85,8 @@ export default class ComponentManager {
       } else {
         */
       const windowSettings = component.production
-        ? productionSettings
-        : debugSettings;
+        ? componentProductionSettings
+        : componentDebugSettings;
 
       // Slap the dynamic values in
       const window = new BrowserWindow({
@@ -124,33 +129,23 @@ export default class ComponentManager {
    * @param system Is this a system component? Affect pathing
    */
   public static loadInterface(): void {
-    // Slap the dynamic values in
-    const window = new BrowserWindow({
-      ...debugSettings,
-      width: 1920,
-      height: 1080,
-      x: 0,
-      y: 0,
+    const windowSettings =
+      process.env.NODE_ENV === 'development' ||
+      process.env.DEBUG_PROD === 'true'
+        ? interfaceDebugSettings
+        : interfaceProductionSettings;
 
-      webPreferences: {
-        ...debugSettings.webPreferences,
-        nodeIntegration: true,
-        webSecurity: false,
-      },
-    });
+    // Slap the dynamic values in
+    const window = new BrowserWindow(windowSettings);
 
     // Build the display path based on external or system components.
     const displayPath = `file://${__dirname}/../../index.html`;
 
+    // Maximize the window
+    window.maximize();
+
     // Load its display file
     window.loadURL(displayPath);
-
-    // Wait until its ready before sending it the settings.
-    /*
-        window.webContents.on('dom-ready', () => {
-          window.webContents.send(ComponentRecievers.Config, component);
-        });
-        */
   }
 
   /**
