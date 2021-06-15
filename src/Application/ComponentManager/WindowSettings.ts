@@ -9,6 +9,8 @@ export const productionSettings = {
     nodeIntegration: true,
     nodeIntegrationInWorker: true,
     preload: path.join(__dirname, '../Component/preload.js'),
+    // TODO Find a way to fix the component API to then re-enable this
+    contextIsolation: false,
   },
   frame: false,
   transparent: true,
@@ -25,6 +27,8 @@ export const debugSettings = {
     nodeIntegration: true,
     nodeIntegrationInWorker: true,
     preload: path.join(__dirname, '../Component/preload.js'),
+    // TODO Find a way to fix the component API to then re-enable this
+    contextIsolation: false,
   },
   hasShadow: false,
   type: 'desktop',
