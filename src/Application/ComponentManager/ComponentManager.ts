@@ -1,5 +1,5 @@
 import { BrowserWindow } from 'electron';
-import { join } from 'path';
+import path from 'path';
 import {
   existsSync,
   readdirSync,
@@ -17,7 +17,7 @@ import { IComponentSettings } from '../Component/IComponentSettings';
 
 /**
  * Component manager class
- * this class is purposed for use in the application which maintains and runs the custom components.
+ * This class is purposed for use in the application which maintains and runs the custom components
  */
 export default class ComponentManager {
   settings: IApplicationSettings;
@@ -26,11 +26,11 @@ export default class ComponentManager {
 
   activeComponents: BrowserWindow[];
 
-  // MAGIC STATIC SINGLETON STUFF.
   static instance: ComponentManager;
 
+  // eslint-disable-next-line class-methods-use-this
   get components() {
-    return this.findComponents();
+    return ComponentManager.findComponents();
   }
 
   constructor() {
@@ -38,7 +38,7 @@ export default class ComponentManager {
     this.messenger = new ManagerMessenger();
 
     if (existsSync('./local/settings.json')) {
-      this.settings = this.loadSettings();
+      this.settings = ComponentManager.loadSettings();
     } else {
       this.settings = Defaults;
       this.saveSettings();
@@ -123,8 +123,7 @@ export default class ComponentManager {
    * @param component The component settings
    * @param system Is this a system component? Affect pathing
    */
-  // eslint-disable-next-line class-methods-use-this
-  public loadInterface(): void {
+  public static loadInterface(): void {
     // Slap the dynamic values in
     const window = new BrowserWindow({
       ...debugSettings,
@@ -157,8 +156,7 @@ export default class ComponentManager {
   /**
    * Loads the application settings
    */
-  // eslint-disable-next-line class-methods-use-this
-  private loadSettings(): IApplicationSettings {
+  private static loadSettings(): IApplicationSettings {
     const contents = readFileSync('local/settings.json');
     return <IApplicationSettings>JSON.parse(contents.toString());
   }
@@ -177,22 +175,20 @@ export default class ComponentManager {
   /**
    * Finds all the components in the /Components directory
    */
-  // eslint-disable-next-line class-methods-use-this
-  private findComponents(): IComponentSettings[] {
-    // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load.
+  private static findComponents(): IComponentSettings[] {
+    // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load
     const directories = readdirSync(`${__dirname}/Components`).filter((f) =>
-      statSync(join(`${__dirname}/Components`, f)).isDirectory()
+      statSync(path.join(`${__dirname}/Components`, f)).isDirectory()
     );
+
     const components: IComponentSettings[] = [];
+    const baseDir = path.join(__dirname, '/Components');
 
-    const baseDir = join(__dirname, '/Components');
+    directories.forEach((directory) => {
+      const configPath = `${baseDir}/${directory}/config.json`;
 
-    // eslint-disable-next-line no-restricted-syntax
-    for (const directory of directories) {
-      const path = `${baseDir}/${directory}/config.json`;
-
-      if (existsSync(path)) {
-        const contents = JSON.parse(readFileSync(path).toString());
+      if (existsSync(configPath)) {
+        const contents = JSON.parse(readFileSync(configPath).toString());
 
         // Config validation
         if (validate(contents.uuid)) {
@@ -207,16 +203,15 @@ export default class ComponentManager {
           `Could not find component config @${directory}, please check the location of this file.`
         );
       }
-    }
+    });
 
     return components;
   }
 
   /**
-   * Public access point for Updating the settings, from tray or from messenger.
-   *
-   * @param json The JSON holding the settings.
-   * @param update Are we updating the settings, or replacing with new JSON.
+   * Public access point for Updating the settings, from tray or from messenger
+   * @param json The JSON holding the settings
+   * @param update Are we updating the settings, or replacing with new JSON
    */
   public updateSettings(json: string, update = false) {
     const parsed: IApplicationSettings = JSON.parse(json);
@@ -236,17 +231,27 @@ export default class ComponentManager {
     this.reload();
   }
 
-  private reload() {
-    this.activeComponents.forEach((element) => element.close());
+  /**
+   * Reloads all components
+   */
+  private reload(): void {
+    this.activeComponents.forEach((window) => window.close());
     this.activeComponents = [];
     this.loadComponents();
   }
 
-  // Singleton MAGIC POWER!
+  /**
+   * Used the get the static singleton instance of the ComponentManager class
+   * @returns The Component Manager Instance
+   */
   public static getManager(): ComponentManager {
     return ComponentManager.instance;
   }
 
+  /**
+   * Gets the users settings
+   * @returns Gets the users settings
+   */
   public getSettings(): IApplicationSettings {
     return this.settings;
   }

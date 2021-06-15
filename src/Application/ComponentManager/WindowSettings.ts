@@ -1,18 +1,8 @@
 import path from 'path';
 
-// Template object for the window settings
-export const debugSettings = {
-  webPreferences: {
-    nodeIntegration: true,
-    nodeIntegrationInWorker: true,
-    preload: path.join(__dirname, '../Component/preload.js'),
-  },
-  hasShadow: false,
-  type: 'desktop',
-  skipTaskbar: true,
-};
-
-// Template object for the edit mode settings.
+/**
+ * The production window settings used for Components
+ */
 export const productionSettings = {
   webPreferences: {
     devTools: false,
@@ -27,7 +17,23 @@ export const productionSettings = {
   skipTaskbar: true,
 };
 
-// Template object for the window settings
+/**
+ * The Debug window settings used for Components
+ */
+export const debugSettings = {
+  webPreferences: {
+    nodeIntegration: true,
+    nodeIntegrationInWorker: true,
+    preload: path.join(__dirname, '../Component/preload.js'),
+  },
+  hasShadow: false,
+  type: 'desktop',
+  skipTaskbar: true,
+};
+
+/**
+ * Unused, TBD on removal
+ */
 export const editSettings = {
   webPreferences: {
     devTools: false,

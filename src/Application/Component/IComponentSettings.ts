@@ -1,6 +1,8 @@
 import { IVec2 } from '../Common/IVec2';
 
-// Custom component base settings (Things that should always be the same not matter the component)
+/**
+ * Custom component base settings (Things that should always be the same not matter the component)
+ */
 export interface IComponentSettings {
   uuid: string;
   name: string;
@@ -17,9 +19,11 @@ export interface IComponentSettings {
   settings: IUserSetting[];
 }
 
-// User facing settings exposed for editing,
-// this will later be used in the main application
-// to edit the component functionality, Like in rainmeter.
+/**
+ * User facing settings exposed for editing,
+ * this will later be used in the main application
+ * to edit the component functionality, Like in rainmeter.
+ */
 export interface IUserSetting {
   name: string;
   description: string;

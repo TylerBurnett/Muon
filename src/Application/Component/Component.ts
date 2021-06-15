@@ -14,8 +14,8 @@ import ComponentMessenger from './ComponentMessenger';
     // Set the callback for the config reciever
     this.messenger = new ComponentMessenger(this.setConfig.bind(this));
 
-    this.insertWindowArgs();
-    // Continue past super into component code.
+    // Inject the CSS required to make the component 'draggable'
+    this.injectWindowCSS();
   }
 
   // Call back for the settings
@@ -23,14 +23,20 @@ import ComponentMessenger from './ComponentMessenger';
     this.settings = config;
   }
 
-  private insertWindowArgs() {
+  /**
+   * Injects the required CSS to make the component 'draggable'
+   */
+  private injectWindowCSS() {
     const style = document.createElement('style');
     style.type = 'text/css';
-    style.innerHTML = this.styleRules;
+    style.innerHTML = this.style;
     document.getElementsByTagName('head')[0].appendChild(style);
   }
 
-  private styleRules = `body {
+  /**
+   * The style rules used the make the component 'draggable', see injectWindowCSS()
+   */
+  private style = `body {
     -webkit-app-region: drag; 
     -webkit-user-select: none;
   }`;

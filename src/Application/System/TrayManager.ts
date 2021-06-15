@@ -22,8 +22,7 @@ export default class TrayManager {
     _BrowserWindow: BrowserWindow,
     _event: Event
   ) {
-    const manager = ComponentManager.getManager();
-    manager.loadInterface();
+    ComponentManager.loadInterface();
   }
 
   private static editMode(

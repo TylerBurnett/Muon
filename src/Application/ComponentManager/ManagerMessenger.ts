@@ -9,6 +9,28 @@ import ComponentManager from './ComponentManager';
  */
 export default class ManagerMessenger {
   constructor() {
+    ManagerMessenger.buildComponentRecievers();
+    ManagerMessenger.buildInterfaceRecievers();
+  }
+
+  /**
+   * Sends messages to the relevant BrowserWindow.
+   * @param window The BrowserWindow Context to use.
+   * @param reciever The Event that the component is listening in on.
+   * @param args Any arguments that the BrowserWindow expects.
+   */
+  public static sendMessage(
+    window: BrowserWindow,
+    reciever: ComponentRecievers,
+    args: any
+  ) {
+    window.webContents.send(reciever, [args]);
+  }
+
+  /**
+   * Builds all the receivers used by the ComponentAPI
+   */
+  private static buildComponentRecievers(): void {
     // Create a reciever for errors
     ipcMain.on(ManagerRecievers.Error, (_event, args) => {
       // eslint-disable-next-line no-console
@@ -26,34 +48,24 @@ export default class ManagerMessenger {
       // eslint-disable-next-line no-console
       console.log(`${<string>args[0]}: ${<string>args[1]}`);
     });
+  }
 
-    // Create a reciever for getting appConfig from the appSettingsComponent.
-    ipcMain.on(ManagerRecievers.AppConfig, (_event, args) => {
-      const manager = ComponentManager.getManager();
-      manager.updateSettings(args[1]);
-    });
-
+  /**
+   * Builds all of the recievers used by the interface
+   */
+  private static buildInterfaceRecievers(): void {
     // Create a reciever for responding the components settings to interface.
-    ipcMain.handle(ManagerRecievers.GetComponents, (event, args) => {
+    ipcMain.handle(ManagerRecievers.GetComponents, () => {
       const manager = ComponentManager.getManager();
       return manager.components;
     });
 
     // Create a reciever for responding the components settings to interface.
-    ipcMain.handle(ManagerRecievers.GetComponent, (event, args) => {
+    ipcMain.handle(ManagerRecievers.GetComponent, (_event, args) => {
       const manager = ComponentManager.getManager();
       return manager.components.filter(
         (component) => component.uuid === args[0]
       );
     });
-  }
-
-  // eslint-disable-next-line class-methods-use-this
-  public sendMessage(
-    window: BrowserWindow,
-    reciever: ComponentRecievers,
-    args: any
-  ) {
-    window.webContents.send(reciever, [args]);
   }
 }
