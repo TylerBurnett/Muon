@@ -10,7 +10,7 @@
  */
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { app, BrowserWindow } from 'electron';
+import { app } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import ComponentManager from './Application/ComponentManager/ComponentManager';
@@ -39,7 +39,7 @@ if (
 const installExtensions = async () => {
   const installer = require('electron-devtools-installer');
   const forceDownload = !!process.env.UPGRADE_EXTENSIONS;
-  const extensions = ['REACT_DEVELOPER_TOOLS'];
+  const extensions = ['REACT_DEVELOPER_TOOLS', 'REDUX_DEVTOOLS'];
 
   return installer
     .default(
@@ -50,8 +50,6 @@ const installExtensions = async () => {
 };
 
 const createWindow = async () => {
-  /*
-  This will be important later
   if (
     process.env.NODE_ENV === 'development' ||
     process.env.DEBUG_PROD === 'true'
@@ -59,6 +57,7 @@ const createWindow = async () => {
     await installExtensions();
   }
 
+  /*
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'assets')
     : path.join(__dirname, '../assets');
@@ -66,12 +65,9 @@ const createWindow = async () => {
   const getAssetPath = (...paths: string[]): string => {
     return path.join(RESOURCES_PATH, ...paths);
   };
-
-  
-  
-
-  
   */
+
+  /*
   // @TODO: Use 'ready-to-show' event
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
   /*
