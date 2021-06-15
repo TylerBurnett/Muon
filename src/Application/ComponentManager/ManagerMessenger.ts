@@ -33,14 +33,6 @@ export default class ManagerMessenger {
       manager.updateSettings(args[1]);
     });
 
-    /*
-      // Create a reciever for getting updated component settings from interface.
-      ipcMain.on(ManagerRecievers.SetComponent, (event, args) => {
-        let manager = ComponentManager.getManager();
-        manager.updateSettings(args[1]);
-      });
-      */
-
     // Create a reciever for responding the components settings to interface.
     ipcMain.handle(ManagerRecievers.GetComponents, (event, args) => {
       const manager = ComponentManager.getManager();
@@ -48,11 +40,11 @@ export default class ManagerMessenger {
     });
 
     // Create a reciever for responding the components settings to interface.
-    ipcMain.on(ManagerRecievers.GetComponent, (event, args) => {
+    ipcMain.handle(ManagerRecievers.GetComponent, (event, args) => {
       const manager = ComponentManager.getManager();
-      manager.updateSettings(args[1]);
-
-      event.returnValue(manager.components);
+      return manager.components.filter(
+        (component) => component.uuid === args[0]
+      );
     });
   }
 

@@ -14,6 +14,7 @@ import { app, BrowserWindow } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import ComponentManager from './Application/ComponentManager/ComponentManager';
+import TrayManager from './Application/System/TrayManager';
 
 export default class AppUpdater {
   constructor() {
@@ -79,6 +80,7 @@ const createWindow = async () => {
   */
 
   const componentManager = new ComponentManager();
+  TrayManager.addTrayIcon();
 };
 
 app.whenReady().then(createWindow).catch(console.log);

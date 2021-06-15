@@ -48,8 +48,6 @@ export default class ComponentManager {
     this.activeComponents = [];
     this.loadComponents();
 
-    this.loadInterface();
-
     // Now set the static instance to this.
     ComponentManager.instance = this;
   }
