@@ -42,9 +42,8 @@ export default class ComponentManager {
     // Attach the parent messenger to the manager
     this.messenger = new ManagerMessenger();
 
-    if (existsSync('./local/settings.json')) {
-      this.settings = ComponentManager.loadSettings();
-    } else {
+    // Load or create the settings
+    if (!this.loadSettings()) {
       this.settings = Defaults;
       this.saveSettings();
     }
@@ -150,21 +149,23 @@ export default class ComponentManager {
 
   /**
    * Loads the application settings
+   * @returns The sucessfullness of returning the settings
    */
-  private static loadSettings(): IApplicationSettings {
-    const contents = readFileSync('local/settings.json');
-    return <IApplicationSettings>JSON.parse(contents.toString());
+  private loadSettings(): boolean {
+    if (existsSync(`${__dirname}/settings.json`)) {
+      const contents = readFileSync(`${__dirname}/settings.json`);
+
+      this.settings = <IApplicationSettings>JSON.parse(contents.toString());
+      return true;
+    }
+    return false;
   }
 
   /**
    * Saves the application settings
    */
-  private saveSettings(): boolean {
-    if (existsSync('local/settings.json')) {
-      writeFileSync('local/settings.json', JSON.stringify(this.settings));
-    }
-
-    return false;
+  private saveSettings(): void {
+    writeFileSync(`${__dirname}/settings.json`, JSON.stringify(this.settings));
   }
 
   /**
