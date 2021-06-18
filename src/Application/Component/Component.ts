@@ -1,4 +1,4 @@
-import { IComponentSettings } from './IComponentSettings';
+import { IComponentSettings } from '../Common/IComponentSettings';
 import ComponentMessenger from './ComponentMessenger';
 
 /**

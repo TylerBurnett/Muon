@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { BrowserWindow } from 'electron';
 import path from 'path';
 import {
@@ -18,7 +19,10 @@ import {
 import ManagerMessenger from './ManagerMessenger';
 import { ComponentRecievers } from '../Common/Recievers';
 import { IApplicationSettings, Defaults } from './IApplicationSettings';
-import { IComponentSettings } from '../Component/IComponentSettings';
+import {
+  IComponentSettings,
+  IComponentSettingsMeta,
+} from '../Common/IComponentSettings';
 
 /**
  * Component manager class
@@ -29,7 +33,10 @@ export default class ComponentManager {
 
   messenger: ManagerMessenger;
 
-  activeComponents: BrowserWindow[];
+  activeComponents: {
+    settings: IComponentSettingsMeta;
+    window: BrowserWindow;
+  }[];
 
   static instance: ComponentManager;
 
@@ -41,11 +48,12 @@ export default class ComponentManager {
   constructor() {
     // Attach the parent messenger to the manager
     this.messenger = new ManagerMessenger();
+    this.settings = {} as IApplicationSettings;
 
     // Load or create the settings
-    if (!this.loadSettings()) {
+    if (!this.loadInternalSettings()) {
       this.settings = Defaults;
-      this.saveSettings();
+      this.saveInternalSettings();
     }
 
     // Finally, load the components.
@@ -59,8 +67,8 @@ export default class ComponentManager {
   /**
    * Loads the collective of located components
    */
-  public loadComponents() {
-    this.components.forEach((component: IComponentSettings) => {
+  public loadComponents(): void {
+    this.components.forEach((component: IComponentSettingsMeta) => {
       this.loadComponent(component);
     });
   }
@@ -70,25 +78,18 @@ export default class ComponentManager {
    * @param component The component settings
    * @param system Is this a system component? Affect pathing
    */
-  public loadComponent(component: IComponentSettings): void {
+  public loadComponent(component: IComponentSettingsMeta): void {
     if (
       this.settings.componentNodeAccess ||
       this.settings.componentNodeAccess ||
       component.nodeDependency === false
     ) {
-      /*
-      // Determine the template object for the window settings
-      let windowSettings;
-      if (this.settings.editMode) {
-        windowSettings = editSettings;
-      } else {
-        */
       const windowSettings = component.production
         ? componentProductionSettings
         : componentDebugSettings;
 
       // Slap the dynamic values in
-      const window = new BrowserWindow({
+      const componentWindow = new BrowserWindow({
         ...windowSettings,
         width: component.windowSize.x,
         height: component.windowSize.y,
@@ -105,17 +106,19 @@ export default class ComponentManager {
       const displayPath = `file://${__dirname}/Components/${component.componentPath}/${component.displayFile}`;
 
       // Load its display file
-      window.loadURL(displayPath);
+      componentWindow.loadURL(displayPath);
 
       // Wait until its ready before sending it the settings.
-      window.webContents.on('dom-ready', () => {
-        window.webContents.send(ComponentRecievers.Config, component);
+      componentWindow.webContents.on('dom-ready', () => {
+        componentWindow.webContents.send(ComponentRecievers.Config, component);
       });
 
       // Add it to the list of initialised components.
-      this.activeComponents.push(window);
+      this.activeComponents.push({
+        settings: component,
+        window: componentWindow,
+      });
     } else {
-      // eslint-disable-next-line no-console
       console.error(
         'Component has node depedencies but lacks node access, to fix this change Component Node Access in settings'
       );
@@ -151,7 +154,7 @@ export default class ComponentManager {
    * Loads the application settings
    * @returns The sucessfullness of returning the settings
    */
-  private loadSettings(): boolean {
+  private loadInternalSettings(): boolean {
     if (existsSync(`${__dirname}/settings.json`)) {
       const contents = readFileSync(`${__dirname}/settings.json`);
 
@@ -164,31 +167,74 @@ export default class ComponentManager {
   /**
    * Saves the application settings
    */
-  private saveSettings(): void {
+  private saveInternalSettings(): void {
     writeFileSync(`${__dirname}/settings.json`, JSON.stringify(this.settings));
+  }
+
+  /**
+   * Saves the specific component settings (also does dirty component work when required)
+   * @param componentSettings The component settings passed back by the system.
+   * @returns
+   */
+  public updateComponentSettings(
+    componentSettings: IComponentSettingsMeta
+  ): boolean {
+    try {
+      console.log('we out here');
+      // Write the file first to see if it breaks
+      writeFileSync(
+        componentSettings.configPath,
+        JSON.stringify(<IComponentSettings>componentSettings)
+      );
+
+      const index = this.activeComponents.findIndex(
+        (component) => component.settings.uuid === componentSettings.uuid
+      );
+
+      // If the component is in active components
+      if (index !== -1) {
+        // If the setting has recently changed to inactive
+        if (componentSettings.active === false) {
+          this.activeComponents[index].window.close();
+          this.activeComponents = this.activeComponents.filter(
+            (_item, i) => i === index
+          );
+        } else this.activeComponents[index].settings = componentSettings;
+      }
+    } catch {
+      return false;
+      console.log('we did not succeed');
+    }
+
+    return true;
   }
 
   /**
    * Finds all the components in the /Components directory
    */
-  private static findComponents(): IComponentSettings[] {
+  private static findComponents(): IComponentSettingsMeta[] {
     // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load
     const directories = readdirSync(`${__dirname}/Components`).filter((f) =>
       statSync(path.join(`${__dirname}/Components`, f)).isDirectory()
     );
 
-    const components: IComponentSettings[] = [];
+    const components: IComponentSettingsMeta[] = [];
     const baseDir = path.join(__dirname, '/Components');
 
     directories.forEach((directory) => {
-      const configPath = `${baseDir}/${directory}/config.json`;
+      const componentConfigPath = `${baseDir}/${directory}/config.json`;
 
-      if (existsSync(configPath)) {
-        const contents = JSON.parse(readFileSync(configPath).toString());
+      if (existsSync(componentConfigPath)) {
+        const contents: IComponentSettings = JSON.parse(
+          readFileSync(componentConfigPath).toString()
+        );
 
         // Config validation
         if (validate(contents.uuid)) {
-          components.push(<IComponentSettings>contents);
+          components.push(<IComponentSettingsMeta>{
+            ...contents,
+            configPath: componentConfigPath,
+          });
         } else {
           console.error(
             `Invalid UUID in config @${directory}, please ensure you use UUID v4,v5.`
@@ -208,8 +254,8 @@ export default class ComponentManager {
    * Public access point for Updating the settings, from tray or from messenger
    * @param json The JSON holding the settings
    * @param update Are we updating the settings, or replacing with new JSON
-   */
-  public updateSettings(json: string, update = false) {
+   
+  public updateSettings(json: string, update = false): void {
     const parsed: IApplicationSettings = JSON.parse(json);
     const temp: any = this.settings;
     if (update) {
@@ -226,12 +272,13 @@ export default class ComponentManager {
     this.saveSettings();
     this.reload();
   }
+  */
 
   /**
    * Reloads all components
    */
   private reload(): void {
-    this.activeComponents.forEach((window) => window.close());
+    this.activeComponents.forEach((item) => item.window.close());
     this.activeComponents = [];
     this.loadComponents();
   }

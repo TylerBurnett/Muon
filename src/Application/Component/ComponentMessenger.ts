@@ -1,5 +1,5 @@
 import { ComponentRecievers, ManagerRecievers } from '../Common/Recievers';
-import { IComponentSettings } from './IComponentSettings';
+import { IComponentSettings } from '../Common/IComponentSettings';
 
 const { ipcRenderer } = require('electron');
 

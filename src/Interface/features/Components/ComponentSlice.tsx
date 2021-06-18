@@ -5,11 +5,11 @@ import {
 } from '@reduxjs/toolkit';
 // eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store';
-import { IComponentSettings } from '../../../Application/Component/IComponentSettings';
+import { IComponentSettingsMeta } from '../../../Application/Common/IComponentSettings';
 import { getComponent, getComponents, saveComponent } from './ComponentAPI';
 
 export interface ComponentState {
-  components: IComponentSettings[];
+  components: IComponentSettingsMeta[];
   status: 'idle' | 'loading' | 'failed';
 }
 
@@ -43,7 +43,7 @@ export const getComponentAsync = createAsyncThunk(
 
 export const saveComponentAsync = createAsyncThunk(
   'components/saveComponent',
-  async (state: IComponentSettings) => {
+  async (state: IComponentSettingsMeta) => {
     const response = await saveComponent(state);
     // The value we return becomes the `fulfilled` action payload
     return response.data;
@@ -82,12 +82,8 @@ export const componentsSlice = createSlice({
       .addCase(saveComponentAsync.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(saveComponentAsync.fulfilled, (state, action) => {
-        state.components[
-          state.components.findIndex(
-            (component) => component.name === action.payload.name
-          )
-        ] = action.payload;
+      .addCase(saveComponentAsync.fulfilled, (state) => {
+        // eslint-disable-next-line prefer-destructuring
         state.status = 'idle';
       });
   },
@@ -100,10 +96,10 @@ export const componentsSelector = (state: RootState) => {
 export const componentSelector = (id: string) => {
   return createSelector(
     componentsSelector,
-    (components: IComponentSettings[]) =>
+    (components: IComponentSettingsMeta[]) =>
       components[
         components.findIndex(
-          (component: IComponentSettings) => component.uuid === id
+          (component: IComponentSettingsMeta) => component.uuid === id
         )
       ]
   );

@@ -21,7 +21,7 @@ import {
 import { Link } from 'react-router-dom';
 import { componentsSelector } from './ComponentSlice';
 import { useAppSelector } from '../../app/hooks';
-import { IComponentSettings } from '../../../Application/Component/IComponentSettings';
+import { IComponentSettings } from '../../../Application/Common/IComponentSettings';
 
 function SideBar() {
   const [state, setState] = useState({

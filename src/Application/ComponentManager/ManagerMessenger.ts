@@ -1,4 +1,5 @@
 import { ipcMain, BrowserWindow } from 'electron';
+import { IComponentSettingsMeta } from '../Common/IComponentSettings';
 import { ComponentRecievers, ManagerRecievers } from '../Common/Recievers';
 // eslint-disable-next-line import/no-cycle
 import ComponentManager from './ComponentManager';
@@ -66,6 +67,13 @@ export default class ManagerMessenger {
       return manager.components.filter(
         (component) => component.uuid === args[0]
       );
+    });
+
+    // Create a reciever for responding the components settings to interface.
+    ipcMain.handle(ManagerRecievers.SetComponent, (_event, args) => {
+      console.log('Messaged recieved captain');
+      const manager = ComponentManager.getManager();
+      return manager.updateComponentSettings(<IComponentSettingsMeta>args[0]);
     });
   }
 }

@@ -1,4 +1,4 @@
-import { app, Tray, Menu, MenuItem, BrowserWindow } from 'electron';
+import { app, Tray, Menu } from 'electron';
 import ComponentManager from '../ComponentManager/ComponentManager';
 
 export default class TrayManager {
@@ -9,7 +9,7 @@ export default class TrayManager {
 
     const menu = Menu.buildFromTemplate([
       { label: 'Settings', type: 'normal', click: this.openSettings },
-      { label: 'Edit Mode', type: 'normal', click: this.editMode },
+      // { label: 'Edit Mode', type: 'normal', click: this.editMode },
       { type: 'separator' },
       { label: 'Exit', type: 'normal', click: this.exit },
     ] as any[]);
@@ -17,14 +17,11 @@ export default class TrayManager {
     this.tray.setContextMenu(menu);
   }
 
-  private static openSettings(
-    _menuItem: MenuItem,
-    _BrowserWindow: BrowserWindow,
-    _event: Event
-  ) {
+  private static openSettings() {
     ComponentManager.loadInterface();
   }
 
+  /*
   private static editMode(
     _menuItem: MenuItem,
     _BrowserWindow: BrowserWindow,
@@ -39,12 +36,9 @@ export default class TrayManager {
       true
     );
   }
+  */
 
-  private static exit(
-    _menuItem: MenuItem,
-    _BrowserWindow: BrowserWindow,
-    _event: Event
-  ) {
+  private static exit() {
     app.exit(0);
   }
 }
