@@ -20,7 +20,7 @@ export const interfaceProductionSettings = {
  */
 export const interfaceDebugSettings = {
   webPreferences: {
-    devTools: false,
+    devTools: true,
     nodeIntegration: true,
     nodeIntegrationInWorker: true,
     // TODO Find a way to fix the component API to then re-enable this

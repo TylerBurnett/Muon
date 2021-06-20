@@ -22,10 +22,6 @@ function ComponentSettings(props: any) {
 
   const validationSchema = yup.object({
     displayFile: yup.string().required('Display File Requires a value'),
-    password: yup
-      .string()
-      .min(8, 'Password should be of minimum 8 characters length')
-      .required('Password is required'),
   });
 
   const formik = useFormik({
@@ -33,7 +29,6 @@ function ComponentSettings(props: any) {
     validationSchema,
     onSubmit: (values: IComponentSettingsMeta) => {
       // eslint-disable-next-line no-alert
-      alert(JSON.stringify(values, null, 2));
       dispatch(saveComponentAsync(values));
     },
   });
@@ -77,11 +72,19 @@ function ComponentSettings(props: any) {
 
                 <Grid item xs={5}>
                   <TextField
-                    label="Component File"
-                    size="small"
-                    fullWidth
-                    disabled
+                    id="ComponentPath"
+                    name="ComponentPath"
+                    label="Component Path"
                     value={component.componentPath}
+                    onChange={formik.handleChange}
+                    error={
+                      formik.touched.displayFile &&
+                      Boolean(formik.errors.displayFile)
+                    }
+                    helperText={
+                      formik.touched.displayFile && formik.errors.displayFile
+                    }
+                    fullWidth
                   />
                 </Grid>
               </Grid>
@@ -110,7 +113,6 @@ function ComponentSettings(props: any) {
                       formik.errors.componentPath
                     }
                     fullWidth
-                    disabled
                   />
                 </Grid>
 
@@ -129,24 +131,19 @@ function ComponentSettings(props: any) {
                       formik.touched.configPath && formik.errors.configPath
                     }
                     fullWidth
-                    disabled
                   />
                 </Grid>
 
                 <Grid item xs={5}>
-                  <TextField
-                    label="Another item"
-                    size="small"
-                    fullWidth
-                    disabled
-                  />
+                  <TextField label="Another item" size="small" fullWidth />
                 </Grid>
               </Grid>
             </Box>
           </Paper>
         </Grid>
         <Button color="primary" variant="contained" fullWidth type="submit">
-          Submit
+          IsValidating: {formik.isValidating}, IsSubmitting:
+          {formik.isSubmitting}
         </Button>
       </form>
     </Grid>

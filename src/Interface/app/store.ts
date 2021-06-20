@@ -4,6 +4,7 @@ import reducer from '../features/Components/ComponentSlice';
 
 export const store = configureStore({
   reducer: { components: reducer },
+  devTools: true,
 });
 
 export type AppDispatch = typeof store.dispatch;
