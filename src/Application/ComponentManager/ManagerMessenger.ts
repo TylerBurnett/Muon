@@ -71,7 +71,6 @@ export default class ManagerMessenger {
 
     // Create a reciever for responding the components settings to interface.
     ipcMain.handle(ManagerRecievers.SetComponent, (_event, args) => {
-      console.log('Messaged recieved captain');
       const manager = ComponentManager.getManager();
       return manager.updateComponentSettings(<IComponentSettingsMeta>args[0]);
     });

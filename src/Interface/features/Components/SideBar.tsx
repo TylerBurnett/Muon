@@ -1,29 +1,111 @@
 import React, { useState } from 'react';
 import {
-  Grid,
-  Paper,
   List,
-  ListSubheader,
   ListItem,
   ListItemIcon,
   ListItemText,
+  Drawer,
+  IconButton,
+  makeStyles,
+  CssBaseline,
+  Divider,
+  createStyles,
+  Theme,
   Collapse,
-  Typography,
+  Avatar,
 } from '@material-ui/core';
 import {
-  List as ListIcon,
-  StarBorder as StarBorderIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
   Settings as SettingsIcon,
   Security as SecurityIcon,
+  ChevronLeft as ChevronLeftIcon,
+  ChevronRight as ChevronRightIcon,
 } from '@material-ui/icons';
 import { Link } from 'react-router-dom';
+import clsx from 'clsx';
 import { componentsSelector } from './ComponentSlice';
 import { useAppSelector } from '../../app/hooks';
 import { IComponentSettings } from '../../../Application/Common/IComponentSettings';
 
+const drawerWidth = 240;
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      display: 'flex',
+    },
+    appBar: {
+      zIndex: theme.zIndex.drawer + 1,
+      transition: theme.transitions.create(['width', 'margin'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+    },
+    appBarShift: {
+      marginLeft: drawerWidth,
+      width: `calc(100% - ${drawerWidth}px)`,
+      transition: theme.transitions.create(['width', 'margin'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    menuButton: {
+      marginRight: 36,
+    },
+    hide: {
+      display: 'none',
+    },
+    drawer: {
+      width: drawerWidth,
+      flexShrink: 0,
+      whiteSpace: 'nowrap',
+    },
+    drawerOpen: {
+      width: drawerWidth,
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    drawerClose: {
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+      overflowX: 'hidden',
+      width: theme.spacing(7) + 1,
+      [theme.breakpoints.up('sm')]: {
+        width: theme.spacing(9) + 1,
+      },
+    },
+    toolbar: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      padding: theme.spacing(0, 1),
+      // necessary for content to be below app bar
+      ...theme.mixins.toolbar,
+    },
+    content: {
+      flexGrow: 1,
+      padding: theme.spacing(3),
+    },
+  })
+);
+
 function SideBar() {
+  const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
+
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
+
   const [state, setState] = useState({
     ActiveComponentsOpen: false,
     InactiveComponentsOpen: false,
@@ -33,59 +115,72 @@ function SideBar() {
     useAppSelector(componentsSelector) || [];
 
   return (
-    <Paper style={{ height: '100vh' }}>
-      <Typography variant="h4" align="center">
-        Desktop Electron
-      </Typography>
-
-      <List
-        component="nav"
-        aria-labelledby="nested-list-subheader"
-        subheader={
-          <ListSubheader component="div" id="nested-list-subheader">
-            System
-          </ListSubheader>
-        }
+    <div className={classes.root}>
+      <CssBaseline />
+      <Drawer
+        variant="permanent"
+        className={clsx(classes.drawer, {
+          [classes.drawerOpen]: open,
+          [classes.drawerClose]: !open,
+        })}
+        classes={{
+          paper: clsx({
+            [classes.drawerOpen]: open,
+            [classes.drawerClose]: !open,
+          }),
+        }}
       >
-        <ListItem button>
-          <ListItemIcon>
-            <SettingsIcon />
-          </ListItemIcon>
-          <ListItemText primary="Settings" />
-        </ListItem>
-        <ListItem button>
-          <ListItemIcon>
-            <SecurityIcon />
-          </ListItemIcon>
-          <ListItemText primary="Security" />
-        </ListItem>
-      </List>
+        <List>
+          <ListItem
+            button
+            onClick={open ? handleDrawerClose : handleDrawerOpen}
+          >
+            <ListItemIcon>
+              {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </ListItemIcon>
+          </ListItem>
+        </List>
+        <Divider />
+        <List>
+          <ListItem button>
+            <ListItemIcon>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Settings" />
+          </ListItem>
+          <ListItem button>
+            <ListItemIcon>
+              <SecurityIcon />
+            </ListItemIcon>
+            <ListItemText primary="Security" />
+          </ListItem>
+        </List>
+        <Divider />
 
-      <List
-        component="nav"
-        aria-labelledby="nested-list-subheader"
-        subheader={
-          <ListSubheader component="div" id="nested-list-subheader">
-            Components
-          </ListSubheader>
-        }
-      >
-        <ListItem
-          button
-          onClick={() =>
-            state.ActiveComponentsOpen
-              ? setState({ ...state, ActiveComponentsOpen: false })
-              : setState({ ...state, ActiveComponentsOpen: true })
-          }
-        >
-          <ListItemIcon>
-            <ListIcon />
-          </ListItemIcon>
-          <ListItemText primary="Active Components" />
-          {state.ActiveComponentsOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        </ListItem>
-        <Collapse in={state.ActiveComponentsOpen} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
+        <List>
+          <ListItem
+            button
+            onClick={() =>
+              state.ActiveComponentsOpen
+                ? setState({ ...state, ActiveComponentsOpen: false })
+                : setState({ ...state, ActiveComponentsOpen: true })
+            }
+          >
+            <ListItemIcon>
+              {state.ActiveComponentsOpen ? (
+                <ExpandLessIcon />
+              ) : (
+                <ExpandMoreIcon />
+              )}
+            </ListItemIcon>
+            <ListItemText primary="Active Components" />
+          </ListItem>
+
+          <Collapse
+            in={state.ActiveComponentsOpen}
+            timeout="auto"
+            unmountOnExit
+          >
             {components.map((component: IComponentSettings) => (
               <ListItem
                 button
@@ -94,69 +189,21 @@ function SideBar() {
                 to={`/component/${component.uuid}`}
               >
                 <ListItemIcon>
-                  <StarBorderIcon />
+                  <Avatar alt={component.name} src={component.iconData}>
+                    {!component.iconData &&
+                      component.name
+                        .split(' ')
+                        .map((str) => str[0])
+                        .join('')}
+                  </Avatar>
                 </ListItemIcon>
                 <ListItemText primary={component.name} />
               </ListItem>
             ))}
-          </List>
-        </Collapse>
-
-        <ListItem
-          button
-          onClick={() =>
-            state.InactiveComponentsOpen
-              ? setState({ ...state, InactiveComponentsOpen: false })
-              : setState({ ...state, InactiveComponentsOpen: true })
-          }
-        >
-          <ListItemIcon>
-            <ListIcon />
-          </ListItemIcon>
-          <ListItemText primary="Inactive Components" />
-          {state.InactiveComponentsOpen ? (
-            <ExpandLessIcon />
-          ) : (
-            <ExpandMoreIcon />
-          )}
-        </ListItem>
-        <Collapse
-          in={state.InactiveComponentsOpen}
-          timeout="auto"
-          unmountOnExit
-        >
-          <List component="div" disablePadding>
-            <ListItem button>
-              <ListItemIcon>
-                <StarBorderIcon />
-              </ListItemIcon>
-              <ListItemText primary="Component 1" />
-            </ListItem>
-
-            <ListItem button>
-              <ListItemIcon>
-                <StarBorderIcon />
-              </ListItemIcon>
-              <ListItemText primary="Component 2" />
-            </ListItem>
-
-            <ListItem button>
-              <ListItemIcon>
-                <StarBorderIcon />
-              </ListItemIcon>
-              <ListItemText primary="Component 3" />
-            </ListItem>
-
-            <ListItem button>
-              <ListItemIcon>
-                <StarBorderIcon />
-              </ListItemIcon>
-              <ListItemText primary="Component 4" />
-            </ListItem>
-          </List>
-        </Collapse>
-      </List>
-    </Paper>
+          </Collapse>
+        </List>
+      </Drawer>
+    </div>
   );
 }
 

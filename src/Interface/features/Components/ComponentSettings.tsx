@@ -4,11 +4,16 @@ import {
   Box,
   Button,
   Grid,
+  IconButton,
   Paper,
   TextField,
   Typography,
 } from '@material-ui/core';
 import { useFormik } from 'formik';
+import {
+  Slideshow as SlideShowIcon,
+  CancelPresentation as CancelPresentationIcon,
+} from '@material-ui/icons';
 import { IComponentSettingsMeta } from '../../../Application/Common/IComponentSettings';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { componentSelector, saveComponentAsync } from './ComponentSlice';
@@ -47,6 +52,43 @@ function ComponentSettings(props: any) {
         </Grid>
       </Grid>
       <form onSubmit={formik.handleSubmit}>
+        <Grid item>
+          <Paper variant="outlined">
+            <Box padding={1}>
+              <Grid container spacing={3}>
+                <Grid item>
+                  {component.active && (
+                    <IconButton
+                      color="secondary"
+                      aria-label="Stop component"
+                      onClick={() =>
+                        dispatch(
+                          saveComponentAsync({ ...component, active: false })
+                        )
+                      }
+                    >
+                      <CancelPresentationIcon />
+                    </IconButton>
+                  )}
+                  {!component.active && (
+                    <IconButton
+                      color="primary"
+                      aria-label="Start Component"
+                      onClick={() =>
+                        dispatch(
+                          saveComponentAsync({ ...component, active: true })
+                        )
+                      }
+                    >
+                      <SlideShowIcon />
+                    </IconButton>
+                  )}
+                </Grid>
+              </Grid>
+            </Box>
+          </Paper>
+        </Grid>
+
         <Grid item>
           <Typography variant="h5">Component Information</Typography>
           <Paper variant="outlined">
@@ -142,8 +184,7 @@ function ComponentSettings(props: any) {
           </Paper>
         </Grid>
         <Button color="primary" variant="contained" fullWidth type="submit">
-          IsValidating: {formik.isValidating}, IsSubmitting:
-          {formik.isSubmitting}
+          submit
         </Button>
       </form>
     </Grid>

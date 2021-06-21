@@ -81,43 +81,47 @@ export default class ComponentManager {
   public loadComponent(component: IComponentSettingsMeta): void {
     if (
       this.settings.componentNodeAccess ||
-      this.settings.componentNodeAccess ||
       component.nodeDependency === false
     ) {
-      const windowSettings = component.production
-        ? componentProductionSettings
-        : componentDebugSettings;
+      if (component.active) {
+        const windowSettings = component.production
+          ? componentProductionSettings
+          : componentDebugSettings;
 
-      // Slap the dynamic values in
-      const componentWindow = new BrowserWindow({
-        ...windowSettings,
-        width: component.windowSize.x,
-        height: component.windowSize.y,
-        x: component.windowLocation.x,
-        y: component.windowLocation.y,
+        // Slap the dynamic values in
+        const componentWindow = new BrowserWindow({
+          ...windowSettings,
+          width: component.windowSize.x,
+          height: component.windowSize.y,
+          x: component.windowLocation.x,
+          y: component.windowLocation.y,
 
-        webPreferences: {
-          ...windowSettings.webPreferences,
-          nodeIntegration: component.nodeDependency,
-        },
-      });
+          webPreferences: {
+            ...windowSettings.webPreferences,
+            nodeIntegration: component.nodeDependency,
+          },
+        });
 
-      // Build the display path based on external or system components.
-      const displayPath = `file://${__dirname}/Components/${component.componentPath}/${component.displayFile}`;
+        // Build the display path based on external or system components.
+        const displayPath = `file://${__dirname}/Components/${component.componentPath}/${component.displayFile}`;
 
-      // Load its display file
-      componentWindow.loadURL(displayPath);
+        // Load its display file
+        componentWindow.loadURL(displayPath);
 
-      // Wait until its ready before sending it the settings.
-      componentWindow.webContents.on('dom-ready', () => {
-        componentWindow.webContents.send(ComponentRecievers.Config, component);
-      });
+        // Wait until its ready before sending it the settings.
+        componentWindow.webContents.on('dom-ready', () => {
+          componentWindow.webContents.send(
+            ComponentRecievers.Config,
+            component
+          );
+        });
 
-      // Add it to the list of initialised components.
-      this.activeComponents.push({
-        settings: component,
-        window: componentWindow,
-      });
+        // Add it to the list of initialised components.
+        this.activeComponents.push({
+          settings: component,
+          window: componentWindow,
+        });
+      }
     } else {
       console.error(
         'Component has node depedencies but lacks node access, to fix this change Component Node Access in settings'
@@ -173,37 +177,39 @@ export default class ComponentManager {
 
   /**
    * Saves the specific component settings (also does dirty component work when required)
-   * @param componentSettings The component settings passed back by the system.
+   * @param newState The component settings passed back by the system.
    * @returns
    */
-  public updateComponentSettings(
-    componentSettings: IComponentSettingsMeta
-  ): boolean {
+  public updateComponentSettings(newState: IComponentSettingsMeta): boolean {
     try {
-      console.log('we out here');
       // Write the file first to see if it breaks
       writeFileSync(
-        componentSettings.configPath,
-        JSON.stringify(<IComponentSettings>componentSettings)
+        newState.configPath,
+        JSON.stringify(<IComponentSettings>newState)
       );
 
-      const index = this.activeComponents.findIndex(
-        (component) => component.settings.uuid === componentSettings.uuid
+      const activeIndex = this.activeComponents.findIndex(
+        (component) => component.settings.uuid === newState.uuid
+      );
+
+      const inactiveIndex = this.components.findIndex(
+        (component) => component.uuid === newState.uuid
       );
 
       // If the component is in active components
-      if (index !== -1) {
+      if (activeIndex !== -1) {
         // If the setting has recently changed to inactive
-        if (componentSettings.active === false) {
-          this.activeComponents[index].window.close();
+        if (newState.active === false) {
+          this.activeComponents[activeIndex].window.close();
           this.activeComponents = this.activeComponents.filter(
-            (_item, i) => i === index
+            (_item, i) => i === activeIndex
           );
-        } else this.activeComponents[index].settings = componentSettings;
+        } else this.activeComponents[activeIndex].settings = newState;
+      } else if (newState.active === true) {
+        this.loadComponent(this.components[inactiveIndex]);
       }
     } catch {
       return false;
-      console.log('we did not succeed');
     }
 
     return true;
