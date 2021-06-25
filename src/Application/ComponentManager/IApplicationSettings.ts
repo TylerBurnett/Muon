@@ -3,7 +3,7 @@
  */
 export interface IApplicationSettings {
   componentNodeAccess: boolean;
-
+  componentsFolderPath: string;
   editMode: boolean;
 }
 

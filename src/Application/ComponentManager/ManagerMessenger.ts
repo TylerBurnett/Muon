@@ -65,7 +65,7 @@ export default class ManagerMessenger {
     ipcMain.handle(ManagerRecievers.GetComponent, (_event, args) => {
       const manager = ComponentManager.getManager();
       return manager.components.filter(
-        (component) => component.uuid === args[0]
+        (component) => component.settings.uuid === args[0]
       );
     });
 
