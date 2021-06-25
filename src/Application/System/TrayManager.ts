@@ -18,7 +18,7 @@ export default class TrayManager {
   }
 
   private static openSettings() {
-    ComponentManager.loadInterface();
+    ComponentManager.startApp();
   }
 
   /*

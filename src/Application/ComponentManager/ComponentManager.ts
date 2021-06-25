@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { BrowserWindow } from 'electron';
 import path from 'path';
 import {
@@ -8,7 +7,8 @@ import {
   readFileSync,
   writeFileSync,
 } from 'fs';
-import { validate } from 'uuid';
+import { ValidationError } from 'yup';
+import { Logger } from 'winston';
 import {
   componentDebugSettings,
   componentProductionSettings,
@@ -22,7 +22,9 @@ import { IApplicationSettings, Defaults } from './IApplicationSettings';
 import {
   IComponentSettings,
   IComponentSettingsMeta,
+  ComponentSettingsValidator,
 } from '../Common/IComponentSettings';
+import buildLogger from './Logger';
 
 /**
  * Component manager class
@@ -33,44 +35,37 @@ export default class ComponentManager {
 
   messenger: ManagerMessenger;
 
-  activeComponents: {
+  logger: Logger;
+
+  components: {
     settings: IComponentSettingsMeta;
-    window: BrowserWindow;
+    window: BrowserWindow | null;
   }[];
 
   static instance: ComponentManager;
 
-  // eslint-disable-next-line class-methods-use-this
-  get components() {
-    return ComponentManager.findComponents();
-  }
-
   constructor() {
     // Attach the parent messenger to the manager
     this.messenger = new ManagerMessenger();
-    this.settings = {} as IApplicationSettings;
+    this.logger = buildLogger();
 
-    // Load or create the settings
+    // Load settings
+    this.settings = {} as IApplicationSettings;
     if (!this.loadInternalSettings()) {
       this.settings = Defaults;
       this.saveInternalSettings();
     }
 
     // Finally, load the components.
-    this.activeComponents = [];
-    this.loadComponents();
+    this.components = this.findComponents().map((componentSettings) => {
+      return {
+        settings: componentSettings,
+        window: this.startComponent(componentSettings),
+      };
+    });
 
     // Now set the static instance to this.
     ComponentManager.instance = this;
-  }
-
-  /**
-   * Loads the collective of located components
-   */
-  public loadComponents(): void {
-    this.components.forEach((component: IComponentSettingsMeta) => {
-      this.loadComponent(component);
-    });
   }
 
   /**
@@ -78,7 +73,9 @@ export default class ComponentManager {
    * @param component The component settings
    * @param system Is this a system component? Affect pathing
    */
-  public loadComponent(component: IComponentSettingsMeta): void {
+  public startComponent(
+    component: IComponentSettingsMeta
+  ): BrowserWindow | null {
     if (
       this.settings.componentNodeAccess ||
       component.nodeDependency === false
@@ -117,16 +114,16 @@ export default class ComponentManager {
         });
 
         // Add it to the list of initialised components.
-        this.activeComponents.push({
-          settings: component,
-          window: componentWindow,
-        });
+        return componentWindow;
       }
     } else {
-      console.error(
-        'Component has node depedencies but lacks node access, to fix this change Component Node Access in settings'
+      this.logger.info(
+        `Component ${component.name} has node depedencies but lacks node access, to fix this change Component Node Access in settings.`
       );
+      return null;
     }
+
+    return null;
   }
 
   /**
@@ -134,7 +131,7 @@ export default class ComponentManager {
    * @param component The component settings
    * @param system Is this a system component? Affect pathing
    */
-  public static loadInterface(): void {
+  public static startApp(): void {
     const windowSettings =
       process.env.NODE_ENV === 'development' ||
       process.env.DEBUG_PROD === 'true'
@@ -188,37 +185,27 @@ export default class ComponentManager {
         JSON.stringify(<IComponentSettings>newState)
       );
 
-      const activeIndex = this.activeComponents.findIndex(
+      const componentIndex = this.components.findIndex(
         (component) => component.settings.uuid === newState.uuid
       );
 
-      const inactiveIndex = this.components.findIndex(
-        (component) => component.uuid === newState.uuid
-      );
-
-      // If the component is in active components
-      if (activeIndex !== -1) {
-        // If the setting has recently changed to inactive
-        if (newState.active === false) {
-          this.activeComponents[activeIndex].window.close();
-          this.activeComponents = this.activeComponents.filter(
-            (_item, i) => i === activeIndex
-          );
-        } else this.activeComponents[activeIndex].settings = newState;
-      } else if (newState.active === true) {
-        this.loadComponent(this.components[inactiveIndex]);
-      }
+      if (newState.active) {
+        if (!this.components[componentIndex].settings.active) {
+          this.components[componentIndex].window?.close();
+        }
+      } else if (this.components[componentIndex].settings.active)
+        this.components[componentIndex].window = this.startComponent(newState);
+      this.components[componentIndex].settings = newState;
+      return true;
     } catch {
       return false;
     }
-
-    return true;
   }
 
   /**
    * Finds all the components in the /Components directory
    */
-  private static findComponents(): IComponentSettingsMeta[] {
+  private findComponents(): IComponentSettingsMeta[] {
     // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load
     const directories = readdirSync(`${__dirname}/Components`).filter((f) =>
       statSync(path.join(`${__dirname}/Components`, f)).isDirectory()
@@ -234,59 +221,24 @@ export default class ComponentManager {
         const contents: IComponentSettings = JSON.parse(
           readFileSync(componentConfigPath).toString()
         );
+        try {
+          ComponentSettingsValidator.validateSync(contents);
 
-        // Config validation
-        if (validate(contents.uuid)) {
           components.push(<IComponentSettingsMeta>{
             ...contents,
             configPath: componentConfigPath,
           });
-        } else {
-          console.error(
-            `Invalid UUID in config @${directory}, please ensure you use UUID v4,v5.`
-          );
+        } catch (e: unknown) {
+          this.logger.error((<ValidationError>e).errors.join(','));
         }
       } else {
-        console.error(
+        this.logger.info(
           `Could not find component config @${directory}, please check the location of this file.`
         );
       }
     });
 
     return components;
-  }
-
-  /**
-   * Public access point for Updating the settings, from tray or from messenger
-   * @param json The JSON holding the settings
-   * @param update Are we updating the settings, or replacing with new JSON
-   
-  public updateSettings(json: string, update = false): void {
-    const parsed: IApplicationSettings = JSON.parse(json);
-    const temp: any = this.settings;
-    if (update) {
-      // eslint-disable-next-line no-restricted-syntax
-      for (const [key, value] of Object.entries(<IApplicationSettings>parsed)) {
-        temp[key] = value;
-      }
-
-      this.settings = <IApplicationSettings>temp;
-    } else {
-      this.settings = <IApplicationSettings>JSON.parse(json);
-    }
-
-    this.saveSettings();
-    this.reload();
-  }
-  */
-
-  /**
-   * Reloads all components
-   */
-  private reload(): void {
-    this.activeComponents.forEach((item) => item.window.close());
-    this.activeComponents = [];
-    this.loadComponents();
   }
 
   /**
