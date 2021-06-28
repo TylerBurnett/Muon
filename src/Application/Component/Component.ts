@@ -1,9 +1,10 @@
-import { IComponentSettings } from '../Common/IComponentSettings';
+import { IComponentSettings } from './IComponentSettings';
 import ComponentMessenger from './ComponentMessenger';
 
 /**
  * Component Base class, used as extended class for all custom components
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).ComponentBase = class ComponentBase {
   settings: IComponentSettings;
 

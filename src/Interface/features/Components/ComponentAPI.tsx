@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import { IComponentSettingsMeta } from '../../../Application/Common/IComponentSettings';
+import { IComponentSettingsMeta } from '../../../Application/Component/IComponentSettings';
 import { ManagerRecievers } from '../../../Application/Common/Recievers';
 
 // A mock function to mimic making an async request for data
@@ -26,9 +26,7 @@ export function saveComponent(state: IComponentSettingsMeta) {
     ipcRenderer
       .invoke(ManagerRecievers.SetComponent, [state])
       // eslint-disable-next-line promise/always-return
-      .then((response: boolean) =>
-        resolve({ data: {} as IComponentSettingsMeta })
-      )
+      .then((response: boolean) => resolve({ data: state }))
       // eslint-disable-next-line no-console
       .catch((e) => console.log(e))
   );

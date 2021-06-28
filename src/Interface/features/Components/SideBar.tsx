@@ -5,7 +5,6 @@ import {
   ListItemIcon,
   ListItemText,
   Drawer,
-  IconButton,
   makeStyles,
   CssBaseline,
   Divider,
@@ -26,7 +25,7 @@ import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { componentsSelector } from './ComponentSlice';
 import { useAppSelector } from '../../app/hooks';
-import { IComponentSettings } from '../../../Application/Common/IComponentSettings';
+import { IComponentSettings } from '../../../Application/Component/IComponentSettings';
 
 const drawerWidth = 240;
 

@@ -5,7 +5,7 @@ import {
 } from '@reduxjs/toolkit';
 // eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store';
-import { IComponentSettingsMeta } from '../../../Application/Common/IComponentSettings';
+import { IComponentSettingsMeta } from '../../../Application/Component/IComponentSettings';
 import { getComponent, getComponents, saveComponent } from './ComponentAPI';
 
 export interface ComponentState {
@@ -82,8 +82,12 @@ export const componentsSlice = createSlice({
       .addCase(saveComponentAsync.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(saveComponentAsync.fulfilled, (state) => {
-        // eslint-disable-next-line prefer-destructuring
+      .addCase(saveComponentAsync.fulfilled, (state, action) => {
+        state.components[
+          state.components.findIndex(
+            (component) => component.name === action.payload.name
+          )
+        ] = action.payload;
         state.status = 'idle';
       });
   },

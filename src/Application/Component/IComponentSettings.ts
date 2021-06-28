@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import { validate } from 'uuid';
-import { IVec2 } from './IVec2';
+import { IVec2 } from '../Common/IVec2';
 
 /**
  * Extends the pre-exsisting IComponentSettings

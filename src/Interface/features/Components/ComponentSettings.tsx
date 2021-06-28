@@ -14,7 +14,7 @@ import {
   Slideshow as SlideShowIcon,
   CancelPresentation as CancelPresentationIcon,
 } from '@material-ui/icons';
-import { IComponentSettingsMeta } from '../../../Application/Common/IComponentSettings';
+import { IComponentSettingsMeta } from '../../../Application/Component/IComponentSettings';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { componentSelector, saveComponentAsync } from './ComponentSlice';
 

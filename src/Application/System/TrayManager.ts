@@ -21,23 +21,6 @@ export default class TrayManager {
     ComponentManager.startApp();
   }
 
-  /*
-  private static editMode(
-    _menuItem: MenuItem,
-    _BrowserWindow: BrowserWindow,
-    _event: Event
-  ) {
-    const manager = ComponentManager.getManager();
-    const currSettings = manager.getSettings();
-    manager.updateSettings(
-      JSON.stringify({
-        editMode: !currSettings.editMode,
-      }),
-      true
-    );
-  }
-  */
-
   private static exit() {
     app.exit(0);
   }
