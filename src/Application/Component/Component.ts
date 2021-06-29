@@ -1,44 +1,50 @@
-import { IComponentSettings } from './IComponentSettings';
-import ComponentMessenger from './ComponentMessenger';
+import { ManagerRecievers } from '../Common/Recievers';
+import { IComponentSettingsMeta } from './IComponentSettings';
 
-/**
- * Component Base class, used as extended class for all custom components
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(window as any).ComponentBase = class ComponentBase {
-  settings: IComponentSettings;
+const { contextBridge, ipcRenderer } = require('electron');
+const OS = require('os-utils');
 
-  messenger: ComponentMessenger;
-
-  constructor() {
-    this.settings = {} as IComponentSettings;
-    // Set the callback for the config reciever
-    this.messenger = new ComponentMessenger(this.setConfig.bind(this));
-
-    // Inject the CSS required to make the component 'draggable'
-    this.injectWindowCSS();
-  }
-
-  // Call back for the settings
-  private setConfig(config: IComponentSettings) {
-    this.settings = config;
-  }
-
-  /**
-   * Injects the required CSS to make the component 'draggable'
-   */
-  private injectWindowCSS() {
-    const style = document.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = this.style;
-    document.getElementsByTagName('head')[0].appendChild(style);
-  }
-
-  /**
-   * The style rules used the make the component 'draggable', see injectWindowCSS()
-   */
-  private style = `body {
+window.addEventListener('DOMContentLoaded', () => {
+  const style = document.createElement('style');
+  style.type = 'text/css';
+  style.innerHTML = `body {
     -webkit-app-region: drag; 
     -webkit-user-select: none;
   }`;
-};
+  document.getElementsByTagName('head')[0].appendChild(style);
+});
+
+contextBridge.exposeInMainWorld('Component', {
+  getSettings: () => ipcRenderer.invoke(ManagerRecievers.GetComponent, []),
+
+  logInfo: (message: string) =>
+    ipcRenderer.invoke(ManagerRecievers.Log, ['ComponentName', message]),
+
+  logWarning: (message: string) =>
+    ipcRenderer.invoke(ManagerRecievers.Warning, ['ComponentName', message]),
+
+  logError: (message: string) =>
+    ipcRenderer.invoke(ManagerRecievers.Warning, ['ComponentName', message]),
+});
+
+contextBridge.exposeInMainWorld('OS', {
+  cpuUsage: OS.cpuUsage,
+
+  cpuFree: OS.cpuFree,
+
+  platform: OS.platform,
+
+  countCPUs: OS.countCPUs,
+
+  freemem: OS.freemem,
+
+  totalmem: OS.totalmem,
+
+  freememPercentage: OS.freememPercentage,
+
+  sysUptime: OS.sysUptime,
+
+  processUptime: OS.processUptime,
+
+  loadavg: OS.loadavg,
+});

@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain } from 'electron';
+import { BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron';
 import path from 'path';
 import {
   existsSync,
@@ -15,7 +15,7 @@ import {
   interfaceDebugSettings,
   interfaceProductionSettings,
 } from './WindowSettings';
-import { ComponentRecievers, ManagerRecievers } from '../Common/Recievers';
+import { ManagerRecievers } from '../Common/Recievers';
 import { IApplicationSettings, Defaults } from './IApplicationSettings';
 import buildLogger from './Logger';
 import {
@@ -39,7 +39,7 @@ export default class ComponentManager {
     window: BrowserWindow | null;
   }[];
 
-  readonly events: IIPCEvent[] = [
+  private readonly events: IIPCEvent[] = [
     {
       channel: ManagerRecievers.GetComponents,
       response: () => {
@@ -48,10 +48,16 @@ export default class ComponentManager {
     },
     {
       channel: ManagerRecievers.GetComponent,
-      response: (event, args: unknown[]) =>
-        this.components.filter(
-          (component) => component.settings.uuid === args[0]
-        ),
+      response: (event: IpcMainInvokeEvent, args: unknown[]) => {
+        if (args[0]) {
+          return this.components.filter(
+            (component) => component.settings.uuid === args[0]
+          )[0].settings;
+        }
+        return this.components.filter(
+          (component) => component.window?.id === event.sender.id
+        )[0].settings;
+      },
     },
     {
       channel: ManagerRecievers.SetComponent,
@@ -269,14 +275,6 @@ export default class ComponentManager {
 
         // Load its display file
         componentWindow.loadURL(displayPath);
-
-        // Wait until its ready before sending it the settings.
-        componentWindow.webContents.on('dom-ready', () => {
-          componentWindow.webContents.send(
-            ComponentRecievers.Config,
-            component
-          );
-        });
 
         // Add it to the list of initialised components.
         return componentWindow;

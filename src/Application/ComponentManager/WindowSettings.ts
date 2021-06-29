@@ -38,7 +38,7 @@ export const componentProductionSettings = {
     devTools: false,
     preload: path.join(__dirname, '../Component/preload.js'),
     // TODO Find a way to fix the component API to then re-enable this
-    contextIsolation: false,
+    contextIsolation: true,
   },
   frame: false,
   transparent: true,
@@ -54,7 +54,7 @@ export const componentDebugSettings = {
   webPreferences: {
     preload: path.join(__dirname, '../Component/preload.js'),
     // TODO Find a way to fix the component API to then re-enable this
-    contextIsolation: false,
+    contextIsolation: true,
   },
   hasShadow: false,
   type: 'desktop',
