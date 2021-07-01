@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain, IpcMainInvokeEvent } from 'electron';
+import { BrowserWindow, ipcMain, IpcMainInvokeEvent, screen } from 'electron';
 import path from 'path';
 import {
   existsSync,
@@ -24,6 +24,7 @@ import {
   IComponentSettingsMeta,
 } from '../Component/IComponentSettings';
 import { IIPCEvent } from './Types';
+import { IVec2 } from '../Common/IVec2';
 
 /**
  * Component manager class
@@ -276,6 +277,22 @@ export default class ComponentManager {
         // Load its display file
         componentWindow.loadURL(displayPath);
 
+        componentWindow.on('moved', () => {
+          const componentIndex = this.components.findIndex(
+            (comp) => comp.settings.uuid === component.uuid
+          );
+
+          const [x, y] = componentWindow.getPosition();
+
+          this.updateComponentSettings({
+            ...this.components[componentIndex].settings,
+            windowLocation: {
+              x,
+              y,
+            },
+          });
+        });
+
         // Add it to the list of initialised components.
         return componentWindow;
       }
@@ -294,4 +311,41 @@ export default class ComponentManager {
   }
 
   // #endregion Component API
+
+  // #region Helpers
+
+  private static getRelativePos(
+    x: number | string,
+    y: number | string,
+    screenId?: number
+  ): IVec2 {
+    const safeX = typeof x === 'number' ? x : Number(x.trimEnd());
+    const safeY = typeof y === 'number' ? y : Number(y.trimEnd());
+
+    const screenContext = screenId
+      ? screen.getAllDisplays()[screenId]
+      : screen.getPrimaryDisplay();
+
+    return {
+      x: Math.round(screenContext.bounds.x * (safeX / 100)),
+      y: Math.round(screenContext.bounds.y * (safeY / 100)),
+    };
+  }
+
+  private static getScreenPoint(
+    x: number,
+    y: number,
+    screenId?: number
+  ): IVec2 {
+    const screenContext = screenId
+      ? screen.getAllDisplays()[screenId]
+      : screen.getPrimaryDisplay();
+
+    return {
+      x: `${Math.round((x / screenContext.bounds.x) * 100)}%`,
+      y: `${Math.round((y / screenContext.bounds.y) * 100)}%`,
+    };
+  }
+
+  // //#endregion Helpers
 }
