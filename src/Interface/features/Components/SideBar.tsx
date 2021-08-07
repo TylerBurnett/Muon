@@ -10,12 +10,11 @@ import {
   Divider,
   createStyles,
   Theme,
-  Collapse,
   Avatar,
+  Badge,
+  withStyles,
 } from '@material-ui/core';
 import {
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
   Settings as SettingsIcon,
   Security as SecurityIcon,
   ChevronLeft as ChevronLeftIcon,
@@ -93,6 +92,44 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
+const ActiveComponentBadge = withStyles((theme: Theme) =>
+  createStyles({
+    badge: {
+      backgroundColor: theme.palette.success.main,
+      color: theme.palette.success.main,
+      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+      '&::after': {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        border: '1px solid currentColor',
+      },
+    },
+  })
+)(Badge);
+
+const InactiveComponentBadge = withStyles((theme: Theme) =>
+  createStyles({
+    badge: {
+      backgroundColor: theme.palette.error.main,
+      color: theme.palette.error.main,
+      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+      '&::after': {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        border: '1px solid currentColor',
+      },
+    },
+  })
+)(Badge);
+
 function SideBar() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -104,11 +141,6 @@ function SideBar() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
-  const [state, setState] = useState({
-    ActiveComponentsOpen: false,
-    InactiveComponentsOpen: false,
-  });
 
   const components: IComponentSettings[] =
     useAppSelector(componentsSelector) || [];
@@ -157,49 +189,53 @@ function SideBar() {
         <Divider />
 
         <List>
-          <ListItem
-            button
-            onClick={() =>
-              state.ActiveComponentsOpen
-                ? setState({ ...state, ActiveComponentsOpen: false })
-                : setState({ ...state, ActiveComponentsOpen: true })
-            }
-          >
-            <ListItemIcon>
-              {state.ActiveComponentsOpen ? (
-                <ExpandLessIcon />
-              ) : (
-                <ExpandMoreIcon />
-              )}
-            </ListItemIcon>
-            <ListItemText primary="Active Components" />
-          </ListItem>
-
-          <Collapse
-            in={state.ActiveComponentsOpen}
-            timeout="auto"
-            unmountOnExit
-          >
-            {components.map((component: IComponentSettings) => (
-              <ListItem
-                button
-                key={component.uuid}
-                component={Link}
-                to={`/component/${component.uuid}`}
-              >
-                <ListItemIcon>
-                  <Avatar alt={component.name} src={component.iconData}>
-                    {!component.iconData &&
-                      component.name
-                        .split(' ')
-                        .map((str) => str[0])
-                        .join('')}
-                  </Avatar>
-                </ListItemIcon>
-                <ListItemText primary={component.name} />
-              </ListItem>
-            ))}
-          </Collapse>
+          {components.map((component: IComponentSettings) => (
+            <ListItem
+              button
+              key={component.uuid}
+              component={Link}
+              to={`/component/${component.uuid}`}
+            >
+              <ListItemIcon>
+                {component.active ? (
+                  <ActiveComponentBadge
+                    overlap="circle"
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    variant="dot"
+                  >
+                    <Avatar alt={component.name} src={component.iconData}>
+                      {!component.iconData &&
+                        component.name
+                          .split(' ')
+                          .map((str) => str[0])
+                          .join('')}
+                    </Avatar>
+                  </ActiveComponentBadge>
+                ) : (
+                  <InactiveComponentBadge
+                    overlap="circle"
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    variant="dot"
+                  >
+                    <Avatar alt={component.name} src={component.iconData}>
+                      {!component.iconData &&
+                        component.name
+                          .split(' ')
+                          .map((str) => str[0])
+                          .join('')}
+                    </Avatar>
+                  </InactiveComponentBadge>
+                )}
+              </ListItemIcon>
+              <ListItemText primary={component.name} />
+            </ListItem>
+          ))}
         </List>
       </Drawer>
     </div>

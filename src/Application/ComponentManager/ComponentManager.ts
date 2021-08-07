@@ -260,10 +260,10 @@ export default class ComponentManager {
         // Slap the dynamic values in
         const componentWindow = new BrowserWindow({
           ...windowSettings,
-          width: component.windowSize.x,
-          height: component.windowSize.y,
-          x: component.windowLocation.x,
-          y: component.windowLocation.y,
+          width: <number>component.windowSize.x,
+          height: <number>component.windowSize.y,
+          x: <number>component.windowLocation.x,
+          y: <number>component.windowLocation.y,
 
           webPreferences: {
             ...windowSettings.webPreferences,

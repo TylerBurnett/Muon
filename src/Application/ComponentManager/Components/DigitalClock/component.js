@@ -2,7 +2,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
   const myComponent = new MyComponent();
 });
 
-class MyComponent extends window.ComponentBase {
+class MyComponent {
   constructor() {
     super();
     setInterval(this.mainLoop.bind(this), 1000);
