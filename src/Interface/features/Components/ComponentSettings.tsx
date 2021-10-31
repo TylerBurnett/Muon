@@ -7,6 +7,7 @@ import {
   TextField,
   Typography,
   Divider,
+  Tooltip,
 } from '@material-ui/core';
 import { useFormik } from 'formik';
 import {
@@ -60,37 +61,47 @@ function ComponentSettings(props: any) {
               <Grid container>
                 <Grid item>
                   {component.active && (
-                    <IconButton
-                      color="secondary"
-                      aria-label="Stop component"
-                      onClick={() =>
-                        dispatch(
-                          saveComponentAsync({ ...component, active: false })
-                        )
-                      }
-                    >
-                      <CancelPresentationIcon />
-                    </IconButton>
+                    <Tooltip title="Stop Component">
+                      <IconButton
+                        color="secondary"
+                        aria-label="Stop component"
+                        onClick={() =>
+                          dispatch(
+                            saveComponentAsync({ ...component, active: false })
+                          )
+                        }
+                      >
+                        <CancelPresentationIcon />
+                      </IconButton>
+                    </Tooltip>
                   )}
                   {!component.active && (
-                    <IconButton
-                      color="primary"
-                      aria-label="Start Component"
-                      onClick={() =>
-                        dispatch(
-                          saveComponentAsync({ ...component, active: true })
-                        )
-                      }
-                    >
-                      <SlideShowIcon />
-                    </IconButton>
+                    <Tooltip title="Start Component">
+                      <IconButton
+                        color="primary"
+                        aria-label="Start Component"
+                        onClick={() =>
+                          dispatch(
+                            saveComponentAsync({ ...component, active: true })
+                          )
+                        }
+                      >
+                        <SlideShowIcon />
+                      </IconButton>
+                    </Tooltip>
                   )}
                 </Grid>
 
                 <Grid item>
-                  <IconButton aria-label="Save Settings" type="submit" disabled>
-                    <RefreshIcon />
-                  </IconButton>
+                  <Tooltip title="Restart Component">
+                    <IconButton
+                      aria-label="Save Settings"
+                      type="submit"
+                      disabled
+                    >
+                      <RefreshIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Grid>
 
                 <Grid item>
@@ -98,16 +109,18 @@ function ComponentSettings(props: any) {
                 </Grid>
 
                 <Grid item>
-                  <IconButton
-                    aria-label="Save Settings"
-                    type="submit"
-                    disabled={
-                      Object.values(formik.touched).filter((v) => v).length ===
-                      0
-                    }
-                  >
-                    <SaveIcon />
-                  </IconButton>
+                  <Tooltip title="Save Component Settings">
+                    <IconButton
+                      aria-label="Save Settings"
+                      type="submit"
+                      disabled={
+                        Object.values(formik.touched).filter((v) => v)
+                          .length === 0
+                      }
+                    >
+                      <SaveIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Grid>
               </Grid>
             </Box>

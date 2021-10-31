@@ -11,7 +11,7 @@ export interface IComponentSettingsMeta extends IComponentSettings {
 }
 
 /**
- * Custom component base settings (Things that should always be the same not matter the component)
+ * Custom component base settings (Things that should always be the same no matter the component)
  */
 export interface IComponentSettings {
   uuid: string;

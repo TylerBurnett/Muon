@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   List,
   ListItem,
@@ -10,9 +10,6 @@ import {
   Divider,
   createStyles,
   Theme,
-  Avatar,
-  Badge,
-  withStyles,
 } from '@material-ui/core';
 import {
   Settings as SettingsIcon,
@@ -25,6 +22,7 @@ import clsx from 'clsx';
 import { componentsSelector } from './ComponentSlice';
 import { useAppSelector } from '../../app/hooks';
 import { IComponentSettings } from '../../../Application/Component/IComponentSettings';
+import ComponentAvatar from './ComponentAvatar';
 
 const drawerWidth = 240;
 
@@ -91,44 +89,6 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-
-const ActiveComponentBadge = withStyles((theme: Theme) =>
-  createStyles({
-    badge: {
-      backgroundColor: theme.palette.success.main,
-      color: theme.palette.success.main,
-      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-      '&::after': {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        borderRadius: '50%',
-        border: '1px solid currentColor',
-      },
-    },
-  })
-)(Badge);
-
-const InactiveComponentBadge = withStyles((theme: Theme) =>
-  createStyles({
-    badge: {
-      backgroundColor: theme.palette.error.main,
-      color: theme.palette.error.main,
-      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-      '&::after': {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        borderRadius: '50%',
-        border: '1px solid currentColor',
-      },
-    },
-  })
-)(Badge);
 
 function SideBar() {
   const classes = useStyles();
@@ -197,41 +157,7 @@ function SideBar() {
               to={`/component/${component.uuid}`}
             >
               <ListItemIcon>
-                {component.active ? (
-                  <ActiveComponentBadge
-                    overlap="circle"
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right',
-                    }}
-                    variant="dot"
-                  >
-                    <Avatar alt={component.name} src={component.iconData}>
-                      {!component.iconData &&
-                        component.name
-                          .split(' ')
-                          .map((str) => str[0])
-                          .join('')}
-                    </Avatar>
-                  </ActiveComponentBadge>
-                ) : (
-                  <InactiveComponentBadge
-                    overlap="circle"
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right',
-                    }}
-                    variant="dot"
-                  >
-                    <Avatar alt={component.name} src={component.iconData}>
-                      {!component.iconData &&
-                        component.name
-                          .split(' ')
-                          .map((str) => str[0])
-                          .join('')}
-                    </Avatar>
-                  </InactiveComponentBadge>
-                )}
+                <ComponentAvatar component={component} />
               </ListItemIcon>
               <ListItemText primary={component.name} />
             </ListItem>

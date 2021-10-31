@@ -1,5 +1,4 @@
 import { ManagerRecievers } from '../Common/Recievers';
-import { IComponentSettingsMeta } from './IComponentSettings';
 
 const { contextBridge, ipcRenderer } = require('electron');
 const OS = require('os-utils');

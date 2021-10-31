@@ -241,6 +241,43 @@ export default class ComponentManager {
   }
 
   /**
+   * Updates the components node access on runtime
+   * @param uuid The component uuid.
+   * @param newState the boolean of the new state
+   */
+  public updateComponentNodeAccess(uuid: string, newState: boolean): boolean {
+    const currentStateIndex =
+      this.settings.componentNodeAccessWhitelist.findIndex(
+        (i: string) => i === uuid
+      );
+
+    if (newState) {
+      if (currentStateIndex === -1) {
+        this.settings.componentNodeAccessWhitelist = [
+          ...this.settings.componentNodeAccessWhitelist,
+          uuid,
+        ];
+        return true;
+      }
+      this.logger.warn(
+        'User attempted to add node access to a component despite it already exsisting'
+      );
+      return false;
+    }
+
+    if (currentStateIndex === -1) {
+      this.logger.warn(
+        'User attempted to remove node access to a component despite it not exsisting.'
+      );
+      return false;
+    }
+    this.settings.componentNodeAccessWhitelist.filter(
+      (i: string) => i !== uuid
+    );
+    return true;
+  }
+
+  /**
    * Loads an individual component based on the provided settings
    * @param component The component settings
    * @param system Is this a system component? Affect pathing
