@@ -16,7 +16,11 @@ import {
   interfaceProductionSettings,
 } from './WindowSettings';
 import { ManagerRecievers } from '../Common/Recievers';
-import { IApplicationSettings, Defaults } from './IApplicationSettings';
+import {
+  IApplicationSettings,
+  ApplicationSettingsValidator,
+  Defaults,
+} from './IApplicationSettings';
 import buildLogger from './Logger';
 import {
   ComponentSettingsValidator,
@@ -40,7 +44,27 @@ export default class ComponentManager {
     window: BrowserWindow | null;
   }[];
 
-  private readonly events: IIPCEvent[] = [
+  private readonly ipcEvents: IIPCEvent[] = [
+    {
+      channel: ManagerRecievers.GetSettings,
+      response: () => {
+        return this.settings;
+      },
+    },
+    {
+      channel: ManagerRecievers.SetSettings,
+      response: (event: IpcMainInvokeEvent, args: unknown[]) => {
+        this.settings = args[0] as IApplicationSettings;
+        this.saveInternalSettings();
+        return this.settings;
+      },
+    },
+    {
+      channel: ManagerRecievers.GetComponents,
+      response: () => {
+        return this.components.map((comp) => comp.settings);
+      },
+    },
     {
       channel: ManagerRecievers.GetComponents,
       response: () => {
@@ -93,7 +117,7 @@ export default class ComponentManager {
     this.logger = buildLogger();
 
     // Build the API for the manager
-    this.events.forEach((event) =>
+    this.ipcEvents.forEach((event) =>
       ipcMain.handle(event.channel, event.response)
     );
 
@@ -153,10 +177,24 @@ export default class ComponentManager {
    */
   private loadInternalSettings(): boolean {
     if (existsSync(`${__dirname}/settings.json`)) {
-      const contents = readFileSync(`${__dirname}/settings.json`);
+      try {
+        const contents = readFileSync(`${__dirname}/settings.json`).toString();
+        ApplicationSettingsValidator.validateSync(contents);
+        this.settings = <IApplicationSettings>JSON.parse(contents);
 
-      this.settings = <IApplicationSettings>JSON.parse(contents.toString());
-      return true;
+        return true;
+      } catch (e: unknown) {
+        if ((<ValidationError>e).errors) {
+          this.logger.error(
+            'Failed to load settings file, failed validation',
+            (<ValidationError>e).errors.join(',')
+          );
+        } else {
+          this.logger.error('Failed to load settings file.');
+        }
+
+        return false;
+      }
     }
     return false;
   }
@@ -174,7 +212,6 @@ export default class ComponentManager {
    * Finds all the components in the /Components directory
    */
   private findComponents(): IComponentSettingsMeta[] {
-    // This code works, but lacks error checking. Add some logs that provide context to why a component couldnt load
     const directories = readdirSync(`${__dirname}/Components`).filter((f) =>
       statSync(path.join(`${__dirname}/Components`, f)).isDirectory()
     );
@@ -189,6 +226,7 @@ export default class ComponentManager {
         const contents: IComponentSettings = JSON.parse(
           readFileSync(componentConfigPath).toString()
         );
+
         try {
           ComponentSettingsValidator.validateSync(contents);
 
@@ -260,7 +298,7 @@ export default class ComponentManager {
         return true;
       }
       this.logger.warn(
-        'User attempted to add node access to a component despite it already exsisting'
+        'User attempted to add node access to a component despite it already exsisting.'
       );
       return false;
     }
@@ -286,8 +324,10 @@ export default class ComponentManager {
     component: IComponentSettingsMeta
   ): BrowserWindow | null {
     if (
-      this.settings.componentNodeAccess ||
-      component.nodeDependency === false
+      this.settings.componentNodeAccessWhitelist.find(
+        (uuid: string) => component.uuid === uuid
+      ) ||
+      !component.nodeDependency
     ) {
       if (component.active) {
         const windowSettings = component.production

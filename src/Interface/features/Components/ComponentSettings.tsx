@@ -121,6 +121,8 @@ function ComponentSettings(props: any) {
                       <SaveIcon />
                     </IconButton>
                   </Tooltip>
+
+                  <Grid item>
                 </Grid>
               </Grid>
             </Box>

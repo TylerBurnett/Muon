@@ -16,9 +16,10 @@ export enum ManagerRecievers {
   Error = 'Error',
   Warning = 'Warning',
   Log = 'Log',
-  AppConfig = 'AppConfig',
 
   // These are only used by the interface
+  GetSettings = 'GetSettings',
+  SetSettings = 'SetSettings',
   GetComponents = 'GetComponents',
   GetComponent = 'GetComponent',
   SetComponent = 'SetComponent',

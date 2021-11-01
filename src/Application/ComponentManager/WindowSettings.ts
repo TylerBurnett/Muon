@@ -58,17 +58,3 @@ export const componentDebugSettings = {
   type: 'desktop',
   skipTaskbar: true,
 };
-
-/**
- * Unused, TBD on removal
- */
-export const editSettings = {
-  webPreferences: {
-    devTools: false,
-  },
-  frame: true,
-  transparent: false,
-  hasShadow: true,
-  type: 'desktop',
-  skipTaskbar: false,
-};
