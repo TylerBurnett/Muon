@@ -1,9 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 // eslint-disable-next-line import/no-cycle
-import reducer from '../features/Components/ComponentSlice';
+import componentReducer from '../features/Components/ComponentSlice';
+// eslint-disable-next-line import/no-cycle
+import settingsReducer from '../features/Settings/SettingsSlice';
 
 export const store = configureStore({
-  reducer: { components: reducer },
+  reducer: { components: componentReducer, settings: settingsReducer },
   devTools: true,
 });
 

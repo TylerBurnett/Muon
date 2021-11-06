@@ -16,6 +16,9 @@ export interface IComponentSettingsMeta extends IComponentSettings {
 export interface IComponentSettings {
   uuid: string;
   name: string;
+  description: string;
+  authorName: string;
+  projectUrl: string;
   active: boolean;
   production: boolean;
   nodeDependency: boolean;
@@ -42,6 +45,9 @@ export const ComponentSettingsValidator = yup.object({
       validate(value || '')
     ),
   name: yup.string().required('Component Name Requires a value'),
+  description: yup.string(),
+  authorName: yup.string(),
+  projectUrl: yup.string().url(),
   active: yup.boolean().required('Active Requires a value'),
   production: yup.boolean().required('Production Requires a value'),
   nodeDependency: yup.boolean().required('Node Dependency Requires a value'),
@@ -54,8 +60,10 @@ export const ComponentSettingsValidator = yup.object({
  * this will later be used in the main application
  * to edit the component functionality, Like in rainmeter.
  */
+
 export interface IUserSetting {
   name: string;
   description: string;
   variable: unknown;
+  validator: string;
 }

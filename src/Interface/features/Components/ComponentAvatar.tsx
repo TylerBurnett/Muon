@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Avatar,
-  Badge,
-  createStyles,
-  Theme,
-  withStyles,
-} from '@material-ui/core';
+import { Avatar, Badge, createStyles, Theme, styled } from '@mui/material';
 import { IComponentSettings } from '../../../Application/Component/IComponentSettings';
 
 interface ComponentAvatarProps {
@@ -13,43 +7,39 @@ interface ComponentAvatarProps {
 }
 
 function ComponentAvatar({ component }: ComponentAvatarProps) {
-  const ActiveComponentBadge = withStyles((theme: Theme) =>
-    createStyles({
-      badge: {
-        backgroundColor: theme.palette.success.main,
-        color: theme.palette.success.main,
-        boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-        '&::after': {
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          borderRadius: '50%',
-          border: '1px solid currentColor',
-        },
+  const ActiveComponentBadge = styled(Badge)(({ theme }) => ({
+    badge: {
+      backgroundColor: theme.palette.success.main,
+      color: theme.palette.success.main,
+      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+      '&::after': {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        border: '1px solid currentColor',
       },
-    })
-  )(Badge);
+    },
+  }));
 
-  const InactiveComponentBadge = withStyles((theme: Theme) =>
-    createStyles({
-      badge: {
-        backgroundColor: theme.palette.error.main,
-        color: theme.palette.error.main,
-        boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-        '&::after': {
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          borderRadius: '50%',
-          border: '1px solid currentColor',
-        },
+  const InactiveComponentBadge = styled(Badge)(({ theme }) => ({
+    badge: {
+      backgroundColor: theme.palette.error.main,
+      color: theme.palette.error.main,
+      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+      '&::after': {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        border: '1px solid currentColor',
       },
-    })
-  )(Badge);
+    },
+  }));
 
   const ComponentBadge = component.active
     ? ActiveComponentBadge
@@ -57,7 +47,7 @@ function ComponentAvatar({ component }: ComponentAvatarProps) {
 
   return (
     <ComponentBadge
-      overlap="circle"
+      overlap="circular"
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'right',

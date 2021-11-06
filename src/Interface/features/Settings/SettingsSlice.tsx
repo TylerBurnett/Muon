@@ -1,13 +1,19 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
 import { getSettings, setSettings } from './SettingsAPI';
 import { IApplicationSettings } from '../../../Application/ComponentManager/IApplicationSettings';
+// eslint-disable-next-line import/no-cycle
+import { RootState } from '../../app/store';
 
-export interface ComponentState {
+export interface SettingsState {
   settings: IApplicationSettings;
   status: 'idle' | 'loading' | 'failed';
 }
 
-const initialState: ComponentState = {
+const initialState: SettingsState = {
   settings: {} as IApplicationSettings,
   status: 'idle',
 };
@@ -49,5 +55,15 @@ export const settingsSlice = createSlice({
       });
   },
 });
+
+export const settingsSelector = (state: RootState) => {
+  return state.settings.settings;
+};
+
+export const componentNodeAccessSelector = (uuid: string) => {
+  return createSelector(settingsSelector, (settings: IApplicationSettings) =>
+    settings.componentNodeAccessWhitelist.includes(uuid)
+  );
+};
 
 export default settingsSlice.reducer;

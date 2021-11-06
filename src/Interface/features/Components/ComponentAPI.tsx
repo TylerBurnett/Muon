@@ -2,7 +2,6 @@ import { ipcRenderer } from 'electron';
 import { IComponentSettingsMeta } from '../../../Application/Component/IComponentSettings';
 import { ManagerRecievers } from '../../../Application/Common/Recievers';
 
-// A mock function to mimic making an async request for data
 export function getComponents() {
   return new Promise<{ data: IComponentSettingsMeta[] }>((resolve) =>
     ipcRenderer
@@ -14,7 +13,6 @@ export function getComponents() {
   );
 }
 
-// A mock function to mimic making an async request for data
 export function getComponent(id: string) {
   return new Promise<{ data: IComponentSettingsMeta }>((resolve) =>
     setTimeout(() => resolve({ data: {} as IComponentSettingsMeta }), 500)

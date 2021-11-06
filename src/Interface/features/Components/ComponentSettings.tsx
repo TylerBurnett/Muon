@@ -1,95 +1,103 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Grid,
-  IconButton,
   Paper,
   TextField,
   Typography,
   Divider,
+  IconButton,
   Tooltip,
-} from '@material-ui/core';
+} from '@mui/material';
 import { useFormik } from 'formik';
-import {
-  Slideshow as SlideShowIcon,
-  CancelPresentation as CancelPresentationIcon,
-  Save as SaveIcon,
-  Refresh as RefreshIcon,
-} from '@material-ui/icons';
+import CodeOffIcon from '@mui/icons-material/CodeOff';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import CodeIcon from '@mui/icons-material/Code';
+import SaveIcon from '@mui/icons-material/Save';
+import SlideShowIcon from '@mui/icons-material/Slideshow';
+import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
+import { useParams } from 'react-router-dom';
 import {
   ComponentSettingsValidator,
   IComponentSettingsMeta,
 } from '../../../Application/Component/IComponentSettings';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { componentSelector, saveComponentAsync } from './ComponentSlice';
+import NodeAccessConfirmationDialogue from './NodeAccessConfirmation';
+import {
+  componentNodeAccessSelector,
+  saveSettingsAsync,
+  settingsSelector,
+} from '../Settings/SettingsSlice';
+import { IApplicationSettings } from '../../../Application/ComponentManager/IApplicationSettings';
 
-function ComponentSettings(props: any) {
+const ComponentSettings: React.FC = () => {
+  const { uuid } = useParams();
+
   const component: IComponentSettingsMeta = useAppSelector(
-    // eslint-disable-next-line react/destructuring-assignment
-    componentSelector(props.match.params.id)
+    componentSelector(uuid || '')
   );
-  const dispatch = useAppDispatch();
+  const settings: IApplicationSettings = useAppSelector(settingsSelector);
+  const componentNodeAccess: boolean = useAppSelector(
+    componentNodeAccessSelector(component.uuid)
+  );
 
+  const dispatch = useAppDispatch();
   const validationSchema = ComponentSettingsValidator;
 
   const formik = useFormik({
     initialValues: component,
     validationSchema,
     onSubmit: (values: IComponentSettingsMeta) => {
-      // eslint-disable-next-line no-alert
       dispatch(saveComponentAsync(values));
     },
   });
 
+  const [nodeDialogueState, setNodeDialogueState] = useState(false);
+
   return (
-    <Grid container direction="column" spacing={5}>
-      <Grid item>
-        <Grid container spacing={5}>
-          <Grid item>
-            <Paper style={{ height: '100px', width: '100px' }} />
-          </Grid>
-          <Grid item xs={5}>
-            <Typography variant="h3">{component.name}</Typography>
-            <Typography variant="body1">{component.uuid}</Typography>
+    <>
+      <Grid container direction="column" spacing={5}>
+        <Grid item>
+          <Grid container spacing={5}>
+            <Grid item>
+              <Paper style={{ height: '100px', width: '100px' }} />
+            </Grid>
+            <Grid item xs={5}>
+              <Typography variant="h3">{component.name}</Typography>
+              <Typography variant="body1">{component.uuid}</Typography>
+            </Grid>
           </Grid>
         </Grid>
-      </Grid>
-      <form onSubmit={formik.handleSubmit}>
+
         <Grid item>
           <Paper variant="outlined" style={{ background: 'none' }}>
             <Box>
               <Grid container>
                 <Grid item>
-                  {component.active && (
-                    <Tooltip title="Stop Component">
-                      <IconButton
-                        color="secondary"
-                        aria-label="Stop component"
-                        onClick={() =>
-                          dispatch(
-                            saveComponentAsync({ ...component, active: false })
-                          )
-                        }
-                      >
+                  <Tooltip
+                    title={
+                      component.active ? 'Stop Component' : 'Start Component'
+                    }
+                  >
+                    <IconButton
+                      color={component.active ? 'secondary' : 'primary'}
+                      onClick={() =>
+                        dispatch(
+                          saveComponentAsync({
+                            ...component,
+                            active: !component.active,
+                          })
+                        )
+                      }
+                    >
+                      {component.active ? (
                         <CancelPresentationIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
-                  {!component.active && (
-                    <Tooltip title="Start Component">
-                      <IconButton
-                        color="primary"
-                        aria-label="Start Component"
-                        onClick={() =>
-                          dispatch(
-                            saveComponentAsync({ ...component, active: true })
-                          )
-                        }
-                      >
+                      ) : (
                         <SlideShowIcon />
-                      </IconButton>
-                    </Tooltip>
-                  )}
+                      )}
+                    </IconButton>
+                  </Tooltip>
                 </Grid>
 
                 <Grid item>
@@ -100,6 +108,23 @@ function ComponentSettings(props: any) {
                       disabled
                     >
                       <RefreshIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+
+                <Grid item>
+                  <Tooltip
+                    title={
+                      componentNodeAccess
+                        ? 'Revoke Node Access'
+                        : 'Give Node Access'
+                    }
+                  >
+                    <IconButton
+                      color={componentNodeAccess ? 'secondary' : 'primary'}
+                      onClick={() => setNodeDialogueState(true)}
+                    >
+                      {componentNodeAccess ? <CodeOffIcon /> : <CodeIcon />}
                     </IconButton>
                   </Tooltip>
                 </Grid>
@@ -121,125 +146,145 @@ function ComponentSettings(props: any) {
                       <SaveIcon />
                     </IconButton>
                   </Tooltip>
-
-                  <Grid item>
                 </Grid>
               </Grid>
             </Box>
           </Paper>
         </Grid>
 
-        <Grid item style={{ marginTop: '30px' }}>
-          <Typography variant="h5">Component Information</Typography>
-          <Divider />
-          <Box padding={3}>
-            <Grid container spacing={3}>
-              <Grid item xs={5}>
-                <TextField
-                  id="displayFile"
-                  name="displayFile"
-                  label="Display File"
-                  value={formik.values.displayFile}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.displayFile &&
-                    Boolean(formik.errors.displayFile)
-                  }
-                  helperText={
-                    formik.touched.displayFile && formik.errors.displayFile
-                  }
-                  size="small"
-                  variant="outlined"
-                  fullWidth
-                />
-              </Grid>
+        <form onSubmit={formik.handleSubmit}>
+          <Grid item style={{ marginTop: '30px' }}>
+            <Typography variant="h5">Component Information</Typography>
+            <Divider />
+            <Box padding={3}>
+              <Grid container spacing={3}>
+                <Grid item xs={5}>
+                  <TextField
+                    id="displayFile"
+                    name="displayFile"
+                    label="Display File"
+                    value={formik.values.displayFile}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={
+                      formik.touched.displayFile &&
+                      Boolean(formik.errors.displayFile)
+                    }
+                    helperText={
+                      formik.touched.displayFile && formik.errors.displayFile
+                    }
+                    size="small"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Grid>
 
-              <Grid item xs={5}>
-                <TextField
-                  id="ComponentPath"
-                  name="ComponentPath"
-                  label="Component Path"
-                  value={component.componentPath}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.displayFile &&
-                    Boolean(formik.errors.displayFile)
-                  }
-                  helperText={
-                    formik.touched.displayFile && formik.errors.displayFile
-                  }
-                  size="small"
-                  variant="outlined"
-                  fullWidth
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        </Grid>
+                <Grid item xs={5}>
+                  <TextField
+                    id="ComponentPath"
+                    name="ComponentPath"
+                    label="Component Path"
+                    value={component.componentPath}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={
+                      formik.touched.displayFile &&
+                      Boolean(formik.errors.displayFile)
+                    }
+                    helperText={
+                      formik.touched.displayFile && formik.errors.displayFile
+                    }
+                    size="small"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={5}>
+                  <TextField
+                    id="componentPath"
+                    name="componentPath"
+                    label="Component Path"
+                    value={formik.values.componentPath}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={
+                      formik.touched.componentPath &&
+                      Boolean(formik.errors.componentPath)
+                    }
+                    helperText={
+                      formik.touched.componentPath &&
+                      formik.errors.componentPath
+                    }
+                    size="small"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Grid>
 
-        <Grid item style={{ marginTop: '20px' }}>
-          <Typography variant="h5">Settings</Typography>
-          <Divider />
-          <Box padding={3}>
-            <Grid container spacing={3}>
-              <Grid item xs={5}>
-                <TextField
-                  id="componentPath"
-                  name="componentPath"
-                  label="Component Path"
-                  value={formik.values.componentPath}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.componentPath &&
-                    Boolean(formik.errors.componentPath)
-                  }
-                  helperText={
-                    formik.touched.componentPath && formik.errors.componentPath
-                  }
-                  size="small"
-                  variant="outlined"
-                  fullWidth
-                />
+                <Grid item xs={5}>
+                  <TextField
+                    id="configPath"
+                    name="configPath"
+                    label="Config Path"
+                    value={formik.values.configPath}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={
+                      formik.touched.configPath &&
+                      Boolean(formik.errors.configPath)
+                    }
+                    helperText={
+                      formik.touched.configPath && formik.errors.configPath
+                    }
+                    size="small"
+                    variant="outlined"
+                    fullWidth
+                  />
+                </Grid>
               </Grid>
+            </Box>
+          </Grid>
 
-              <Grid item xs={5}>
-                <TextField
-                  id="configPath"
-                  name="configPath"
-                  label="Config Path"
-                  value={formik.values.configPath}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  error={
-                    formik.touched.configPath &&
-                    Boolean(formik.errors.configPath)
-                  }
-                  helperText={
-                    formik.touched.configPath && formik.errors.configPath
-                  }
-                  size="small"
-                  variant="outlined"
-                  fullWidth
-                />
-              </Grid>
+          <Grid item style={{ marginTop: '20px' }}>
+            <Typography variant="h5">Settings</Typography>
+            <Divider />
+            <Box padding={3}>
+              <Grid container spacing={3} />
+            </Box>
+          </Grid>
+        </form>
+      </Grid>
+      <NodeAccessConfirmationDialogue
+        open={nodeDialogueState}
+        onClose={(result: boolean) => {
+          setNodeDialogueState(false);
 
-              <Grid item xs={5}>
-                <TextField
-                  label="Another item"
-                  size="small"
-                  variant="outlined"
-                  fullWidth
-                />
-              </Grid>
-            </Grid>
-          </Box>
-        </Grid>
-      </form>
-    </Grid>
+          if (result) {
+            if (componentNodeAccess)
+              dispatch(
+                saveSettingsAsync({
+                  ...settings,
+                  componentNodeAccessWhitelist:
+                    settings.componentNodeAccessWhitelist.filter(
+                      (whiteListuuid) => whiteListuuid !== uuid
+                    ),
+                })
+              );
+            else
+              dispatch(
+                saveSettingsAsync({
+                  ...settings,
+                  componentNodeAccessWhitelist: [
+                    ...settings.componentNodeAccessWhitelist,
+                    uuid || '',
+                  ],
+                })
+              );
+          }
+        }}
+      />
+    </>
   );
-}
+};
 
 export default ComponentSettings;

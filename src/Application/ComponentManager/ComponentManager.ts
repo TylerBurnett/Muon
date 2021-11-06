@@ -66,12 +66,6 @@ export default class ComponentManager {
       },
     },
     {
-      channel: ManagerRecievers.GetComponents,
-      response: () => {
-        return this.components.map((comp) => comp.settings);
-      },
-    },
-    {
       channel: ManagerRecievers.GetComponent,
       response: (event: IpcMainInvokeEvent, args: unknown[]) => {
         if (args[0]) {

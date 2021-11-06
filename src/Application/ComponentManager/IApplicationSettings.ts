@@ -17,8 +17,12 @@ export const ApplicationSettingsValidator = yup.object({
   componentsFolderPath: yup
     .string()
     .test('Valid UUID', 'UUID is not a valid format', (value) => {
-      const stats = statSync(value || '');
-      return stats.isDirectory();
+      try {
+        const stats = statSync(value || '');
+        return stats.isDirectory();
+      } catch (e) {
+        return false;
+      }
     }),
 });
 

@@ -5,7 +5,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-} from '@material-ui/core';
+} from '@mui/material';
 import React from 'react';
 
 interface NodeAccessConfirmationDialogueProps {
@@ -41,13 +41,16 @@ function NodeAccessConfirmationDialogue({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => onClose(false)} color="primary">
-          Disagree
-        </Button>
         <Button onClick={() => onClose(true)} color="primary" autoFocus>
           Agree
+        </Button>
+
+        <Button onClick={() => onClose(false)} color="primary">
+          Disagree
         </Button>
       </DialogActions>
     </Dialog>
   );
 }
+
+export default NodeAccessConfirmationDialogue;
