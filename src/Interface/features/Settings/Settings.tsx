@@ -18,7 +18,7 @@ import {
 } from '../../../Application/ComponentManager/IApplicationSettings';
 import { saveSettingsAsync, settingsSelector } from './SettingsSlice';
 
-function ApplicationSettings(props: any) {
+const ApplicationSettings: React.FC = () => {
   const settings: IApplicationSettings = useAppSelector(settingsSelector);
   const dispatch = useAppDispatch();
 
@@ -99,6 +99,6 @@ function ApplicationSettings(props: any) {
       </form>
     </Grid>
   );
-}
+};
 
 export default ApplicationSettings;

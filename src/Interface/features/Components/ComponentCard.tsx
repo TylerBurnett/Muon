@@ -1,14 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import {
-  Grid,
-  Typography,
-  Paper,
-  Card,
-  CardContent,
-  CardActions,
-  Button,
-} from '@mui/material';
+import { Grid, Typography, Card, CardContent } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { IComponentSettingsMeta } from '../../../Application/Component/IComponentSettings';
 import ComponentAvatar from './ComponentAvatar';

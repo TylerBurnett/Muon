@@ -1,33 +1,13 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  Grid,
-  Paper,
-  TextField,
-  Typography,
-  Divider,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
-import { useParams } from 'react-router-dom';
-import {
-  ComponentSettingsValidator,
-  IComponentSettingsMeta,
-} from '../../../Application/Component/IComponentSettings';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import {
-  componentSelector,
-  componentsSelector,
-  saveComponentAsync,
-} from './ComponentSlice';
+import React from 'react';
+import { Grid, Typography } from '@mui/material';
+import { IComponentSettingsMeta } from '../../../Application/Component/IComponentSettings';
+import { useAppSelector } from '../../app/hooks';
+import { componentsSelector } from './ComponentSlice';
 import ComponentCard from './ComponentCard';
 
 const Components: React.FC = () => {
   const components: IComponentSettingsMeta[] =
     useAppSelector(componentsSelector);
-
-  const dispatch = useAppDispatch();
-  const validationSchema = ComponentSettingsValidator;
 
   return (
     <>

@@ -1,12 +1,13 @@
 import React from 'react';
-import { Avatar, Badge, createStyles, Theme, styled } from '@mui/material';
+import { Avatar, Badge, styled } from '@mui/material';
 import { IComponentSettings } from '../../../Application/Component/IComponentSettings';
 
 interface ComponentAvatarProps {
   component: IComponentSettings;
 }
 
-function ComponentAvatar({ component }: ComponentAvatarProps) {
+const ComponentAvatar: React.FC<ComponentAvatarProps> = ({ component }) => {
+  // TODO: Refactor this into mixins to reduce repetitive nature of code.
   const ActiveComponentBadge = styled(Badge)(({ theme }) => ({
     badge: {
       backgroundColor: theme.palette.success.main,
@@ -24,6 +25,7 @@ function ComponentAvatar({ component }: ComponentAvatarProps) {
     },
   }));
 
+  // TODO: Refactor this into mixins to reduce repetitive nature of code.
   const InactiveComponentBadge = styled(Badge)(({ theme }) => ({
     badge: {
       backgroundColor: theme.palette.error.main,
@@ -41,6 +43,7 @@ function ComponentAvatar({ component }: ComponentAvatarProps) {
     },
   }));
 
+  // TODO: Refactor this into mixins to reduce repetitive nature of code.
   const ComponentBadge = component.active
     ? ActiveComponentBadge
     : InactiveComponentBadge;
@@ -67,6 +70,6 @@ function ComponentAvatar({ component }: ComponentAvatarProps) {
       </Avatar>
     </ComponentBadge>
   );
-}
+};
 
 export default ComponentAvatar;
