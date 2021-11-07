@@ -26,10 +26,10 @@ const ComponentCard: React.FC<ComponentCardProps> = ({ component }) => {
         <Grid container direction="column">
           <Grid item>
             <Grid container>
-              <Grid item xs="3">
+              <Grid item xs={3}>
                 <ComponentAvatar component={component} />
               </Grid>
-              <Grid item xs="9">
+              <Grid item xs={9}>
                 <Typography variant="h5">{component.name}</Typography>
                 <Typography variant="subtitle2">
                   {component.authorName}

@@ -64,6 +64,6 @@ export const ComponentSettingsValidator = yup.object({
 export interface IUserSetting {
   name: string;
   description: string;
-  variable: unknown;
+  value: unknown;
   validator: string;
 }

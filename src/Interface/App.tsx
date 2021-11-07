@@ -21,7 +21,7 @@ function App() {
           <SideBar />
         </Grid>
         <Grid item xs={10}>
-          <Box width="auto" p={15}>
+          <Box width="auto" sx={{ p: 10 }} md={{ p: 15 }}>
             <Routes>
               <Route path="/C:/components" element={<Components />} />
               <Route

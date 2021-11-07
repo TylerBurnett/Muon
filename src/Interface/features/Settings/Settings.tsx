@@ -38,9 +38,9 @@ function ApplicationSettings(props: any) {
       <Grid item>
         <Grid container>
           <Grid item xs={5}>
-            <Typography variant="h3">Components</Typography>
+            <Typography variant="h3">Settings</Typography>
             <Typography variant="subtitle2">
-              All of your desktop customizability goodness in one place.
+              Tweak your interface settings till your heart is content
             </Typography>
           </Grid>
         </Grid>

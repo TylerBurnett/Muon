@@ -9,10 +9,12 @@ import {
   CSSObject,
   Theme,
   styled,
+  Tooltip,
 } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SecurityIcon from '@mui/icons-material/Security';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import { Link } from 'react-router-dom';
 import { componentsSelector } from './ComponentSlice';
 import { useAppSelector } from '../../app/hooks';
@@ -47,17 +49,23 @@ function SideBar() {
           <Divider />
           <ListItem button key="Dashboard" component={Link} to="/components">
             <SideBarIcon>
-              <DashboardIcon />
+              <Tooltip title="Components" placement="right">
+                <DashboardIcon />
+              </Tooltip>
             </SideBarIcon>
           </ListItem>
           <ListItem button key="Settings" component={Link} to="/settings">
             <SideBarIcon>
-              <SettingsIcon />
+              <Tooltip title="Settings" placement="right">
+                <SettingsIcon />
+              </Tooltip>
             </SideBarIcon>
           </ListItem>
           <ListItem button>
-            <SideBarIcon>
-              <SecurityIcon />
+            <SideBarIcon button key="Settings" component={Link} to="/console">
+              <Tooltip title="Console" placement="right">
+                <AssessmentIcon />
+              </Tooltip>
             </SideBarIcon>
           </ListItem>
         </List>

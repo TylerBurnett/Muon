@@ -45,7 +45,7 @@ const Components: React.FC = () => {
         <Grid item>
           <Grid container spacing={2}>
             {components.map((component) => (
-              <Grid item xs={4} key={component.uuid}>
+              <Grid item xs={4} sm={3} key={component.uuid}>
                 <ComponentCard component={component} />
               </Grid>
             ))}

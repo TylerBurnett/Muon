@@ -8,6 +8,7 @@ import {
   Divider,
   IconButton,
   Tooltip,
+  Avatar,
 } from '@mui/material';
 import { useFormik } from 'formik';
 import CodeOffIcon from '@mui/icons-material/CodeOff';
@@ -57,11 +58,15 @@ const ComponentSettings: React.FC = () => {
 
   return (
     <>
-      <Grid container direction="column" spacing={5}>
+      <Grid container direction="column">
         <Grid item>
           <Grid container spacing={5}>
             <Grid item>
-              <Paper style={{ height: '100px', width: '100px' }} />
+              <Avatar
+                alt="Remy Sharp"
+                src={component.iconData}
+                sx={{ width: 90, height: 90 }}
+              />
             </Grid>
             <Grid item xs={5}>
               <Typography variant="h3">{component.name}</Typography>
@@ -249,7 +254,32 @@ const ComponentSettings: React.FC = () => {
             <Typography variant="h5">Settings</Typography>
             <Divider />
             <Box padding={3}>
-              <Grid container spacing={3} />
+              <Grid container spacing={3}>
+                {component.settings.map((setting, index) => (
+                  <Grid item xs={5} key={`ComponentSetting-${setting.name}`}>
+                    <TextField
+                      id={`settings.[${index}].value`}
+                      name={`settings.[${index}].value`}
+                      label={setting.name}
+                      placeholder={setting.description}
+                      value={formik.values.settings[index].value}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      error={
+                        formik.touched.settings?.[index].value &&
+                        Boolean(formik.errors.settings?.[index].value)
+                      }
+                      helperText={
+                        formik.touched.settings?.[index].value &&
+                        formik.errors.settings?.[index].value
+                      }
+                      size="small"
+                      variant="outlined"
+                      fullWidth
+                    />
+                  </Grid>
+                ))}
+              </Grid>
             </Box>
           </Grid>
         </form>

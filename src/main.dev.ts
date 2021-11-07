@@ -13,6 +13,7 @@ import 'regenerator-runtime/runtime';
 import { app } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import path from 'path';
 import ComponentManager from './Application/ComponentManager/ComponentManager';
 import TrayManager from './Application/System/TrayManager';
 
@@ -57,7 +58,6 @@ const main = async () => {
     await installExtensions();
   }
 
-  /*
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'assets')
     : path.join(__dirname, '../assets');
@@ -65,7 +65,6 @@ const main = async () => {
   const getAssetPath = (...paths: string[]): string => {
     return path.join(RESOURCES_PATH, ...paths);
   };
-  */
 
   /*
   // @TODO: Use 'ready-to-show' event
@@ -76,7 +75,7 @@ const main = async () => {
   */
 
   const componentManager = new ComponentManager();
-  TrayManager.addTrayIcon();
+  TrayManager.addTrayIcon(`${getAssetPath()}/icons/32x32.png`);
 };
 
 app.whenReady().then(main).catch(console.log);

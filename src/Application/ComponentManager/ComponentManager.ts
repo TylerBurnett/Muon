@@ -146,7 +146,7 @@ export default class ComponentManager {
     // Slap the dynamic values in
     const window = new BrowserWindow(windowSettings);
 
-    // Build the display path based on external or system components.
+    // Build the display path
     const displayPath = `file://${__dirname}/../../index.html`;
 
     // Maximize the window

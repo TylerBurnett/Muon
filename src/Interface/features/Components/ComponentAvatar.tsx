@@ -54,7 +54,11 @@ function ComponentAvatar({ component }: ComponentAvatarProps) {
       }}
       variant="dot"
     >
-      <Avatar alt={component.name} src={component.iconData}>
+      <Avatar
+        alt={component.name}
+        src={component.iconData}
+        sx={{ width: 50, height: 50 }}
+      >
         {!component.iconData &&
           component.name
             .split(' ')
