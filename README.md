@@ -1,4 +1,3 @@
-
 ## Starting Development
 
 Start the app in the `dev` environment:
@@ -16,6 +15,7 @@ yarn package
 ```
 
 ## Docs
+
 This application environment is provided by the fantastic guys over at electron react boilerplate. You can find their [docs and guides here](https://electron-react-boilerplate.js.org/docs/installation)
 
 ## License
