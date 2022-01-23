@@ -8,6 +8,7 @@ import { IVec2 } from '../Common/IVec2';
  */
 export interface IComponentSettingsMeta extends IComponentSettings {
   configPath: string;
+  componentDir: string;
 }
 
 /**
@@ -45,14 +46,15 @@ export const ComponentSettingsValidator = yup.object({
       validate(value || '')
     ),
   name: yup.string().required('Component Name Requires a value'),
-  description: yup.string(),
-  authorName: yup.string(),
+  description: yup.string().required('Description Requires a value'),
+  authorName: yup.string().required('Author Name Requires a value'),
   projectUrl: yup.string().url(),
   active: yup.boolean().required('Active Requires a value'),
   production: yup.boolean().required('Production Requires a value'),
   nodeDependency: yup.boolean().required('Node Dependency Requires a value'),
   displayFile: yup.string().required('Display File Requires a value'),
   componentPath: yup.string().required('Component Path Requires a value'),
+  settings: yup.array().required(),
 });
 
 /**

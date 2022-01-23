@@ -74,9 +74,9 @@ const ApplicationSettings: React.FC = () => {
             <Grid container spacing={3}>
               <Grid item xs={5}>
                 <TextField
-                  id="displayFile"
-                  name="displayFile"
-                  label="Display File"
+                  id="componentsFolderPath"
+                  name="componentsFolderPath"
+                  label="Components Directory"
                   value={formik.values.componentsFolderPath}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}

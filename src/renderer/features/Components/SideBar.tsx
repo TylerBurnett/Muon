@@ -42,7 +42,7 @@ const SideBar: React.FC = () => {
             </Tooltip>
           </ListItem>
           <Divider />
-          <ListItem button key="Dashboard" component={Link} to="/components">
+          <ListItem button key="Dashboard" component={Link} to="/">
             <SideBarIcon>
               <Tooltip title="Components" placement="right">
                 <DashboardIcon />

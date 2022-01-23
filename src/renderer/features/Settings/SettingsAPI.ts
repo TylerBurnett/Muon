@@ -23,3 +23,25 @@ export function setSettings(state: IApplicationSettings) {
       .catch((e) => console.log(e))
   );
 }
+
+export function setComponentNodeAccess(uuid: string, newState: boolean) {
+  return new Promise<{ data: IApplicationSettings }>((resolve) =>
+    ipcRenderer
+      .invoke(ManagerRecievers.SetComponentNodeAccess, [uuid, newState])
+      // eslint-disable-next-line promise/always-return
+      .then((response: IApplicationSettings) => resolve({ data: response }))
+      // eslint-disable-next-line no-console
+      .catch((e) => console.log(e))
+  );
+}
+
+export function setComponentActiveState(uuid: string, newState: boolean) {
+  return new Promise<{ data: IApplicationSettings }>((resolve) =>
+    ipcRenderer
+      .invoke(ManagerRecievers.SetComponentActiveState, [uuid, newState])
+      // eslint-disable-next-line promise/always-return
+      .then((response: IApplicationSettings) => resolve({ data: response }))
+      // eslint-disable-next-line no-console
+      .catch((e) => console.log(e))
+  );
+}

@@ -23,7 +23,7 @@ contextBridge.exposeInMainWorld('Component', {
     ipcRenderer.invoke(ManagerRecievers.Warning, ['ComponentName', message]),
 
   logError: (message: string) =>
-    ipcRenderer.invoke(ManagerRecievers.Warning, ['ComponentName', message]),
+    ipcRenderer.invoke(ManagerRecievers.Error, ['ComponentName', message]),
 });
 
 contextBridge.exposeInMainWorld('OS', {

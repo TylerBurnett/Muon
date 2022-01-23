@@ -23,4 +23,6 @@ export enum ManagerRecievers {
   GetComponents = 'GetComponents',
   GetComponent = 'GetComponent',
   SetComponent = 'SetComponent',
+  SetComponentNodeAccess = 'SetComponentNodeAccess',
+  SetComponentActiveState = 'SetComponentActiveState',
 }

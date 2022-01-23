@@ -19,7 +19,8 @@ import { ManagerRecievers } from '../Common/Recievers';
 import {
   IApplicationSettings,
   ApplicationSettingsValidator,
-  Defaults,
+  ApplicationSettingsDefaults,
+  ComponentInstanceSettingsDefaults,
 } from './IApplicationSettings';
 import buildLogger from './Logger';
 import {
@@ -79,6 +80,20 @@ export default class ComponentManager {
       },
     },
     {
+      channel: ManagerRecievers.SetComponentNodeAccess,
+      response: (_: IpcMainInvokeEvent, args: unknown[]) => {
+        this.updateComponentNodeAccess(args[0] as string, args[1] as boolean);
+        return this.settings;
+      },
+    },
+    {
+      channel: ManagerRecievers.SetComponentActiveState,
+      response: (_: IpcMainInvokeEvent, args: unknown[]) => {
+        this.updateComponentActiveState(args[0] as string, args[1] as boolean);
+        return this.settings;
+      },
+    },
+    {
       channel: ManagerRecievers.SetComponent,
       response: (_, args: unknown[]) =>
         this.updateComponentSettings(<IComponentSettingsMeta>args[0]),
@@ -118,7 +133,7 @@ export default class ComponentManager {
     // Load settings
     this.settings = {} as IApplicationSettings;
     if (!this.loadInternalSettings()) {
-      this.settings = Defaults;
+      this.settings = ApplicationSettingsDefaults;
       this.saveInternalSettings();
     }
 
@@ -206,19 +221,20 @@ export default class ComponentManager {
    * Finds all the components in the /Components directory
    */
   private findComponents(): IComponentSettingsMeta[] {
-    const directories = readdirSync(`${__dirname}/Components`).filter((f) =>
-      statSync(path.join(`${__dirname}/Components`, f)).isDirectory()
+    const directories = readdirSync(this.settings.componentsFolderPath).filter(
+      (f) =>
+        statSync(path.join(this.settings.componentsFolderPath, f)).isDirectory()
     );
 
     const components: IComponentSettingsMeta[] = [];
-    const baseDir = path.join(__dirname, '/Components');
+    const baseDir = path.join(this.settings.componentsFolderPath);
 
     directories.forEach((directory) => {
-      const componentConfigPath = `${baseDir}/${directory}/config.json`;
+      const componentDirPath = `${baseDir}/${directory}`;
 
-      if (existsSync(componentConfigPath)) {
+      if (existsSync(`${componentDirPath}/config.json`)) {
         const contents: IComponentSettings = JSON.parse(
-          readFileSync(componentConfigPath).toString()
+          readFileSync(`${componentDirPath}/config.json`).toString()
         );
 
         try {
@@ -226,8 +242,19 @@ export default class ComponentManager {
 
           components.push(<IComponentSettingsMeta>{
             ...contents,
-            configPath: componentConfigPath,
+            configPath: componentDirPath,
+            componentDir: `${baseDir}/${directory}`,
           });
+
+          if (
+            this.settings.componentSettings.find(
+              (settings) => settings.uuid === contents.uuid
+            ) === undefined
+          )
+            this.settings.componentSettings = [
+              ...this.settings.componentSettings,
+              ComponentInstanceSettingsDefaults(contents.uuid),
+            ];
         } catch (e: unknown) {
           this.logger.error((<ValidationError>e).errors.join(','));
         }
@@ -236,6 +263,8 @@ export default class ComponentManager {
           `Could not find component config @${directory}, please check the location of this file.`
         );
       }
+
+      this.saveInternalSettings();
     });
 
     return components;
@@ -250,7 +279,7 @@ export default class ComponentManager {
     try {
       // Write the file first to see if it breaks
       writeFileSync(
-        newState.configPath,
+        `${newState.componentDir}/config.json`,
         JSON.stringify(<IComponentSettings>newState)
       );
 
@@ -258,13 +287,6 @@ export default class ComponentManager {
         (component) => component.settings.uuid === newState.uuid
       );
 
-      if (newState.active) {
-        if (!this.components[componentIndex].settings.active) {
-          this.components[componentIndex].window =
-            this.startComponent(newState);
-        }
-      } else if (this.components[componentIndex].settings.active)
-        this.components[componentIndex].window?.close();
       this.components[componentIndex].settings = newState;
       return true;
     } catch {
@@ -273,40 +295,62 @@ export default class ComponentManager {
   }
 
   /**
-   * Updates the components node access on runtime
+   * Modifies components node access state.
    * @param uuid The component uuid.
    * @param newState the boolean of the new state
    */
-  public updateComponentNodeAccess(uuid: string, newState: boolean): boolean {
-    const currentStateIndex =
-      this.settings.componentNodeAccessWhitelist.findIndex(
-        (i: string) => i === uuid
-      );
-
-    if (newState) {
-      if (currentStateIndex === -1) {
-        this.settings.componentNodeAccessWhitelist = [
-          ...this.settings.componentNodeAccessWhitelist,
-          uuid,
-        ];
-        return true;
+  public updateComponentNodeAccess(uuid: string, newState: boolean): void {
+    this.settings.componentSettings.map((instance) => {
+      if (instance.uuid === uuid) {
+        if (newState !== instance.nodeAccess) {
+          instance.nodeAccess = newState;
+        } else
+          this.logger.warn(
+            'User attempted to modify a components node access to the same state.'
+          );
       }
-      this.logger.warn(
-        'User attempted to add node access to a component despite it already exsisting.'
-      );
-      return false;
-    }
+      return instance;
+    });
 
-    if (currentStateIndex === -1) {
-      this.logger.warn(
-        'User attempted to remove node access to a component despite it not exsisting.'
-      );
-      return false;
-    }
-    this.settings.componentNodeAccessWhitelist.filter(
-      (i: string) => i !== uuid
+    this.saveInternalSettings();
+  }
+
+  /**
+   * Modifies components active state.
+   * @param uuid The component uuid.
+   * @param newState the boolean of the new state
+   */
+  public updateComponentActiveState(uuid: string, newState: boolean): void {
+    const componentIndex = this.components.findIndex(
+      (component) => component.settings.uuid === uuid
     );
-    return true;
+    let shouldStart = false;
+
+    this.settings.componentSettings = this.settings.componentSettings.map(
+      (instance) => {
+        if (instance.uuid === uuid) {
+          if (newState !== instance.active) {
+            if (newState) {
+              shouldStart = true;
+            } else {
+              this.components[componentIndex].window?.close();
+            }
+
+            instance.active = newState;
+          } else {
+            this.logger.warn(
+              'User attempted to modify a components active state to the same state.'
+            );
+          }
+        }
+        return instance;
+      }
+    );
+
+    if (shouldStart)
+      this.startComponent(this.components[componentIndex].settings);
+
+    this.saveInternalSettings();
   }
 
   /**
@@ -317,13 +361,12 @@ export default class ComponentManager {
   public startComponent(
     component: IComponentSettingsMeta
   ): BrowserWindow | null {
-    if (
-      this.settings.componentNodeAccessWhitelist.find(
-        (uuid: string) => component.uuid === uuid
-      ) ||
-      !component.nodeDependency
-    ) {
-      if (component.active) {
+    const instanceSettings = this.settings.componentSettings.find(
+      (settings) => settings.uuid === component.uuid
+    );
+
+    if (instanceSettings?.nodeAccess || !component.nodeDependency) {
+      if (instanceSettings?.active) {
         const windowSettings = component.production
           ? componentProductionSettings
           : componentDebugSettings;
@@ -331,10 +374,10 @@ export default class ComponentManager {
         // Slap the dynamic values in
         const componentWindow = new BrowserWindow({
           ...windowSettings,
-          width: <number>component.windowSize.x,
-          height: <number>component.windowSize.y,
-          x: <number>component.windowLocation.x,
-          y: <number>component.windowLocation.y,
+          width: component.windowSize.x,
+          height: component.windowSize.y,
+          x: component.windowLocation.x,
+          y: component.windowLocation.y,
 
           webPreferences: {
             ...windowSettings.webPreferences,
@@ -343,7 +386,7 @@ export default class ComponentManager {
         });
 
         // Build the display path based on external or system components.
-        const displayPath = `file://${__dirname}/Components/${component.componentPath}/${component.displayFile}`;
+        const displayPath = `file://${component.componentDir}/${component.displayFile}`;
 
         // Load its display file
         componentWindow.loadURL(displayPath);
@@ -382,42 +425,4 @@ export default class ComponentManager {
   }
 
   // #endregion Component API
-
-  // #region Helpers
-  /* 
-  private static getRelativePos(
-    x: number | string,
-    y: number | string,
-    screenId?: number
-  ): IVec2 {
-    const safeX = typeof x === 'number' ? x : Number(x.trimEnd());
-    const safeY = typeof y === 'number' ? y : Number(y.trimEnd());
-
-    const screenContext = screenId
-      ? screen.getAllDisplays()[screenId]
-      : screen.getPrimaryDisplay();
-
-    return {
-      x: Math.round(screenContext.bounds.x * (safeX / 100)),
-      y: Math.round(screenContext.bounds.y * (safeY / 100)),
-    };
-  }
-
- 
-  private static getScreenPoint(
-    x: number,
-    y: number,
-    screenId?: number
-  ): IVec2 {
-    const screenContext = screenId
-      ? screen.getAllDisplays()[screenId]
-      : screen.getPrimaryDisplay();
-
-    return {
-      x: `${Math.round((x / screenContext.bounds.x) * 100)}%`,
-      y: `${Math.round((y / screenContext.bounds.y) * 100)}%`,
-    };
-  }
-  */
-  // //#endregion Helpers
 }

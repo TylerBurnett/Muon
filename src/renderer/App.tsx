@@ -22,10 +22,9 @@ function App() {
         <Grid item xs={10}>
           <Box width="auto" pt={5} pr={10}>
             <Routes>
-              <Route path="/components" element={<Components />} />
+              <Route path="/" element={<Components />} />
               <Route path="/component/:uuid" element={<ComponentSettings />} />
               <Route path="/settings" element={<ApplicationSettings />} />
-              <Route path="/" element={<Components />} />
             </Routes>
           </Box>
         </Grid>
