@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Grid, Typography, Card, CardContent } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { IComponentSettingsMeta } from '../../../main/Component/IComponentSettings';
+import { IComponentSettingsMeta } from '../../../main/Data/ComponentConfig';
 import ComponentAvatar from './ComponentAvatar';
 
 interface ComponentCardProps {

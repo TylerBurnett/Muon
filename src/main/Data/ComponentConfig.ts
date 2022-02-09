@@ -1,20 +1,23 @@
 import * as yup from 'yup';
 import { validate } from 'uuid';
-import { IVec2 } from '../Common/IVec2';
+import { BrowserWindow } from 'electron';
+import { Vec2 } from './Vec2';
 
 /**
- * Extends the pre-exsisting IComponentSettings
- * This is used to keep track of component config file locations
+ * Interface container for Components
+ * Used internally to store metadata and functional classes associated with the operations of a component.
  */
-export interface IComponentSettingsMeta extends IComponentSettings {
+export interface Component {
   configPath: string;
   componentDir: string;
+  settings: ComponentConfig;
+  window: BrowserWindow | undefined;
 }
 
 /**
- * Custom component base settings (Things that should always be the same no matter the component)
+ * component configuration, In a sense the config can be described as developer centric settings.
  */
-export interface IComponentSettings {
+export interface ComponentConfig {
   uuid: string;
   name: string;
   description: string;
@@ -29,14 +32,24 @@ export interface IComponentSettings {
   displayFile: string;
   componentPath: string;
 
-  windowLocation: IVec2;
-  windowSize: IVec2;
+  windowLocation: Vec2;
+  windowSize: Vec2;
 
-  settings: IUserSetting[];
+  settings: ComponentUserConfig[];
 }
 
 /**
- * Interface validator
+ * Used as an object array in ComponentConfig, this gives the component user defined extensibility.
+ */
+export interface ComponentUserConfig {
+  name: string;
+  description: string;
+  value: unknown;
+  validator: string;
+}
+
+/**
+ * Component Config Validator, used to verify the correct use of data which cant be achieved through type checking.
  */
 export const ComponentSettingsValidator = yup.object({
   uuid: yup
@@ -56,16 +69,3 @@ export const ComponentSettingsValidator = yup.object({
   componentPath: yup.string().required('Component Path Requires a value'),
   settings: yup.array().required(),
 });
-
-/**
- * User facing settings exposed for editing,
- * this will later be used in the main application
- * to edit the component functionality, Like in rainmeter.
- */
-
-export interface IUserSetting {
-  name: string;
-  description: string;
-  value: unknown;
-  validator: string;
-}

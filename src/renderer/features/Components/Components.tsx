@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, Typography } from '@mui/material';
-import { IComponentSettingsMeta } from '../../../main/Component/IComponentSettings';
+import { IComponentSettingsMeta } from '../../../main/Data/ComponentConfig';
 import { useAppSelector } from '../../app/hooks';
 import { componentsSelector } from './ComponentSlice';
 import ComponentCard from './ComponentCard';

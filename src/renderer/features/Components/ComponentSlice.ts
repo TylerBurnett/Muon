@@ -5,7 +5,7 @@ import {
 } from '@reduxjs/toolkit';
 // eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store';
-import { IComponentSettingsMeta } from '../../../main/Component/IComponentSettings';
+import { IComponentSettingsMeta } from '../../../main/Data/ComponentConfig';
 import { getComponent, getComponents, saveComponent } from './ComponentAPI';
 
 export interface ComponentState {

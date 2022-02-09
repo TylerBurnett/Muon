@@ -26,7 +26,7 @@ import { useParams } from 'react-router-dom';
 import {
   ComponentSettingsValidator,
   IComponentSettingsMeta,
-} from '../../../main/Component/IComponentSettings';
+} from '../../../main/Data/ComponentConfig';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { componentSelector, saveComponentAsync } from './ComponentSlice';
 import NodeAccessConfirmationDialogue from './NodeAccessConfirmation';

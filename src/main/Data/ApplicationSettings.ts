@@ -3,20 +3,23 @@ import * as yup from 'yup';
 /**
  * The Interface for users application settings
  */
-export interface IApplicationSettings {
-  componentNodeAccessWhitelist: string[];
-  componentSettings: IComponentInstanceSettings[];
-  componentsFolderPath: string;
+export interface SettingsContainer {
+  componentSettings: ComponentSettings[];
+  applicationSettings: ApplicationSettings;
 }
 
 /**
  * Manages settings that are handled on an instance basis, E.G. Should not be controlled
  * externally by the component dev.
  */
-export interface IComponentInstanceSettings {
+export interface ComponentSettings {
   uuid: string;
   active: boolean;
   nodeAccess: boolean;
+}
+
+export interface ApplicationSettings {
+  componentsFolderPath: string;
 }
 
 /**
@@ -42,7 +45,8 @@ export const ComponentInstanceSettingsDefaults = (uuid: string) => {
  * Builder for the IApplicationsSettings Interface
  */
 export const ApplicationSettingsDefaults = {
-  componentNodeAccessWhitelist: [] as string[],
   componentSettings: [] as object[],
-  componentsFolderPath: '/components',
-} as IApplicationSettings;
+  applicationSettings: {
+    componentsFolderPath: './components',
+  },
+} as SettingsContainer;

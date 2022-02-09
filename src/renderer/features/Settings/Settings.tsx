@@ -14,12 +14,12 @@ import { Save as SaveIcon } from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import {
   ApplicationSettingsValidator,
-  IApplicationSettings,
-} from '../../../main/ComponentManager/IApplicationSettings';
+  SettingsContainer,
+} from '../../../main/Data/ApplicationSettings';
 import { saveSettingsAsync, settingsSelector } from './SettingsSlice';
 
 const ApplicationSettings: React.FC = () => {
-  const settings: IApplicationSettings = useAppSelector(settingsSelector);
+  const settings: SettingsContainer = useAppSelector(settingsSelector);
   const dispatch = useAppDispatch();
 
   const validationSchema = ApplicationSettingsValidator;
@@ -27,7 +27,7 @@ const ApplicationSettings: React.FC = () => {
   const formik = useFormik({
     initialValues: settings,
     validationSchema,
-    onSubmit: (values: IApplicationSettings) => {
+    onSubmit: (values: SettingsContainer) => {
       // eslint-disable-next-line no-alert
       dispatch(saveSettingsAsync(values));
     },
@@ -101,4 +101,4 @@ const ApplicationSettings: React.FC = () => {
   );
 };
 
-export default ApplicationSettings;
+export default SettingsContainer;

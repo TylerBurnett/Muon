@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import { IComponentSettingsMeta } from '../../../main/Component/IComponentSettings';
+import { IComponentSettingsMeta } from '../../../main/Data/ComponentConfig';
 import { ManagerRecievers } from '../../../main/Common/Recievers';
 
 export function getComponents() {

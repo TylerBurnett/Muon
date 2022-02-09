@@ -5,7 +5,6 @@ import { useAppDispatch } from './app/hooks';
 import { getComponentsAsync } from './features/Components/ComponentSlice';
 import { getSettingsAsync } from './features/Settings/SettingsSlice';
 import ComponentSettings from './features/Components/ComponentSettings';
-import ApplicationSettings from './features/Settings/Settings';
 import Components from './features/Components/Components';
 
 function App() {

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Avatar, Badge, styled } from '@mui/material';
-import { IComponentSettings } from '../../../main/Component/IComponentSettings';
+import { ComponentConfig } from '../../../main/Data/ComponentConfig';
 
 interface ComponentAvatarProps {
-  component: IComponentSettings;
+  component: ComponentConfig;
 }
 
 const ComponentAvatar: React.FC<ComponentAvatarProps> = ({ component }) => {

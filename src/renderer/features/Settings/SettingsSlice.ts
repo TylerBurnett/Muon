@@ -10,19 +10,19 @@ import {
   setSettings,
 } from './SettingsAPI';
 import {
-  IApplicationSettings,
-  IComponentInstanceSettings,
-} from '../../../main/ComponentManager/IApplicationSettings';
+  SettingsContainer,
+  ComponentSettings,
+} from '../../../main/Data/ApplicationSettings';
 // eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store';
 
 export interface SettingsState {
-  settings: IApplicationSettings;
+  settings: SettingsContainer;
   status: 'idle' | 'loading' | 'failed';
 }
 
 const initialState: SettingsState = {
-  settings: {} as IApplicationSettings,
+  settings: {} as SettingsContainer,
   status: 'idle',
 };
 
@@ -33,7 +33,7 @@ export const getSettingsAsync = createAsyncThunk('settings/get', async () => {
 
 export const saveSettingsAsync = createAsyncThunk(
   'settings/save',
-  async (state: IApplicationSettings) => {
+  async (state: SettingsContainer) => {
     const response = await setSettings(state);
     return response.data;
   }
@@ -103,10 +103,10 @@ export const settingsSelector = (state: RootState) => {
 export const componentInstanceSettingsSelector = (uuid: string) => {
   return createSelector(
     settingsSelector,
-    (settings: IApplicationSettings) =>
+    (settings: SettingsContainer) =>
       settings.componentSettings.find(
         (instanceSetting) => instanceSetting.uuid === uuid
-      ) || ({} as IComponentInstanceSettings)
+      ) || ({} as ComponentSettings)
   );
 };
 

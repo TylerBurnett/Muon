@@ -1,5 +1,3 @@
-import { ManagerRecievers } from '../Common/Recievers';
-
 const { contextBridge, ipcRenderer } = require('electron');
 const OS = require('os-utils');
 
@@ -14,16 +12,16 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 contextBridge.exposeInMainWorld('Component', {
-  getSettings: () => ipcRenderer.invoke(ManagerRecievers.GetComponent, []),
+  getSettings: () => ipcRenderer.invoke('GetComponent', []),
 
   logInfo: (message: string) =>
-    ipcRenderer.invoke(ManagerRecievers.Log, ['ComponentName', message]),
+    ipcRenderer.invoke('LogInfo', ['ComponentName', message]),
 
   logWarning: (message: string) =>
-    ipcRenderer.invoke(ManagerRecievers.Warning, ['ComponentName', message]),
+    ipcRenderer.invoke('LogWarning', ['ComponentName', message]),
 
   logError: (message: string) =>
-    ipcRenderer.invoke(ManagerRecievers.Error, ['ComponentName', message]),
+    ipcRenderer.invoke('LogError', ['ComponentName', message]),
 });
 
 contextBridge.exposeInMainWorld('OS', {
