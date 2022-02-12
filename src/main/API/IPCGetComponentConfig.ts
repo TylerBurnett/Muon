@@ -1,6 +1,6 @@
 import { IpcMainInvokeEvent } from 'electron';
 import { inject, singleton } from 'tsyringe';
-import { Logger } from 'winston';
+import LoggerService from '../Services/LoggerService';
 import ClientService from '../Services/ClientService';
 import ComponentService from '../Services/ComponentService';
 import IPCHandler from './IPCHandler';
@@ -8,12 +8,12 @@ import IPCHandler from './IPCHandler';
 @singleton()
 export default class IPCGetComponentConfig extends IPCHandler {
   constructor(
-    @inject('Logger') logger: Logger,
+    @inject('LoggerService') logger: LoggerService,
     @inject('ClientService') client: ClientService,
     @inject('ComponentService')
     private components: ComponentService
   ) {
-    super('GetComponentConfig', true, logger, client);
+    super('GetComponentConfig', true, logger.logger, client);
   }
 
   handleEvent(_event: IpcMainInvokeEvent, args: [string]) {

@@ -10,7 +10,7 @@ import { Vec2 } from './Vec2';
 export interface Component {
   configPath: string;
   componentDir: string;
-  settings: ComponentConfig;
+  config: ComponentConfig;
   window: BrowserWindow | undefined;
 }
 

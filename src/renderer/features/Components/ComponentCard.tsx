@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import { Grid, Typography, Card, CardContent } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { IComponentSettingsMeta } from '../../../main/Data/ComponentConfig';
+import { ComponentConfig } from '../../../main/Data/ComponentConfig';
 import ComponentAvatar from './ComponentAvatar';
 
 interface ComponentCardProps {
-  component: IComponentSettingsMeta;
+  component: ComponentConfig;
 }
 
 const ComponentCard: React.FC<ComponentCardProps> = ({ component }) => {

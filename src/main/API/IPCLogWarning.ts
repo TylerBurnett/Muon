@@ -1,16 +1,16 @@
 import { IpcMainInvokeEvent } from 'electron';
 import { inject, singleton } from 'tsyringe';
-import { Logger } from 'winston';
+import LoggerService from '../Services/LoggerService';
 import ClientService from '../Services/ClientService';
 import IPCHandler from './IPCHandler';
 
 @singleton()
 export default class IPCLogWarning extends IPCHandler {
   constructor(
-    @inject('Logger') logger: Logger,
+    @inject('LoggerService') logger: LoggerService,
     @inject('ClientService') client: ClientService
   ) {
-    super('LogWarning', false, logger, client);
+    super('LogWarning', false, logger.logger, client);
   }
 
   handleEvent(_event: IpcMainInvokeEvent, args: [string, string]) {

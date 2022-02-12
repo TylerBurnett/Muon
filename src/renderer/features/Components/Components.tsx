@@ -1,13 +1,12 @@
 import React from 'react';
 import { Grid, Typography } from '@mui/material';
-import { IComponentSettingsMeta } from '../../../main/Data/ComponentConfig';
+import { ComponentConfig } from '../../../main/Data/ComponentConfig';
 import { useAppSelector } from '../../app/hooks';
 import { componentsSelector } from './ComponentSlice';
 import ComponentCard from './ComponentCard';
 
 const Components: React.FC = () => {
-  const components: IComponentSettingsMeta[] =
-    useAppSelector(componentsSelector);
+  const components: ComponentConfig[] = useAppSelector(componentsSelector);
 
   return (
     <>

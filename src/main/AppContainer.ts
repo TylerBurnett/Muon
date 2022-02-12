@@ -1,6 +1,4 @@
-import { app } from 'electron';
-import { container } from 'tsyringe';
-import { Logger } from 'winston';
+import { container, Lifecycle } from 'tsyringe';
 import IPC_GetComponentConfig from './API/IPCGetComponentConfig';
 import IPC_GetComponentConfigs from './API/IPCGetComponentConfigs';
 import IPCGetSettings from './API/IPCGetSettings';
@@ -16,7 +14,8 @@ import ClientService from './Services/ClientService';
 import ClientServiceImpl from './Services/ClientServiceImpl';
 import ComponentService from './Services/ComponentService';
 import ComponentServiceImpl from './Services/ComponentServiceImpl';
-import buildLogger from './Services/LoggerFactory';
+import LoggerService from './Services/LoggerService';
+import LoggerServiceImpl from './Services/LoggerServiceImpl';
 import SystemTrayService from './Services/SystemTrayService';
 import SystemTrayServiceImpl from './Services/SystemTrayServiceImpl';
 
@@ -24,36 +23,49 @@ const buildContainer = () => {
   /**
    * Container Registry
    */
-  container.register<Logger>('Logger', {
-    useValue: buildLogger(),
-  });
+  container.register<LoggerService>(
+    'LoggerService',
+    {
+      useClass: LoggerServiceImpl,
+    },
+    { lifecycle: Lifecycle.Singleton }
+  );
 
-  container.register<ApplicationSettingsService>('ApplicationSettingsService', {
-    useClass: ApplicationSettingsServiceImpl,
-  });
+  container.register<ApplicationSettingsService>(
+    'ApplicationSettingsService',
+    {
+      useClass: ApplicationSettingsServiceImpl,
+    },
+    { lifecycle: Lifecycle.Singleton }
+  );
 
-  container.register<ClientService>('ClientService', {
-    useClass: ClientServiceImpl,
-  });
+  container.register<ClientService>(
+    'ClientService',
+    {
+      useClass: ClientServiceImpl,
+    },
+    { lifecycle: Lifecycle.Singleton }
+  );
 
-  container.register<SystemTrayService>('SystemTrayService', {
-    useClass: SystemTrayServiceImpl,
-  });
+  container.register<SystemTrayService>(
+    'SystemTrayService',
+    {
+      useClass: SystemTrayServiceImpl,
+    },
+    { lifecycle: Lifecycle.Singleton }
+  );
 
-  container.register<ComponentService>('ComponentService', {
-    useClass: ComponentServiceImpl,
-  });
+  container.register<ComponentService>(
+    'ComponentService',
+    {
+      useClass: ComponentServiceImpl,
+    },
+    { lifecycle: Lifecycle.Singleton }
+  );
 
   /**
    * Container Resolvers
    */
-  container.resolve(ApplicationSettingsServiceImpl);
-
-  container.resolve(ClientServiceImpl);
-
-  container.resolve(ComponentServiceImpl);
-
-  container.resolve(SystemTrayServiceImpl);
 
   // IPC Endpoints
   container.resolve(IPC_GetComponentConfig);

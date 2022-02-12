@@ -5,11 +5,11 @@ import {
 } from '@reduxjs/toolkit';
 // eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store';
-import { IComponentSettingsMeta } from '../../../main/Data/ComponentConfig';
+import { ComponentConfig } from '../../../main/Data/ComponentConfig';
 import { getComponent, getComponents, saveComponent } from './ComponentAPI';
 
 export interface ComponentState {
-  components: IComponentSettingsMeta[];
+  components: ComponentConfig[];
   status: 'idle' | 'loading' | 'failed';
 }
 
@@ -18,16 +18,10 @@ const initialState: ComponentState = {
   status: 'idle',
 };
 
-// The function below is called a thunk and allows us to perform async logic. It
-// can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
-// will call the thunk with the `dispatch` function as the first argument. Async
-// code can then be executed and other actions can be dispatched. Thunks are
-// typically used to make async requests.
 export const getComponentsAsync = createAsyncThunk(
   'components/getComponents',
   async () => {
     const response = await getComponents();
-    // The value we return becomes the `fulfilled` action payload
     return response.data;
   }
 );
@@ -36,16 +30,14 @@ export const getComponentAsync = createAsyncThunk(
   'components/getComponent',
   async () => {
     const response = await getComponent();
-    // The value we return becomes the `fulfilled` action payload
     return response.data;
   }
 );
 
 export const saveComponentAsync = createAsyncThunk(
   'components/saveComponent',
-  async (state: IComponentSettingsMeta) => {
+  async (state: ComponentConfig) => {
     const response = await saveComponent(state);
-    // The value we return becomes the `fulfilled` action payload
     return response.data;
   }
 );
@@ -97,10 +89,10 @@ export const componentsSelector = (state: RootState) => {
 export const componentSelector = (id: string) => {
   return createSelector(
     componentsSelector,
-    (components: IComponentSettingsMeta[]) =>
+    (components: ComponentConfig[]) =>
       components[
         components.findIndex(
-          (component: IComponentSettingsMeta) => component.uuid === id
+          (component: ComponentConfig) => component.uuid === id
         )
       ]
   );

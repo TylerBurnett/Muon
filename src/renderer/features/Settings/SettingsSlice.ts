@@ -3,12 +3,7 @@ import {
   createSelector,
   createSlice,
 } from '@reduxjs/toolkit';
-import {
-  getSettings,
-  setComponentActiveState,
-  setComponentNodeAccess,
-  setSettings,
-} from './SettingsAPI';
+import { getSettings, setComponentSettings, setSettings } from './SettingsAPI';
 import {
   SettingsContainer,
   ComponentSettings,
@@ -39,18 +34,10 @@ export const saveSettingsAsync = createAsyncThunk(
   }
 );
 
-export const setComponentNodeAccessAsync = createAsyncThunk(
-  'settings/setComponentNodeAccess',
-  async (state: { uuid: string; newState: boolean }) => {
-    const response = await setComponentNodeAccess(state.uuid, state.newState);
-    return response.data;
-  }
-);
-
-export const setComponentActiveStateAsync = createAsyncThunk(
-  'settings/setComponentActiveState',
-  async (state: { uuid: string; newState: boolean }) => {
-    const response = await setComponentActiveState(state.uuid, state.newState);
+export const setComponentSettingsAsync = createAsyncThunk(
+  'settings/setComponentSettings',
+  async (newState: ComponentSettings) => {
+    const response = await setComponentSettings(newState);
     return response.data;
   }
 );
@@ -69,7 +56,6 @@ export const settingsSlice = createSlice({
         state.settings = action.payload;
         state.status = 'idle';
       })
-
       .addCase(saveSettingsAsync.pending, (state) => {
         state.status = 'loading';
       })
@@ -77,21 +63,8 @@ export const settingsSlice = createSlice({
         state.settings = action.payload;
         state.status = 'idle';
       })
-
-      .addCase(setComponentNodeAccessAsync.pending, (state) => {
+      .addCase(setComponentSettingsAsync.pending, (state) => {
         state.status = 'loading';
-      })
-      .addCase(setComponentNodeAccessAsync.fulfilled, (state, action) => {
-        state.settings = action.payload;
-        state.status = 'idle';
-      })
-
-      .addCase(setComponentActiveStateAsync.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(setComponentActiveStateAsync.fulfilled, (state, action) => {
-        state.settings = action.payload;
-        state.status = 'idle';
       });
   },
 });

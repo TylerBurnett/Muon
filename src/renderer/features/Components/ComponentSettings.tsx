@@ -25,32 +25,29 @@ import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import { useParams } from 'react-router-dom';
 import {
   ComponentSettingsValidator,
-  IComponentSettingsMeta,
+  ComponentConfig,
 } from '../../../main/Data/ComponentConfig';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { componentSelector, saveComponentAsync } from './ComponentSlice';
 import NodeAccessConfirmationDialogue from './NodeAccessConfirmation';
 import {
   componentInstanceSettingsSelector,
-  setComponentActiveStateAsync,
-  setComponentNodeAccessAsync,
+  setComponentSettingsAsync,
 } from '../Settings/SettingsSlice';
 
 const ComponentSettings: React.FC = () => {
   const { uuid } = useParams();
 
-  const component: IComponentSettingsMeta = useAppSelector(
+  const component: ComponentConfig = useAppSelector(
     componentSelector(uuid || '')
   );
-  const componentInstanceSettings = useAppSelector(
+  const componentSettings = useAppSelector(
     componentInstanceSettingsSelector(uuid || '')
   );
 
   const dispatch = useAppDispatch();
   const validationSchema = ComponentSettingsValidator;
-
   const [nodeDialogueState, setNodeDialogueState] = useState(false);
-
   const [toastState, setToastState] = useState({
     active: false,
     type: 'warning' as AlertColor,
@@ -60,7 +57,7 @@ const ComponentSettings: React.FC = () => {
   const formik = useFormik({
     initialValues: component,
     validationSchema,
-    onSubmit: (values: IComponentSettingsMeta) => {
+    onSubmit: (values: ComponentConfig) => {
       dispatch(saveComponentAsync(values));
 
       setToastState({
@@ -110,27 +107,25 @@ const ComponentSettings: React.FC = () => {
                   <Grid item>
                     <Tooltip
                       title={
-                        componentInstanceSettings.active
+                        componentSettings.active
                           ? 'Stop Component'
                           : 'Start Component'
                       }
                     >
                       <IconButton
                         color={
-                          componentInstanceSettings.active
-                            ? 'secondary'
-                            : 'primary'
+                          componentSettings.active ? 'secondary' : 'primary'
                         }
                         onClick={() =>
                           dispatch(
-                            setComponentActiveStateAsync({
-                              uuid: componentInstanceSettings.uuid,
-                              newState: !componentInstanceSettings.active,
+                            setComponentSettingsAsync({
+                              ...componentSettings,
+                              active: !componentSettings.active,
                             })
                           )
                         }
                       >
-                        {componentInstanceSettings.active ? (
+                        {componentSettings.active ? (
                           <CancelPresentationIcon />
                         ) : (
                           <SlideShowIcon />
@@ -142,20 +137,18 @@ const ComponentSettings: React.FC = () => {
                   <Grid item>
                     <Tooltip
                       title={
-                        componentInstanceSettings.nodeAccess
+                        componentSettings.nodeAccess
                           ? 'Revoke Node Access'
                           : 'Give Node Access'
                       }
                     >
                       <IconButton
                         color={
-                          componentInstanceSettings.nodeAccess
-                            ? 'secondary'
-                            : 'primary'
+                          componentSettings.nodeAccess ? 'secondary' : 'primary'
                         }
                         onClick={() => setNodeDialogueState(true)}
                       >
-                        {componentInstanceSettings.nodeAccess ? (
+                        {componentSettings.nodeAccess ? (
                           <CodeOffIcon />
                         ) : (
                           <CodeIcon />
@@ -198,11 +191,9 @@ const ComponentSettings: React.FC = () => {
                 />
                 <Chip
                   variant="outlined"
-                  color={
-                    componentInstanceSettings.nodeAccess ? 'warning' : 'success'
-                  }
+                  color={componentSettings.nodeAccess ? 'warning' : 'success'}
                   label={`Node Requirement: ${
-                    componentInstanceSettings.nodeAccess ? 'Yes' : 'No'
+                    componentSettings.nodeAccess ? 'Yes' : 'No'
                   }`}
                 />
               </Stack>
@@ -256,9 +247,9 @@ const ComponentSettings: React.FC = () => {
 
           if (result) {
             dispatch(
-              setComponentNodeAccessAsync({
-                uuid: componentInstanceSettings.uuid,
-                newState: !componentInstanceSettings.nodeAccess,
+              setComponentSettingsAsync({
+                ...componentSettings,
+                nodeAccess: !componentSettings.nodeAccess,
               })
             );
           }

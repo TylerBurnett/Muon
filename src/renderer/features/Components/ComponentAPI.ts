@@ -1,31 +1,28 @@
 import { ipcRenderer } from 'electron';
-import { IComponentSettingsMeta } from '../../../main/Data/ComponentConfig';
-import { ManagerRecievers } from '../../../main/Common/Recievers';
+import { ComponentConfig } from '../../../main/Data/ComponentConfig';
 
 export function getComponents() {
-  return new Promise<{ data: IComponentSettingsMeta[] }>((resolve) =>
+  return new Promise<{ data: ComponentConfig[] }>((resolve) =>
     ipcRenderer
-      .invoke(ManagerRecievers.GetComponents, {})
-      // eslint-disable-next-line promise/always-return
-      .then((response: IComponentSettingsMeta[]) => resolve({ data: response }))
+      .invoke('GetComponentConfigs', {})
+      .then((response: ComponentConfig[]) => resolve({ data: response }))
       // eslint-disable-next-line no-console
-      .catch((e) => console.log(e))
+      .catch(console.log)
   );
 }
 
 export function getComponent() {
-  return new Promise<{ data: IComponentSettingsMeta }>((resolve) =>
-    setTimeout(() => resolve({ data: {} as IComponentSettingsMeta }), 500)
+  return new Promise<{ data: ComponentConfig }>((resolve) =>
+    setTimeout(() => resolve({ data: {} as ComponentConfig }), 500)
   );
 }
 
-export function saveComponent(state: IComponentSettingsMeta) {
-  return new Promise<{ data: IComponentSettingsMeta }>((resolve) =>
+export function saveComponent(state: ComponentConfig) {
+  return new Promise<{ data: ComponentConfig }>((resolve) =>
     ipcRenderer
-      .invoke(ManagerRecievers.SetComponent, [state])
-      // eslint-disable-next-line promise/always-return
+      .invoke('SetComponentConfig', [state])
       .then(() => resolve({ data: state }))
       // eslint-disable-next-line no-console
-      .catch((e) => console.log(e))
+      .catch(console.log)
   );
 }

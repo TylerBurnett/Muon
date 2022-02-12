@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { inject, singleton } from 'tsyringe';
-import { Logger } from 'winston';
 import { ValidationError } from 'yup';
+import { Logger } from 'winston';
 import ApplicationSettingsService from './ApplicationSettingsService';
 import {
   ApplicationSettingsValidator,
@@ -10,6 +10,7 @@ import {
   ApplicationSettings,
   ApplicationSettingsDefaults,
 } from '../Data/ApplicationSettings';
+import LoggerService from './LoggerService';
 
 @singleton()
 export default class ApplicationSettingsServiceImpl
@@ -19,7 +20,10 @@ export default class ApplicationSettingsServiceImpl
 
   private settings: SettingsContainer;
 
-  constructor(@inject('Logger') private logger: Logger) {
+  private log: Logger;
+
+  constructor(@inject('LoggerService') logger: LoggerService) {
+    this.log = logger.logger;
     this.settings = {} as SettingsContainer;
 
     if (!this.loadSettings()) {
@@ -44,13 +48,14 @@ export default class ApplicationSettingsServiceImpl
 
     if (settings || !instantiate) return settings;
 
-    return this.settings.componentSettings[
+    const index =
       this.settings.componentSettings.push({
         uuid,
         active: false,
         nodeAccess: false,
-      }) - 1
-    ];
+      }) - 1;
+    this.saveSettings();
+    return this.settings.componentSettings[index];
   }
 
   public updateComponentSettings(newState: ComponentSettings) {
@@ -84,12 +89,12 @@ export default class ApplicationSettingsServiceImpl
         return true;
       } catch (e: unknown) {
         if ((<ValidationError>e).errors) {
-          this.logger.error(
+          this.log.error(
             'Failed to load settings file, failed validation',
             (<ValidationError>e).errors.join(',')
           );
         } else {
-          this.logger.error('Failed to load settings file.');
+          this.log.error('Failed to load settings file.');
         }
 
         return false;

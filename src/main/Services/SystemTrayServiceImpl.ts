@@ -3,17 +3,21 @@ import { inject, singleton } from 'tsyringe';
 import { Logger } from 'winston';
 import ClientService from './ClientService';
 import { getAssetPath } from '../Common/util';
+import LoggerService from './LoggerService';
 
 @singleton()
 export default class TrayService {
   readonly path = `${getAssetPath()}/icons/32x32.png`;
 
-  private tray: Tray;
+  private tray: Tray | undefined;
+
+  private log: Logger;
 
   constructor(
-    @inject('Logger') private logger: Logger,
+    @inject('LoggerService') logger: LoggerService,
     @inject('ClientService') private client: ClientService
   ) {
+    this.log = logger.logger;
     const menu = Menu.buildFromTemplate([
       { label: 'Settings', type: 'normal', click: this.client.startApp },
       { label: 'Exit', type: 'normal', click: () => app.exit(0) },
@@ -26,6 +30,6 @@ export default class TrayService {
         this.tray = new Tray(this.path);
         this.tray.setContextMenu(menu);
       })
-      .catch(this.logger.log);
+      .catch((e) => this.log.error(''));
   }
 }

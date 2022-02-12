@@ -6,4 +6,6 @@ export default interface ComponentService {
   getComponentConfig(uuid: string): ComponentConfig | undefined;
 
   updateComponentConfig(newState: ComponentConfig): void;
+
+  checkComponentStatus(uuid: string): void;
 }
