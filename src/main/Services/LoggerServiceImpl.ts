@@ -7,7 +7,6 @@ export default class LoggerServiceImpl implements LoggerService {
   public logger: Logger;
 
   constructor() {
-    console.log('Logger Service Instance');
     this.logger = LoggerServiceImpl.buildLogger();
   }
 

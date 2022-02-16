@@ -42,8 +42,6 @@ export default class ComponentServiceImpl implements ComponentService {
     this.log = logger.logger;
     this.components = this.loadComponentConfigs();
 
-    console.log('Component Service Instance');
-
     app
       .whenReady()
       .then(() => {
@@ -53,8 +51,8 @@ export default class ComponentServiceImpl implements ComponentService {
         }
         return undefined;
       })
-      .catch(() =>
-        this.log.error('App failed to ready in ComponentServiceImpl')
+      .catch((e) =>
+        this.log.error('App failed to ready in ComponentServiceImpl', e)
       );
   }
 
@@ -91,8 +89,6 @@ export default class ComponentServiceImpl implements ComponentService {
           component.config,
           componentSettings
         );
-
-        console.log(shouldActivate);
 
         if (shouldActivate && component.window === undefined)
           this.startComponent(component.config.uuid);

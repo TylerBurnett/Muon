@@ -59,5 +59,4 @@ const main = async () => {
 };
 
 buildContainer();
-
 app.whenReady().then(main).catch(console.log);

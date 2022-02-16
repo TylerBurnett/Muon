@@ -15,7 +15,9 @@ export default class IPCHandler {
   ) {
     this.logger = logger;
     this.client = client;
-    ipcMain.handle(this.channel, this.authenticateCall);
+    ipcMain.handle(this.channel, (event, args) =>
+      this.authenticateCall(event, args)
+    );
   }
 
   /**
@@ -25,11 +27,12 @@ export default class IPCHandler {
    */
   private authenticateCall(event: IpcMainInvokeEvent, args: unknown[]) {
     if (!this.protectedChannel || event.sender.id === this.client.getId())
-      this.handleEvent(event, args);
-    else
-      this.logger.warning(
-        `Component ${event.sender.getTitle()} tried to use protected API`
-      );
+      return this.handleEvent(event, args);
+
+    this.logger.warning(
+      `Component ${event.sender.getTitle()} tried to use protected API`
+    );
+    return undefined;
   }
 
   /**
@@ -38,7 +41,7 @@ export default class IPCHandler {
    * @param args passthrough args
    */
   handleEvent(_event: IpcMainInvokeEvent, _args: unknown[]) {
-    this.logger.warn(
+    this.logger.error(
       `API Channel ${this.channel} has no override handler implemented.`
     );
   }

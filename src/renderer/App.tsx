@@ -6,6 +6,7 @@ import { getComponentsAsync } from './features/Components/ComponentSlice';
 import { getSettingsAsync } from './features/Settings/SettingsSlice';
 import ComponentSettings from './features/Components/ComponentSettings';
 import Components from './features/Components/Components';
+import ApplicationSettingsForm from './features/Settings/ApplicationSettingsForm';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -23,7 +24,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Components />} />
               <Route path="/component/:uuid" element={<ComponentSettings />} />
-              <Route path="/settings" element={<ApplicationSettings />} />
+              <Route path="/settings" element={<ApplicationSettingsForm />} />
             </Routes>
           </Box>
         </Grid>

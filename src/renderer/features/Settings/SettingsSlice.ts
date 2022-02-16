@@ -3,10 +3,15 @@ import {
   createSelector,
   createSlice,
 } from '@reduxjs/toolkit';
-import { getSettings, setComponentSettings, setSettings } from './SettingsAPI';
+import {
+  getSettings,
+  setComponentSettings,
+  setApplicationSettings,
+} from './SettingsAPI';
 import {
   SettingsContainer,
   ComponentSettings,
+  ApplicationSettings,
 } from '../../../main/Data/ApplicationSettings';
 // eslint-disable-next-line import/no-cycle
 import { RootState } from '../../app/store';
@@ -26,10 +31,10 @@ export const getSettingsAsync = createAsyncThunk('settings/get', async () => {
   return response.data;
 });
 
-export const saveSettingsAsync = createAsyncThunk(
+export const saveApplicationSettingsAsync = createAsyncThunk(
   'settings/save',
-  async (state: SettingsContainer) => {
-    const response = await setSettings(state);
+  async (state: ApplicationSettings) => {
+    const response = await setApplicationSettings(state);
     return response.data;
   }
 );
@@ -56,11 +61,11 @@ export const settingsSlice = createSlice({
         state.settings = action.payload;
         state.status = 'idle';
       })
-      .addCase(saveSettingsAsync.pending, (state) => {
+      .addCase(saveApplicationSettingsAsync.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(saveSettingsAsync.fulfilled, (state, action) => {
-        state.settings = action.payload;
+      .addCase(saveApplicationSettingsAsync.fulfilled, (state, action) => {
+        state.settings.applicationSettings = action.payload;
         state.status = 'idle';
       })
       .addCase(setComponentSettingsAsync.pending, (state) => {
@@ -69,13 +74,17 @@ export const settingsSlice = createSlice({
   },
 });
 
-export const settingsSelector = (state: RootState) => {
+export const settingsContainerSelector = (state: RootState) => {
   return state.settings.settings;
 };
 
-export const componentInstanceSettingsSelector = (uuid: string) => {
+export const applicationSettingsSelector = (state: RootState) => {
+  return state.settings.settings.applicationSettings;
+};
+
+export const componentSettingsSelector = (uuid: string) => {
   return createSelector(
-    settingsSelector,
+    settingsContainerSelector,
     (settings: SettingsContainer) =>
       settings.componentSettings.find(
         (instanceSetting) => instanceSetting.uuid === uuid

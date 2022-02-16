@@ -1,6 +1,6 @@
 import { container, Lifecycle } from 'tsyringe';
-import IPC_GetComponentConfig from './API/IPCGetComponentConfig';
-import IPC_GetComponentConfigs from './API/IPCGetComponentConfigs';
+import IPCGetComponentConfig from './API/IPCGetComponentConfig';
+import IPCGetComponentConfigs from './API/IPCGetComponentConfigs';
 import IPCGetSettings from './API/IPCGetSettings';
 import IPCLogError from './API/IPCLogError';
 import IPCLogInfo from './API/IPCLogInfo';
@@ -16,7 +16,6 @@ import ComponentService from './Services/ComponentService';
 import ComponentServiceImpl from './Services/ComponentServiceImpl';
 import LoggerService from './Services/LoggerService';
 import LoggerServiceImpl from './Services/LoggerServiceImpl';
-import SystemTrayService from './Services/SystemTrayService';
 import SystemTrayServiceImpl from './Services/SystemTrayServiceImpl';
 
 const buildContainer = () => {
@@ -47,14 +46,6 @@ const buildContainer = () => {
     { lifecycle: Lifecycle.Singleton }
   );
 
-  container.register<SystemTrayService>(
-    'SystemTrayService',
-    {
-      useClass: SystemTrayServiceImpl,
-    },
-    { lifecycle: Lifecycle.Singleton }
-  );
-
   container.register<ComponentService>(
     'ComponentService',
     {
@@ -66,11 +57,12 @@ const buildContainer = () => {
   /**
    * Container Resolvers
    */
+  container.resolve(SystemTrayServiceImpl);
 
   // IPC Endpoints
-  container.resolve(IPC_GetComponentConfig);
+  container.resolve(IPCGetComponentConfig);
 
-  container.resolve(IPC_GetComponentConfigs);
+  container.resolve(IPCGetComponentConfigs);
 
   container.resolve(IPCGetSettings);
 
