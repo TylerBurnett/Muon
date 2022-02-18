@@ -4,9 +4,9 @@ import {
   createSlice,
 } from '@reduxjs/toolkit';
 import {
-  getSettings,
-  setComponentSettings,
-  setApplicationSettings,
+  getSettingsContainer,
+  setComponentSettings as saveComponentSettings,
+  setApplicationSettings as saveApplicationSettings,
 } from './SettingsAPI';
 import {
   SettingsContainer,
@@ -26,23 +26,27 @@ const initialState: SettingsState = {
   status: 'idle',
 };
 
-export const getSettingsAsync = createAsyncThunk('settings/get', async () => {
-  const response = await getSettings();
-  return response.data;
-});
+export const getSettingsContainerAsync = createAsyncThunk(
+  'settings/getContainer',
+  async () => {
+    const response = await getSettingsContainer();
+    return response.data;
+  }
+);
 
 export const saveApplicationSettingsAsync = createAsyncThunk(
-  'settings/save',
+  'settings/saveApplicationSettings',
   async (state: ApplicationSettings) => {
-    const response = await setApplicationSettings(state);
+    const response = await saveApplicationSettings(state);
     return response.data;
   }
 );
 
 export const setComponentSettingsAsync = createAsyncThunk(
-  'settings/setComponentSettings',
+  'settings/saveComponentSettings',
   async (newState: ComponentSettings) => {
-    const response = await setComponentSettings(newState);
+    const response = await saveComponentSettings(newState);
+    console.log(response.data);
     return response.data;
   }
 );
@@ -54,10 +58,10 @@ export const settingsSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(getSettingsAsync.pending, (state) => {
+      .addCase(getSettingsContainerAsync.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(getSettingsAsync.fulfilled, (state, action) => {
+      .addCase(getSettingsContainerAsync.fulfilled, (state, action) => {
         state.settings = action.payload;
         state.status = 'idle';
       })
@@ -70,6 +74,15 @@ export const settingsSlice = createSlice({
       })
       .addCase(setComponentSettingsAsync.pending, (state) => {
         state.status = 'loading';
+      })
+      .addCase(setComponentSettingsAsync.fulfilled, (state, action) => {
+        state.status = 'idle';
+        state.settings.componentSettings = state.settings.componentSettings.map(
+          (obj) => {
+            if (obj.uuid === action.payload.uuid) return action.payload;
+            return obj;
+          }
+        );
       });
   },
 });
@@ -85,10 +98,9 @@ export const applicationSettingsSelector = (state: RootState) => {
 export const componentSettingsSelector = (uuid: string) => {
   return createSelector(
     settingsContainerSelector,
-    (settings: SettingsContainer) =>
-      settings.componentSettings.find(
-        (instanceSetting) => instanceSetting.uuid === uuid
-      ) || ({} as ComponentSettings)
+    (settings) =>
+      settings.componentSettings.find((obj) => obj.uuid === uuid) ||
+      ({} as ComponentSettings)
   );
 };
 

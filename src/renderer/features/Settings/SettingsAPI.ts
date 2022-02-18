@@ -5,10 +5,10 @@ import {
   SettingsContainer,
 } from '../../../main/Data/ApplicationSettings';
 
-export function getSettings() {
+export function getSettingsContainer() {
   return new Promise<{ data: SettingsContainer }>((resolve) =>
     ipcRenderer
-      .invoke('GetSettings')
+      .invoke('GetSettingsContainer')
       .then((response: SettingsContainer) => resolve({ data: response }))
       // eslint-disable-next-line no-console
       .catch((e) => console.log(e))
@@ -26,10 +26,10 @@ export function setApplicationSettings(state: ApplicationSettings) {
 }
 
 export function setComponentSettings(newState: ComponentSettings) {
-  return new Promise<{ data: SettingsContainer }>((resolve) =>
+  return new Promise<{ data: ComponentSettings }>((resolve) =>
     ipcRenderer
       .invoke('SetComponentSettings', [newState])
-      .then((response: SettingsContainer) => resolve({ data: response }))
+      .then((response: ComponentSettings) => resolve({ data: response }))
       // eslint-disable-next-line no-console
       .catch((e) => console.log(e))
   );

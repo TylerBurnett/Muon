@@ -40,6 +40,7 @@ export default class IPCHandler {
    * @param event passthrough event
    * @param args passthrough args
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   handleEvent(_event: IpcMainInvokeEvent, _args: unknown[]) {
     this.logger.error(
       `API Channel ${this.channel} has no override handler implemented.`

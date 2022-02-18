@@ -90,11 +90,7 @@ export const componentSelector = (id: string) => {
   return createSelector(
     componentsSelector,
     (components: ComponentConfig[]) =>
-      components[
-        components.findIndex(
-          (component: ComponentConfig) => component.uuid === id
-        )
-      ]
+      components[components.findIndex((component) => component.uuid === id)]
   );
 };
 

@@ -32,6 +32,10 @@ export default class ApplicationSettingsServiceImpl
     }
   }
 
+  public getSettingsContainer() {
+    return this.settings;
+  }
+
   public getApplicationSettings() {
     return this.settings.applicationSettings;
   }

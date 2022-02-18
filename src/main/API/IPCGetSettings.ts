@@ -13,10 +13,10 @@ export default class IPCGetSettings extends IPCHandler {
     @inject('ApplicationSettingsService')
     private app: ApplicationSettingsService
   ) {
-    super('GetSettings', true, logger.logger, client);
+    super('GetSettingsContainer', true, logger.logger, client);
   }
 
   handleEvent(_event: IpcMainInvokeEvent, _args: unknown[]) {
-    return this.app.getApplicationSettings();
+    return this.app.getSettingsContainer();
   }
 }

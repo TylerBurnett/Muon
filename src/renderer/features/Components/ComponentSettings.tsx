@@ -31,7 +31,7 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { componentSelector, saveComponentAsync } from './ComponentSlice';
 import NodeAccessConfirmationDialogue from './NodeAccessConfirmation';
 import {
-  componentInstanceSettingsSelector,
+  componentSettingsSelector,
   setComponentSettingsAsync,
 } from '../Settings/SettingsSlice';
 
@@ -42,7 +42,7 @@ const ComponentSettings: React.FC = () => {
     componentSelector(uuid || '')
   );
   const componentSettings = useAppSelector(
-    componentInstanceSettingsSelector(uuid || '')
+    componentSettingsSelector(uuid || '')
   );
 
   const dispatch = useAppDispatch();

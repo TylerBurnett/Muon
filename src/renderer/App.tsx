@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import SideBar from './features/Components/SideBar';
 import { useAppDispatch } from './app/hooks';
 import { getComponentsAsync } from './features/Components/ComponentSlice';
-import { getSettingsAsync } from './features/Settings/SettingsSlice';
+import { getSettingsContainerAsync } from './features/Settings/SettingsSlice';
 import ComponentSettings from './features/Components/ComponentSettings';
 import Components from './features/Components/Components';
 import ApplicationSettingsForm from './features/Settings/ApplicationSettingsForm';
@@ -11,7 +11,7 @@ import ApplicationSettingsForm from './features/Settings/ApplicationSettingsForm
 function App() {
   const dispatch = useAppDispatch();
   dispatch(getComponentsAsync());
-  dispatch(getSettingsAsync());
+  dispatch(getSettingsContainerAsync());
 
   return (
     <Router>
