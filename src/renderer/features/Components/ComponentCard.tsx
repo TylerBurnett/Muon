@@ -25,7 +25,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({ component }) => {
           <Grid item>
             <Grid container spacing={2}>
               <Grid item xs="auto">
-                <ComponentAvatar component={component} />
+                <ComponentAvatar component={component} size="50px" />
               </Grid>
               <Grid item xs={9}>
                 <Typography variant="h5">{component.name}</Typography>

@@ -46,7 +46,6 @@ export const setComponentSettingsAsync = createAsyncThunk(
   'settings/saveComponentSettings',
   async (newState: ComponentSettings) => {
     const response = await saveComponentSettings(newState);
-    console.log(response.data);
     return response.data;
   }
 );

@@ -60,8 +60,11 @@ export default class ComponentServiceImpl implements ComponentService {
     return this.components.map((comp) => comp.config);
   }
 
-  public getComponentConfig(uuid: string) {
-    return this.getComponent(uuid)?.config;
+  public getComponentConfig(
+    idValue: unknown,
+    matchType: 'uuid' | 'webContentsId' = 'uuid'
+  ) {
+    return this.getComponent(idValue, matchType)?.config;
   }
 
   public updateComponentConfig(newState: ComponentConfig) {
@@ -98,8 +101,16 @@ export default class ComponentServiceImpl implements ComponentService {
     }
   }
 
-  private getComponent(uuid: string) {
-    return this.components.find((obj) => obj.config.uuid === uuid);
+  public getComponent(
+    idValue: unknown,
+    matchType: 'uuid' | 'webContentsId' = 'uuid'
+  ) {
+    if (matchType === 'uuid')
+      return this.components.find((obj) => obj.config.uuid === idValue);
+
+    return this.components.find(
+      (obj) => obj.window?.webContents.id === idValue
+    );
   }
 
   private static shouldActivate(
@@ -159,20 +170,20 @@ export default class ComponentServiceImpl implements ComponentService {
     // Load its display file
     componentWindow.loadURL(displayPath);
 
-    componentWindow.on('moved', () => {
-      const componentIndex = this.components.findIndex(
-        (comp) => comp.config.uuid === component.config.uuid
-      );
+    componentWindow.on('moved', (uuid = component.config.uuid) => {
+      const obj = this.getComponent(uuid);
 
-      const [x, y] = componentWindow.getPosition();
+      if (obj && obj.window) {
+        const [x, y] = obj.window.getPosition();
 
-      this.updateComponentConfig({
-        ...this.components[componentIndex].config,
-        windowLocation: {
-          x,
-          y,
-        },
-      });
+        this.updateComponentConfig({
+          ...obj.config,
+          windowLocation: {
+            x,
+            y,
+          },
+        });
+      }
     });
 
     // Add it to the list of initialised components.

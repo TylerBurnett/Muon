@@ -34,6 +34,7 @@ import {
   componentSettingsSelector,
   setComponentSettingsAsync,
 } from '../Settings/SettingsSlice';
+import ComponentAvatar from './ComponentAvatar';
 
 const ComponentSettings: React.FC = () => {
   const { uuid } = useParams();
@@ -74,11 +75,7 @@ const ComponentSettings: React.FC = () => {
         <Grid item>
           <Grid container spacing={5}>
             <Grid item>
-              <Avatar
-                alt="Component Icon"
-                src={component.iconData}
-                sx={{ width: 90, height: 90 }}
-              />
+              <ComponentAvatar component={component} size="90px" />
             </Grid>
             <Grid item xs={5}>
               <Typography variant="h3">{component.name}</Typography>
@@ -147,6 +144,7 @@ const ComponentSettings: React.FC = () => {
                           componentSettings.nodeAccess ? 'secondary' : 'primary'
                         }
                         onClick={() => setNodeDialogueState(true)}
+                        disabled={!component.nodeDependency}
                       >
                         {componentSettings.nodeAccess ? (
                           <CodeOffIcon />
@@ -177,7 +175,7 @@ const ComponentSettings: React.FC = () => {
             <Typography variant="h5">Component Information</Typography>
             <Divider />
             <Box padding={3}>
-              <Typography variant="body1" paragraph>
+              <Typography variant="body1" paragraph style={{ height: '100px' }}>
                 {component.description}
               </Typography>
 

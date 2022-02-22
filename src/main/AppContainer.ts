@@ -8,6 +8,7 @@ import IPCLogWarning from './API/IPCLogWarning';
 import IPCSetComponentConfig from './API/IPCSetComponentConfig';
 import IPCSetComponentSettings from './API/IPCSetComponentSettings';
 import IPCSetSettings from './API/IPCSetSettings';
+import IPCShowComponentContextMenu from './API/IPCShowComponentContextMenu';
 import ApplicationSettingsService from './Services/ApplicationSettingsService';
 import ApplicationSettingsServiceImpl from './Services/ApplicationSettingsServiceImpl';
 import ClientService from './Services/ClientService';
@@ -77,6 +78,8 @@ const buildContainer = () => {
   container.resolve(IPCSetComponentSettings);
 
   container.resolve(IPCSetSettings);
+
+  container.resolve(IPCShowComponentContextMenu);
 
   return container;
 };

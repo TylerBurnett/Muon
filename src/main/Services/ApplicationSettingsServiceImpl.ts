@@ -57,6 +57,7 @@ export default class ApplicationSettingsServiceImpl
         uuid,
         active: false,
         nodeAccess: false,
+        locked: false,
       }) - 1;
     this.saveSettings();
     return this.settings.componentSettings[index];

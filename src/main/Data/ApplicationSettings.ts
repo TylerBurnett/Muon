@@ -16,6 +16,7 @@ export interface ComponentSettings {
   uuid: string;
   active: boolean;
   nodeAccess: boolean;
+  locked: boolean;
 }
 
 export interface ApplicationSettings {
@@ -38,6 +39,7 @@ export const ComponentInstanceSettingsDefaults = (uuid: string) => {
     uuid,
     active: false,
     nodeAccess: false,
+    locked: false,
   };
 };
 

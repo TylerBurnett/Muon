@@ -19,10 +19,7 @@ const SideBar: React.FC = () => {
   const Sidebar = styled(Drawer)(({ theme }) => ({
     '.MuiDrawer-paper': {
       overflowX: 'hidden',
-      width: `calc(${theme.spacing(7)} + 1px)`,
-      [theme.breakpoints.up('sm')]: {
-        width: `calc(${theme.spacing(9)} + 1px)`,
-      },
+      width: `calc(${theme.spacing(9)} + 1px)`,
     },
   }));
 
@@ -36,7 +33,7 @@ const SideBar: React.FC = () => {
     <div>
       <Sidebar variant="permanent">
         <List>
-          <ListItem button key="Dashboard" component={Link} to="/components">
+          <ListItem button key="Dashboard" component={Link} to="/">
             <Tooltip title="Muon" placement="right">
               <Avatar src={icon} style={{ width: '40px', height: '40px' }} />
             </Tooltip>

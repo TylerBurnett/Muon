@@ -4,63 +4,39 @@ import { ComponentConfig } from '../../../main/Data/ComponentConfig';
 
 interface ComponentAvatarProps {
   component: ComponentConfig;
+  size: string;
 }
 
-const ComponentAvatar: React.FC<ComponentAvatarProps> = ({ component }) => {
-  // TODO: Refactor this into mixins to reduce repetitive nature of code.
-  const ActiveComponentBadge = styled(Badge)(({ theme }) => ({
-    badge: {
-      backgroundColor: theme.palette.success.main,
-      color: theme.palette.success.main,
+const ComponentAvatar: React.FC<ComponentAvatarProps> = ({
+  component,
+  size,
+}) => {
+  const AvatarBadge = styled(Badge)(({ theme, color }) => ({
+    '& .MuiBadge-badge': {
+      backgroundColor: color,
+      color,
+      height: '20%',
+      width: '20%',
+      borderRadius: '100%',
       boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-      '&::after': {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        borderRadius: '50%',
-        border: '1px solid currentColor',
-      },
     },
   }));
-
-  // TODO: Refactor this into mixins to reduce repetitive nature of code.
-  const InactiveComponentBadge = styled(Badge)(({ theme }) => ({
-    badge: {
-      backgroundColor: theme.palette.error.main,
-      color: theme.palette.error.main,
-      boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-      '&::after': {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        borderRadius: '50%',
-        border: '1px solid currentColor',
-      },
-    },
-  }));
-
-  // TODO: Refactor this into mixins to reduce repetitive nature of code.
-  const ComponentBadge = component.active
-    ? ActiveComponentBadge
-    : InactiveComponentBadge;
 
   return (
-    <ComponentBadge
+    <AvatarBadge
       overlap="circular"
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'right',
       }}
       variant="dot"
+      color={component.active ? 'success' : 'error'}
     >
       <Avatar
         alt={component.name}
         src={component.iconData}
-        sx={{ width: 50, height: 50 }}
+        sx={{ width: size, height: size }}
+        style={{ fontSize: '160%' }}
       >
         {!component.iconData &&
           component.name
@@ -68,7 +44,7 @@ const ComponentAvatar: React.FC<ComponentAvatarProps> = ({ component }) => {
             .map((str: string) => str[0])
             .join('')}
       </Avatar>
-    </ComponentBadge>
+    </AvatarBadge>
   );
 };
 

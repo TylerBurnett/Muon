@@ -36,7 +36,7 @@ export const interfaceDebugSettings = {
 export const componentProductionSettings = {
   webPreferences: {
     devTools: false,
-    preload: path.join(__dirname, '../Component/preload.js'),
+    preload: path.join(__dirname, '../Exports/ComponentPreload.js'),
     contextIsolation: true,
   },
   frame: false,
@@ -51,7 +51,7 @@ export const componentProductionSettings = {
  */
 export const componentDebugSettings = {
   webPreferences: {
-    preload: path.join(__dirname, '../Component/preload.js'),
+    preload: path.join(__dirname, '../Exports/ComponentPreload.js'),
     contextIsolation: true,
   },
   hasShadow: false,

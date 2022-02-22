@@ -1,9 +1,17 @@
-import { ComponentConfig } from '../Data/ComponentConfig';
+import { Component, ComponentConfig } from '../Data/ComponentConfig';
 
 export default interface ComponentService {
   getComponentConfigs(): ComponentConfig[];
 
-  getComponentConfig(uuid: string): ComponentConfig | undefined;
+  getComponentConfig(
+    idValue: unknown,
+    matchType?: 'uuid' | 'webContentsId'
+  ): ComponentConfig | undefined;
+
+  getComponent(
+    idValue: unknown,
+    matchType: 'uuid' | 'webContentsId'
+  ): Component | undefined;
 
   updateComponentConfig(newState: ComponentConfig): void;
 

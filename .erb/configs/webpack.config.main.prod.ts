@@ -33,7 +33,7 @@ export default merge(baseConfig, {
     main: path.join(webpackPaths.srcMainPath, 'main.ts'),
     preload: path.join(
       webpackPaths.srcMainPath,
-      '/Exports/ComponentPreload.ts'
+      '/Exports/ComponentPreload.js'
     ),
   },
 
