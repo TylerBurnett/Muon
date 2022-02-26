@@ -1,11 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 const OS = require('os-utils');
 
-window.addEventListener('contextmenu', (e) => {
-  e.preventDefault();
-  ipcRenderer.invoke('ShowContextMenu');
-});
-
 ipcRenderer.on('EnableDrag', () => {
   const style = document.createElement('style');
   style.id = 'component-drag';
@@ -19,6 +14,22 @@ ipcRenderer.on('EnableDrag', () => {
 
 ipcRenderer.on('DisableDrag', () => {
   document.getElementById('component-drag')?.remove();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const style = document.createElement('style');
+  style.id = 'component-drag';
+  style.type = 'text/css';
+  style.innerHTML = `body {
+    -webkit-app-region: drag; 
+    -webkit-user-select: none;
+  }`;
+  document.getElementsByTagName('head')[0].appendChild(style);
+});
+
+window.addEventListener('contextmenu', (e) => {
+  e.preventDefault();
+  ipcRenderer.invoke('ShowContextMenu');
 });
 
 contextBridge.exposeInMainWorld('Component', {

@@ -8,7 +8,6 @@ import {
   Divider,
   IconButton,
   Tooltip,
-  Avatar,
   Snackbar,
   Alert,
   AlertColor,
