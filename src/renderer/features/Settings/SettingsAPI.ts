@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 import {
   ApplicationSettings,
   ComponentSettings,
@@ -7,7 +6,7 @@ import {
 
 export function getSettingsContainer() {
   return new Promise<{ data: SettingsContainer }>((resolve) =>
-    ipcRenderer
+    window.client.ipcRenderer
       .invoke('GetSettingsContainer')
       .then((response: SettingsContainer) => resolve({ data: response }))
       // eslint-disable-next-line no-console
@@ -17,7 +16,7 @@ export function getSettingsContainer() {
 
 export function setApplicationSettings(state: ApplicationSettings) {
   return new Promise<{ data: ApplicationSettings }>((resolve) =>
-    ipcRenderer
+    window.client.ipcRenderer
       .invoke('SetSettings', [state])
       .then((response: ApplicationSettings) => resolve({ data: response }))
       // eslint-disable-next-line no-console
@@ -27,7 +26,7 @@ export function setApplicationSettings(state: ApplicationSettings) {
 
 export function setComponentSettings(newState: ComponentSettings) {
   return new Promise<{ data: ComponentSettings }>((resolve) =>
-    ipcRenderer
+    window.client.ipcRenderer
       .invoke('SetComponentSettings', [newState])
       .then((response: ComponentSettings) => resolve({ data: response }))
       // eslint-disable-next-line no-console

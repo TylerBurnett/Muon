@@ -196,44 +196,50 @@ export default class ComponentServiceImpl implements ComponentService {
    */
   private loadComponentConfigs(): Component[] {
     const applicationSettings = this.appSettings.getApplicationSettings();
-
-    const directories = readdirSync(
-      applicationSettings.componentsFolderPath
-    ).filter((f) =>
-      statSync(
-        path.join(applicationSettings.componentsFolderPath, f)
-      ).isDirectory()
-    );
-
     const components: Component[] = [];
-    const baseDir = path.join(applicationSettings.componentsFolderPath);
 
-    directories.forEach((directory) => {
-      const componentDirPath = `${baseDir}/${directory}`;
+    if (existsSync(applicationSettings.componentsFolderPath)) {
+      const directories = readdirSync(
+        applicationSettings.componentsFolderPath
+      ).filter((f) =>
+        statSync(
+          path.join(applicationSettings.componentsFolderPath, f)
+        ).isDirectory()
+      );
 
-      if (existsSync(`${componentDirPath}/config.json`)) {
-        const contents: ComponentConfig = JSON.parse(
-          readFileSync(`${componentDirPath}/config.json`).toString()
-        );
+      const baseDir = path.join(applicationSettings.componentsFolderPath);
 
-        try {
-          ComponentConfigValidator.validateSync(contents);
+      directories.forEach((directory) => {
+        const componentDirPath = `${baseDir}/${directory}`;
 
-          components.push({
-            config: contents,
-            configPath: componentDirPath,
-            componentDir: `${baseDir}/${directory}`,
-            window: undefined,
-          });
-        } catch (e: unknown) {
-          this.log.error((<ValidationError>e).errors.join(','));
+        if (existsSync(`${componentDirPath}/config.json`)) {
+          const contents: ComponentConfig = JSON.parse(
+            readFileSync(`${componentDirPath}/config.json`).toString()
+          );
+
+          try {
+            ComponentConfigValidator.validateSync(contents);
+
+            components.push({
+              config: contents,
+              configPath: componentDirPath,
+              componentDir: `${baseDir}/${directory}`,
+              window: undefined,
+            });
+          } catch (e: unknown) {
+            this.log.error((<ValidationError>e).errors.join(','));
+          }
+        } else {
+          this.log.info(
+            `Could not find component config @${directory}, please check the location of this file.`
+          );
         }
-      } else {
-        this.log.info(
-          `Could not find component config @${directory}, please check the location of this file.`
-        );
-      }
-    });
+      });
+    } else {
+      this.log.warn(
+        'Could not find compoenents directory used in user settings. Please check the file path.'
+      );
+    }
 
     return components;
   }

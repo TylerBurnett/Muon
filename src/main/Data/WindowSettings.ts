@@ -6,10 +6,8 @@ import path from 'path';
 export const interfaceProductionSettings = {
   webPreferences: {
     devTools: false,
-    nodeIntegration: true,
-    nodeIntegrationInWorker: true,
-    // TODO Find a way to fix the component API to then re-enable this
-    contextIsolation: false,
+    // TODO These will totally break when we build the app, find a better way to resolve path based on prod/ packaged flags
+    preload: path.join(__dirname, '../Exports/ClientPreload.js'),
   },
   type: 'desktop',
   frame: true,
@@ -21,10 +19,8 @@ export const interfaceProductionSettings = {
 export const interfaceDebugSettings = {
   webPreferences: {
     devTools: true,
-    nodeIntegration: true,
-    nodeIntegrationInWorker: true,
-    // TODO Find a way to fix the component API to then re-enable this
-    contextIsolation: false,
+    // TODO These will totally break when we build the app, find a better way to resolve path based on prod/ packaged flags
+    preload: path.join(__dirname, '../Exports/ClientPreload.js'),
   },
   type: 'desktop',
   frame: true,
@@ -37,7 +33,6 @@ export const componentProductionSettings = {
   webPreferences: {
     devTools: false,
     preload: path.join(__dirname, '../Exports/ComponentPreload.js'),
-    contextIsolation: true,
   },
   frame: false,
   transparent: true,
@@ -52,7 +47,6 @@ export const componentProductionSettings = {
 export const componentDebugSettings = {
   webPreferences: {
     preload: path.join(__dirname, '../Exports/ComponentPreload.js'),
-    contextIsolation: true,
   },
   hasShadow: false,
   type: 'desktop',
