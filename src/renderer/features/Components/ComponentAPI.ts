@@ -2,7 +2,7 @@ import { ComponentConfig } from '../../../main/Data/ComponentConfig';
 
 export function getComponents() {
   return new Promise<{ data: ComponentConfig[] }>((resolve) =>
-    window.client.ipcRenderer
+    window.client
       .invoke('GetComponentConfigs', {})
       .then((response: ComponentConfig[]) => resolve({ data: response }))
       // eslint-disable-next-line no-console
@@ -18,7 +18,7 @@ export function getComponent() {
 
 export function saveComponent(state: ComponentConfig) {
   return new Promise<{ data: ComponentConfig }>((resolve) =>
-    window.client.ipcRenderer
+    window.client
       .invoke('SetComponentConfig', [state])
       .then(() => resolve({ data: state }))
       // eslint-disable-next-line no-console

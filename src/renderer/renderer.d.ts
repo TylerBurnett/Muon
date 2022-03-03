@@ -1,7 +1,5 @@
-import { IpcRenderer } from 'electron';
-
 export interface Client {
-  ipcRenderer: IpcRenderer;
+  invoke: (channel: string, ...args: any[]) => Promise<any>;
 }
 
 declare global {

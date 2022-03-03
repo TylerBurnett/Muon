@@ -27,7 +27,7 @@ export default merge(baseConfig, {
 
   mode: 'production',
 
-  target: 'electron-main',
+  target: ['web', 'electron-renderer'],
 
   entry: {
     main: path.join(webpackPaths.srcMainPath, 'main.ts'),
@@ -44,6 +44,9 @@ export default merge(baseConfig, {
   output: {
     path: webpackPaths.distMainPath,
     filename: '[name].js',
+    library: {
+      type: 'umd',
+    },
   },
 
   optimization: {

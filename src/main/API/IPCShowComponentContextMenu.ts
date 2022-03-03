@@ -59,7 +59,7 @@ export default class IPCSetComponentConfig extends IPCHandler {
         ];
 
         const menu = Menu.buildFromTemplate(template);
-        menu.popup({ window: component.window });
+        menu.popup();
       }
     }
   }

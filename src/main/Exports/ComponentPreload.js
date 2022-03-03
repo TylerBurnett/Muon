@@ -27,10 +27,22 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementsByTagName('head')[0].appendChild(style);
 });
 
+/*
+window.addEventListener('mousedown', (e) => {
+  console.log(e.button);
+  if (e.button === 3) {
+    ipcRenderer.invoke('ShowContextMenu');
+    e.preventDefault();
+  }
+});
+*/
+
+/*
 window.addEventListener('contextmenu', (e) => {
   e.preventDefault();
   ipcRenderer.invoke('ShowContextMenu');
 });
+*/
 
 contextBridge.exposeInMainWorld('Component', {
   getSettings: () => ipcRenderer.invoke('GetComponent', []),

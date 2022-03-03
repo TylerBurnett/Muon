@@ -8,16 +8,6 @@ import ComponentSettings from './features/Components/ComponentSettings';
 import Components from './features/Components/Components';
 import ApplicationSettingsForm from './features/Settings/ApplicationSettingsForm';
 
-export interface IElectronAPI {
-  loadPreferences: () => Promise<void>;
-}
-
-declare global {
-  interface Window {
-    electronAPI: IElectronAPI;
-  }
-}
-
 function App() {
   const dispatch = useAppDispatch();
   dispatch(getComponentsAsync());
